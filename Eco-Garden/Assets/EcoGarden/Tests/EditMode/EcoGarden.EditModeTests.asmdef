@@ -1,0 +1,21 @@
+{
+    "name": "EcoGarden.EditModeTests",
+    "rootNamespace": "EcoGarden.Tests",
+    "references": [
+        "EcoGarden.Runtime"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "noEngineReferences": false
+}

@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c06a32ed1fc832242bf551ff8081c21e, type: 3}
+  m_Name: producer_lotus_seed_01
+  m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Config.ProducerDefinition
+  producerId: producer_lotus_seed_01
+  spawnItem: {fileID: 11400000, guid: ff538eddbdbd6af42a5d8603a52c658a, type: 2}
+  cooldownSeconds: 1
+  spawnCostGold: 0

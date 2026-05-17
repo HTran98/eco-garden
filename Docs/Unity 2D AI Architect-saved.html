@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unity 2D AI Architect | Level Design Output</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@700;800&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0ea5e9',
+                        secondary: '#10b981',
+                        accent: '#8b5cf6',
+                        darkBg: '#0b0f1a',
+                        cardBg: '#161e2d',
+                        border: '#1e293b'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Outfit', 'Montserrat', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0b0f1a;
+            color: #e2e8f0;
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(14, 165, 233, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 40%);
+        }
+        .glass-card {
+            background: rgba(22, 30, 45, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            border-color: rgba(14, 165, 233, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+        }
+        .grid-tile {
+            aspect-ratio: 1 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+        .tile-locked { background: rgba(0,0,0,0.3); color: #475569; border: 1px dashed #334155; }
+        .tile-empty { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); }
+        .tile-obstacle { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #f87171; }
+        .tile-producer { background: rgba(14, 165, 233, 0.2); border: 1px solid #0ea5e9; color: #38bdf8; font-weight: bold; }
+        .tile-npc { background: rgba(139, 92, 246, 0.2); border: 1px solid #8b5cf6; color: #c084fc; font-weight: bold; }
+        .tile-item { background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; color: #34d399; }
+        
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0b0f1a; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #334155; }
+
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1.5rem;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-primary/30">
+
+    <!-- Header Section -->
+    <header class="py-12 px-6 text-center relative overflow-hidden">
+        <div class="absolute inset-0 z-0 opacity-20 pointer-events-none">
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[300px] bg-primary/20 blur-[120px] rounded-full"></div>
+        </div>
+        <div class="relative z-10">
+            <div class="inline-block px-4 py-1.5 mb-4 rounded-full border border-primary/20 bg-primary/5 text-primary text-xs font-bold uppercase tracking-widest animate-pulse">
+                AI Architect Output
+            </div>
+            <h1 class="text-4xl md:text-6xl font-display font-extrabold tracking-tight text-white mb-4">
+                Unity 2D <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">Architect</span>
+            </h1>
+            <p class="text-slate-400 max-w-2xl mx-auto text-lg">
+                Automated game systems and level design generation for modern mobile ecosystems.
+            </p>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 pb-24">
+        
+        <!-- SECTION 1: USER SPECIFICATIONS -->
+        <div class="mb-20">
+            <div class="flex items-center gap-4 mb-8">
+                <div class="h-px flex-1 bg-gradient-to-r from-transparent to-border"></div>
+                <h2 class="text-2xl font-display font-semibold text-slate-100 px-4">User Specifications</h2>
+                <div class="h-px flex-1 bg-gradient-to-l from-transparent to-border"></div>
+            </div>
+
+            <div class="bento-grid">
+                <!-- Project Overview -->
+                <div class="col-span-12 md:col-span-8 glass-card rounded-2xl p-8">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="p-2 bg-primary/10 rounded-lg">
+                            <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-white">Project Overview</h3>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-6">
+                        <div>
+                            <p class="text-slate-500 text-xs uppercase font-bold tracking-wider mb-1">Genre</p>
+                            <p class="text-slate-200">2D Puzzle Merge</p>
+                        </div>
+                        <div>
+                            <p class="text-slate-500 text-xs uppercase font-bold tracking-wider mb-1">Aesthetic</p>
+                            <p class="text-slate-200">Pastel Zen</p>
+                        </div>
+                        <div>
+                            <p class="text-slate-500 text-xs uppercase font-bold tracking-wider mb-1">Platform</p>
+                            <p class="text-slate-200">Android (Unity 6)</p>
+                        </div>
+                        <div>
+                            <p class="text-slate-500 text-xs uppercase font-bold tracking-wider mb-1">Revenue</p>
+                            <p class="text-slate-200">Hybrid IAP/Ads</p>
+                        </div>
+                    </div>
+                    <div class="mt-8">
+                        <p class="text-slate-400 leading-relaxed italic">
+                            "A relaxing 2D grid-based merging experience focused on item evolution (Lotus Seeds) with high-end Unity 6 optimizations and transparent monetization."
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Player Abilities -->
+                <div class="col-span-12 md:col-span-4 glass-card rounded-2xl p-8 border-l-4 border-l-accent">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="p-2 bg-accent/10 rounded-lg">
+                            <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-white">Abilities</h3>
+                    </div>
+                    <ul class="space-y-4">
+                        <li class="flex gap-3">
+                            <div class="w-1.5 h-1.5 rounded-full bg-accent mt-2"></div>
+                            <div>
+                                <span class="text-slate-200 font-semibold block">Shovel</span>
+                                <span class="text-slate-500 text-sm">Removes stuck items/weeds.</span>
+                            </div>
+                        </li>
+                        <li class="flex gap-3">
+                            <div class="w-1.5 h-1.5 rounded-full bg-accent mt-2"></div>
+                            <div>
+                                <span class="text-slate-200 font-semibold block">Magic Wand</span>
+                                <span class="text-slate-500 text-sm">Instant level evolution.</span>
+                            </div>
+                        </li>
+                        <li class="flex gap-3">
+                            <div class="w-1.5 h-1.5 rounded-full bg-accent mt-2"></div>
+                            <div>
+                                <span class="text-slate-200 font-semibold block">Sorting Magnet</span>
+                                <span class="text-slate-500 text-sm">Gathers like-items automatically.</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Evolution System -->
+                <div class="col-span-12 glass-card rounded-2xl p-8">
+                    <div class="flex items-center gap-3 mb-8">
+                        <div class="p-2 bg-secondary/10 rounded-lg">
+                            <svg class="w-6 h-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-white">Lotus Evolution Chain</h3>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                        <div class="bg-slate-900/50 p-4 rounded-xl text-center border border-slate-800">
+                            <div class="text-xs text-secondary font-bold mb-2">LVL 1</div>
+                            <div class="text-white font-medium mb-1">Dried Seed</div>
+                            <div class="text-slate-500 text-xs">$1 Gold</div>
+                        </div>
+                        <div class="bg-slate-900/50 p-4 rounded-xl text-center border border-slate-800">
+                            <div class="text-xs text-secondary font-bold mb-2">LVL 2</div>
+                            <div class="text-white font-medium mb-1">Sprout</div>
+                            <div class="text-slate-500 text-xs">$3 Gold</div>
+                        </div>
+                        <div class="bg-slate-900/50 p-4 rounded-xl text-center border border-slate-800">
+                            <div class="text-xs text-secondary font-bold mb-2">LVL 3</div>
+                            <div class="text-white font-medium mb-1">Baby Leaf</div>
+                            <div class="text-slate-500 text-xs">$8 Gold</div>
+                        </div>
+                        <div class="bg-slate-900/50 p-4 rounded-xl text-center border border-slate-800">
+                            <div class="text-xs text-secondary font-bold mb-2">LVL 4</div>
+                            <div class="text-white font-medium mb-1">Flower Bud</div>
+                            <div class="text-slate-500 text-xs">$20 Gold</div>
+                        </div>
+                        <div class="bg-slate-900/50 p-4 rounded-xl text-center border border-secondary/30 relative">
+                            <div class="absolute -top-2 -right-2 bg-secondary text-[10px] text-darkBg px-2 py-0.5 rounded-full font-bold">MAX</div>
+                            <div class="text-xs text-secondary font-bold mb-2">LVL 5</div>
+                            <div class="text-white font-medium mb-1">Blooming Lotus</div>
+                            <div class="text-slate-500 text-xs">$50 Gold</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 2: GENERATED LEVEL DESIGN -->
+        <div>
+            <div class="flex items-center gap-4 mb-8">
+                <div class="h-px flex-1 bg-gradient-to-r from-transparent to-border"></div>
+                <h2 class="text-2xl font-display font-semibold text-slate-100 px-4">Level Specification</h2>
+                <div class="h-px flex-1 bg-gradient-to-l from-transparent to-border"></div>
+            </div>
+
+            <div class="bento-grid">
+                <!-- Level Summary -->
+                <div class="col-span-12 glass-card rounded-2xl p-6 flex flex-wrap items-center justify-between gap-6 border-b-4 border-b-primary">
+                    <div class="flex items-center gap-6">
+                        <div class="text-center bg-primary/20 px-4 py-2 rounded-lg">
+                            <p class="text-[10px] uppercase font-bold text-primary tracking-widest">Level</p>
+                            <p class="text-2xl font-display font-bold text-white">15</p>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white">The Lotus Pond Corner</h3>
+                            <p class="text-slate-400">8x8 Grid Puzzle • Spatial Optimization Challenge</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="flex items-center gap-2 bg-slate-800/50 px-3 py-1.5 rounded-md border border-slate-700">
+                            <span class="w-2 h-2 rounded-full bg-pink-400"></span>
+                            <span class="text-xs text-slate-300">Pastel Zen</span>
+                        </div>
+                        <div class="flex items-center gap-2 bg-slate-800/50 px-3 py-1.5 rounded-md border border-slate-700">
+                            <span class="w-2 h-2 rounded-full bg-teal-400"></span>
+                            <span class="text-xs text-slate-300">Foggy Pond BG</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grid Visualizer -->
+                <div class="col-span-12 lg:col-span-7 glass-card rounded-2xl p-8">
+                    <h4 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 3a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 5h10v10H5V5z" clip-rule="evenodd"></path></svg>
+                        Grid Layout Visualization
+                    </h4>
+                    <div class="grid grid-cols-8 gap-2 max-w-md mx-auto">
+                        <!-- Row 7 -->
+                        <div class="grid-tile tile-locked">L</div><div class="grid-tile tile-locked">L</div><div class="grid-tile tile-empty">-</div><div class="grid-tile tile-empty">-</div><div class="grid-tile tile-empty">-</div><div class="grid-tile tile-empty">-</div><div class="grid-tile tile-locked">L</div><div class="grid-tile tile-locked">L</div>
+                        <!-- Row 6 -->
+                        <div class="grid-tile tile-locked">L</div><div class="grid-tile tile-empty">-</div><div class="grid-tile tile-empty">-</div><div class="grid-tile tile-item">2</div><div class="grid-tile tile-item">1</div><div class="grid-tile tile-empty">-</div><div class="grid-tile tile-empty">-</div><div class="grid-tile tile-locked">L</div>
+                        <!-- Row 5 -->
+                        <div class="grid-tile tile-empty">-</div><div class="grid-tile tile-empty">-</div><div class="grid-tile tile-obstacle">W</div><div class="grid-tile tile-empty">-</div><div class="grid-tile tile-empty">-</div><div class="grid-tile tile-obstacle">W</div><div class="grid-tile tile-empty">-</div><div class="grid-tile tile-empty">-</div>
+                        <!-- Row 4 -->
+                        <div class="grid-tile tile-producer">S</div><div class="grid-tile tile-empty">-</div><div class="grid-tile tile-obstacle">P</div><div class="grid-tile tile-obstacle">P</div><div class="grid-tile tile-obstacle">P</div><div class="grid-tile tile-obstacle">P</div><div class="grid-tile tile-empty">-</div><div class="grid-tile tile-npc">NPC</div>
+                        <!-- Row 3 -->
+                        <div class="grid-tile tile-empty">-</div><div class="grid-tile tile-empty">-</div><div class="grid-tile tile-obstacle">P</div><div class="grid-tile tile-obstacle">P</div><div class="grid-tile tile-obstacle">P</div><div class="grid-tile tile-obstacle">P</div><div class="grid-tile tile-empty">-</div><div class="grid-tile tile-empty">-</div>
+                        <!-- Row 2 -->
+                        <div class="grid-tile tile-empty">-</div><div class="grid-tile tile-empty">-</div><div class="grid-tile tile-obstacle">W</div><div class="grid-tile tile-empty">-</div><div class="grid-tile tile-empty">-</div><div class="grid-tile tile-obstacle">W</div><div class="grid-tile tile-empty">-</div><div class="grid-tile tile-empty">-</div>
+                        <!-- Row 1 -->
+                        <div class="grid-tile tile-locked">L</div><div class="grid-tile tile-empty">-</div><div class="grid-tile tile-empty">-</div><div class="grid-tile tile-item">1</div><div class="grid-tile tile-item">1</div><div class="grid-tile tile-empty">-</div><div class="grid-tile tile-empty">-</div><div class="grid-tile tile-locked">L</div>
+                        <!-- Row 0 -->
+                        <div class="grid-tile tile-locked">L</div><div class="grid-tile tile-locked">L</div><div class="grid-tile tile-empty">-</div><div class="grid-tile tile-empty">-</div><div class="grid-tile tile-empty">-</div><div class="grid-tile tile-empty">-</div><div class="grid-tile tile-locked">L</div><div class="grid-tile tile-locked">L</div>
+                    </div>
+                    
+                    <div class="mt-8 grid grid-cols-2 sm:grid-cols-3 gap-4 text-[10px] font-mono">
+                        <div class="flex items-center gap-2"><span class="w-3 h-3 bg-primary/20 border border-primary rounded"></span> [S] Producer</div>
+                        <div class="flex items-center gap-2"><span class="w-3 h-3 bg-red-500/20 border border-red-500/40 rounded"></span> [W/P] Obstacles</div>
+                        <div class="flex items-center gap-2"><span class="w-3 h-3 bg-violet-500/20 border border-violet-500/40 rounded"></span> [NPC] Order Point</div>
+                        <div class="flex items-center gap-2"><span class="w-3 h-3 bg-green-500/20 border border-green-500/40 rounded"></span> [1/2] Pre-placed</div>
+                        <div class="flex items-center gap-2"><span class="w-3 h-3 bg-slate-900 border border-slate-700 rounded"></span> [L] Locked</div>
+                    </div>
+                </div>
+
+                <!-- AI Logic -->
+                <div class="col-span-12 lg:col-span-5 space-y-6">
+                    <div class="glass-card rounded-2xl p-6 h-full">
+                        <h4 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            AI Behaviors
+                        </h4>
+                        
+                        <div class="space-y-6">
+                            <div>
+                                <h5 class="text-sm font-bold text-slate-200 uppercase tracking-tight mb-2">Customer NPC</h5>
+                                <p class="text-sm text-slate-400 leading-relaxed">
+                                    Spawns at <code class="text-primary">(-1, 4)</code>, patrols to <code class="text-primary">(7, 4)</code>. Wait time: 180s. Disappears post-fulfillment.
+                                </p>
+                            </div>
+                            <div>
+                                <h5 class="text-sm font-bold text-slate-200 uppercase tracking-tight mb-2">Zen Butterflies</h5>
+                                <div class="bg-slate-900/40 p-4 rounded-xl border border-slate-800 text-xs font-mono space-y-2 text-slate-300">
+                                    <div class="flex items-start gap-2">
+                                        <span class="text-accent">A:</span>
+                                        <span>(1,1) → (2,5) → (6,5) → (5,1) loop</span>
+                                    </div>
+                                    <div class="flex items-start gap-2">
+                                        <span class="text-accent">B:</span>
+                                        <span>Hover logic around [Lv5] Blooming Lotus</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <h5 class="text-sm font-bold text-slate-200 uppercase tracking-tight mb-2">Locomotion Style</h5>
+                                <p class="text-sm text-slate-400 italic">Float-weighted lerping for organic wing physics.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analysis & Strategy -->
+                <div class="col-span-12 md:col-span-6 glass-card rounded-2xl p-8">
+                    <h4 class="text-lg font-bold text-white mb-4">Traversability Analysis</h4>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        The level is bisected by a central <span class="text-red-400">Pebble Wall [P]</span> which creates a bottleneck. While technically traversable, the limited space around the Producer [S] will lead to rapid grid saturation, forcing the player to engage with grid management mechanics.
+                    </p>
+                </div>
+
+                <div class="col-span-12 md:col-span-6 glass-card rounded-2xl p-8 border-r-4 border-r-secondary">
+                    <h4 class="text-lg font-bold text-white mb-4">Ability Integration</h4>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="text-slate-200">Shovel Priority:</span>
+                            <span class="text-secondary font-mono">CRITICAL</span>
+                        </div>
+                        <div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+                            <div class="bg-secondary w-[95%] h-full"></div>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-2">
+                            Essential for breaching $(3,3)$ or $(4,3)$ to link the top and bottom merging quadrants.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Final Conclusion Block -->
+        <div class="mt-12 glass-card rounded-3xl p-8 bg-gradient-to-br from-cardBg to-slate-900 border-primary/10">
+            <div class="flex flex-col md:flex-row gap-8 items-center">
+                <div class="flex-1">
+                    <h3 class="text-2xl font-bold text-white mb-2">Architect's Summary</h3>
+                    <p class="text-slate-400">
+                        Level 15 marks a transition from simple merging to "Spatial Puzzling." By restricting the central horizontal axis, we encourage the use of the Shovel tool (monetization hook) or patient gold accumulation for tile expansion.
+                    </p>
+                </div>
+                <div class="w-full md:w-auto">
+                    <div class="bg-primary hover:bg-primary/80 transition-colors text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-primary/20 cursor-pointer text-center">
+                        Export to Unity Package
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Decorative Bottom Accent -->
+    <div class="fixed bottom-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-accent to-secondary opacity-50"></div>
+
+</body>
+</html>

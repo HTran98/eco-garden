@@ -1,0 +1,51 @@
+# Unity generated folders
+Eco-Garden/Library/
+Eco-Garden/Temp/
+Eco-Garden/Obj/
+Eco-Garden/Logs/
+Eco-Garden/UserSettings/
+Eco-Garden/MemoryCaptures/
+Eco-Garden/Recordings/
+
+# Unity build output
+Eco-Garden/Build/
+Eco-Garden/Builds/
+Eco-Garden/ExportedObj/
+Eco-Garden/*.apk
+Eco-Garden/*.aab
+Eco-Garden/*.unitypackage
+
+# Unity generated project files
+Eco-Garden/*.csproj
+Eco-Garden/*.sln
+Eco-Garden/*.slnx
+Eco-Garden/*.suo
+Eco-Garden/*.user
+Eco-Garden/*.userprefs
+Eco-Garden/*.pidb
+Eco-Garden/*.booproj
+
+# Crash and profiler files
+Eco-Garden/sysinfo.txt
+Eco-Garden/*.stackdump
+Eco-Garden/*.pdb
+Eco-Garden/*.mdb
+
+# IDE and OS files
+.vs/
+.vscode/
+.idea/
+*.tmp
+*.log
+*.bak
+*.swp
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Rider / JetBrains
+*.DotSettings.user
+
+# Visual Studio cache
+*.VC.db
+*.VC.VC.opendb

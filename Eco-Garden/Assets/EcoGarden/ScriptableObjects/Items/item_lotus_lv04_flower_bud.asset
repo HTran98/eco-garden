@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eed178fec33216447bbb2bf98eeccdd6, type: 3}
+  m_Name: item_lotus_lv04_flower_bud
+  m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Config.ItemDefinition
+  itemId: item_lotus_lv04_flower_bud
+  familyId: lotus
+  level: 4
+  displayName: Flower Bud
+  sellValue: 20
+  sprite: {fileID: 0}
+  nextItem: {fileID: 11400000, guid: 627a4203074a8564cb1e4fbb70b44ad2, type: 2}
