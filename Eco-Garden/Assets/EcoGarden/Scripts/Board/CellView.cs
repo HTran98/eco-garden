@@ -31,5 +31,19 @@ namespace EcoGarden.Board
             transform.localScale = new Vector3(size.x, size.y, 1f);
             name = "Cell_" + boardCell.Position.X + "_" + boardCell.Position.Y + "_" + boardCell.Kind;
         }
+
+        public void Refresh(BoardCell boardCell, Sprite sprite, Color color)
+        {
+            cell = boardCell;
+
+            if (spriteRenderer == null)
+            {
+                spriteRenderer = GetComponent<SpriteRenderer>();
+            }
+
+            spriteRenderer.sprite = sprite;
+            spriteRenderer.color = color;
+            name = "Cell_" + boardCell.Position.X + "_" + boardCell.Position.Y + "_" + boardCell.Kind;
+        }
     }
 }

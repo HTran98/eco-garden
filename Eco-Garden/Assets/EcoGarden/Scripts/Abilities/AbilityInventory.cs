@@ -1,10 +1,13 @@
 using System.Collections.Generic;
+using System;
 
 namespace EcoGarden.Abilities
 {
     public sealed class AbilityInventory
     {
         private readonly Dictionary<AbilityKind, int> counts = new Dictionary<AbilityKind, int>();
+
+        public event Action<AbilityKind, int> CountChanged;
 
         public int GetCount(AbilityKind abilityKind)
         {
@@ -13,7 +16,9 @@ namespace EcoGarden.Abilities
 
         public void SetCount(AbilityKind abilityKind, int count)
         {
-            counts[abilityKind] = count < 0 ? 0 : count;
+            int safeCount = count < 0 ? 0 : count;
+            counts[abilityKind] = safeCount;
+            CountChanged?.Invoke(abilityKind, safeCount);
         }
 
         public bool TryConsume(AbilityKind abilityKind)
@@ -25,6 +30,7 @@ namespace EcoGarden.Abilities
             }
 
             counts[abilityKind] = count - 1;
+            CountChanged?.Invoke(abilityKind, counts[abilityKind]);
             return true;
         }
     }

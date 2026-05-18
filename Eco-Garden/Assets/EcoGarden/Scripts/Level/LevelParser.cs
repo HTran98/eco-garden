@@ -80,7 +80,7 @@ namespace EcoGarden.Level
                         Producer = new ProducerRuntime(levelDefinition.DefaultProducer)
                     };
                 case 'N':
-                    return new BoardCell(position, CellKind.NpcOrderPoint);
+                    return new BoardCell(position, CellKind.Empty);
                 default:
                     if (char.IsDigit(token))
                     {

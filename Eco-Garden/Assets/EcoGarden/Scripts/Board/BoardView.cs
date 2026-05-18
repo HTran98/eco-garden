@@ -8,14 +8,17 @@ namespace EcoGarden.Board
     {
         [SerializeField] private float cellSize = 0.82f;
         [SerializeField] private float cellGap = 0.06f;
+        [SerializeField] private float itemSizeRatio = 0.78f;
         [SerializeField] private Transform cellRoot;
         [SerializeField] private Transform itemRoot;
 
         private readonly Dictionary<GridPosition, CellView> cellViews = new Dictionary<GridPosition, CellView>();
         private readonly Dictionary<GridPosition, ItemView> itemViews = new Dictionary<GridPosition, ItemView>();
+        private readonly List<GridPosition> staleItemPositions = new List<GridPosition>();
 
         public float CellSize { get { return cellSize; } }
         public float CellGap { get { return cellGap; } }
+        public float ItemWorldSize { get { return cellSize * itemSizeRatio; } }
 
         public float GetBoardWorldWidth(BoardState boardState)
         {
@@ -46,6 +49,43 @@ namespace EcoGarden.Board
                     CreateItemView(boardState, cell);
                 }
             }
+        }
+
+        public void Sync(BoardState boardState)
+        {
+            if (boardState == null)
+            {
+                Clear();
+                return;
+            }
+
+            if (cellViews.Count == 0)
+            {
+                Render(boardState);
+                return;
+            }
+
+            EnsureRoots();
+
+            staleItemPositions.Clear();
+            foreach (GridPosition position in itemViews.Keys)
+            {
+                staleItemPositions.Add(position);
+            }
+
+            foreach (BoardCell cell in boardState.GetCells())
+            {
+                SyncCellView(boardState, cell);
+                SyncItemView(boardState, cell);
+                staleItemPositions.Remove(cell.Position);
+            }
+
+            for (int i = 0; i < staleItemPositions.Count; i++)
+            {
+                RemoveItemView(staleItemPositions[i]);
+            }
+
+            staleItemPositions.Clear();
         }
 
         public Vector3 GridToWorld(BoardState boardState, GridPosition position)
@@ -94,7 +134,7 @@ namespace EcoGarden.Board
             CellView cellView = cellObject.AddComponent<CellView>();
             cellView.Initialize(
                 cell,
-                PlaceholderSpriteFactory.SquareSprite,
+                GetCellSprite(cell),
                 GetCellColor(cell),
                 GridToWorld(boardState, cell.Position),
                 new Vector2(cellSize, cellSize));
@@ -110,11 +150,67 @@ namespace EcoGarden.Board
             itemView.Initialize(
                 cell.Item,
                 cell.Position,
-                PlaceholderSpriteFactory.SquareSprite,
-                GetItemColor(cell.Item.Level),
+                PlaceholderSpriteFactory.GetLotusSprite(cell.Item.Level),
+                Color.white,
                 GridToWorld(boardState, cell.Position),
-                cellSize * 0.68f);
+                ItemWorldSize);
             itemViews[cell.Position] = itemView;
+        }
+
+        private void SyncCellView(BoardState boardState, BoardCell cell)
+        {
+            if (!cellViews.TryGetValue(cell.Position, out CellView cellView) || cellView == null)
+            {
+                CreateCellView(boardState, cell);
+                return;
+            }
+
+            cellView.Refresh(cell, GetCellSprite(cell), GetCellColor(cell));
+        }
+
+        private void SyncItemView(BoardState boardState, BoardCell cell)
+        {
+            if (cell.Item == null)
+            {
+                RemoveItemView(cell.Position);
+                return;
+            }
+
+            if (!itemViews.TryGetValue(cell.Position, out ItemView itemView) || itemView == null)
+            {
+                CreateItemView(boardState, cell);
+                return;
+            }
+
+            itemView.Refresh(
+                cell.Item,
+                cell.Position,
+                PlaceholderSpriteFactory.GetLotusSprite(cell.Item.Level),
+                Color.white,
+                GridToWorld(boardState, cell.Position),
+                ItemWorldSize);
+        }
+
+        private void RemoveItemView(GridPosition position)
+        {
+            if (!itemViews.TryGetValue(position, out ItemView itemView))
+            {
+                return;
+            }
+
+            if (itemView != null)
+            {
+                if (Application.isPlaying)
+                {
+                    Destroy(itemView.gameObject);
+                }
+                else
+                {
+                    DestroyImmediate(itemView.gameObject);
+                }
+            }
+
+            itemViews.Remove(position);
         }
 
         private void EnsureRoots()
@@ -171,6 +267,23 @@ namespace EcoGarden.Board
                     return new Color(0.62f, 0.38f, 0.78f, 1f);
                 default:
                     return new Color(0.60f, 0.78f, 0.74f, 1f);
+            }
+        }
+
+        private static Sprite GetCellSprite(BoardCell cell)
+        {
+            switch (cell.Kind)
+            {
+                case CellKind.Locked:
+                    return PlaceholderSpriteFactory.LockedTileSprite;
+                case CellKind.Obstacle:
+                    return cell.ObstacleKind == ObstacleKind.Weed
+                        ? PlaceholderSpriteFactory.WeedSprite
+                        : PlaceholderSpriteFactory.PebbleSprite;
+                case CellKind.Producer:
+                    return PlaceholderSpriteFactory.ProducerSprite;
+                default:
+                    return PlaceholderSpriteFactory.EmptyTileSprite;
             }
         }
 

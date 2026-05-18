@@ -24,7 +24,7 @@ namespace EcoGarden.Board
 
         public bool CanReceiveItem
         {
-            get { return (Kind == CellKind.Empty || Kind == CellKind.NpcOrderPoint) && Item == null; }
+            get { return Kind == CellKind.Empty && Item == null; }
         }
     }
 }

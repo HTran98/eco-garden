@@ -3,6 +3,8 @@ using EcoGarden.Config;
 using EcoGarden.Input;
 using EcoGarden.Level;
 using EcoGarden.Economy;
+using EcoGarden.AI;
+using EcoGarden.Save;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -35,6 +37,13 @@ namespace EcoGarden.Editor
             gameRoot.AddComponent<GameBootstrapper>();
             gameRoot.AddComponent<LevelStateController>();
             gameRoot.AddComponent<EconomyController>();
+            gameRoot.AddComponent<SaveController>();
+
+            GameObject npcObject = new GameObject("CustomerNpc");
+            NpcMovementController npc = npcObject.AddComponent<NpcMovementController>();
+            npc.SetBoardController(boardController);
+
+            CreateButterflies(boardRoot.transform.position);
 
             GameObject inputRoot = new GameObject("InputRoot");
             inputRoot.AddComponent<BoardInputController>();
@@ -58,6 +67,27 @@ namespace EcoGarden.Editor
             camera.clearFlags = CameraClearFlags.SolidColor;
             camera.backgroundColor = new Color(0.30f, 0.43f, 0.60f, 1f);
             cameraObject.transform.position = new Vector3(0f, 0f, -10f);
+        }
+
+        private static void CreateButterflies(Vector3 boardCenter)
+        {
+            GameObject butterflyAObject = new GameObject("ButterflyA");
+            ButterflyMovementController butterflyA = butterflyAObject.AddComponent<ButterflyMovementController>();
+            butterflyA.ConfigureLoop(
+                boardCenter + new Vector3(0f, 0.2f, 0f),
+                new Vector2(4.45f, 2.15f),
+                0.46f,
+                0f,
+                new Color(1f, 0.74f, 0.32f, 1f));
+
+            GameObject butterflyBObject = new GameObject("ButterflyB");
+            ButterflyMovementController butterflyB = butterflyBObject.AddComponent<ButterflyMovementController>();
+            butterflyB.ConfigureHover(
+                boardCenter + new Vector3(-3.2f, 2.9f, 0f),
+                new Vector2(0.48f, 0.32f),
+                0.82f,
+                1.7f,
+                new Color(0.68f, 0.86f, 1f, 1f));
         }
     }
 }

@@ -15,7 +15,7 @@ namespace EcoGarden.Tests
             Assert.AreEqual(8, board.Height);
             Assert.AreEqual(CellKind.Locked, board.GetCell(new GridPosition(0, 7)).Kind);
             Assert.AreEqual(CellKind.Producer, board.GetCell(new GridPosition(0, 4)).Kind);
-            Assert.AreEqual(CellKind.NpcOrderPoint, board.GetCell(new GridPosition(7, 4)).Kind);
+            Assert.AreEqual(CellKind.Empty, board.GetCell(new GridPosition(7, 4)).Kind);
         }
 
         [Test]

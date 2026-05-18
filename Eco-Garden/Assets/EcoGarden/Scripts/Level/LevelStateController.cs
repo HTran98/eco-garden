@@ -9,11 +9,13 @@ namespace EcoGarden.Level
     {
         [SerializeField] private BoardController boardController;
         [SerializeField] private Text timerText;
+        [SerializeField] private Text objectiveText;
         [SerializeField] private Text feedbackText;
         [SerializeField] private GameObject resultPanel;
         [SerializeField] private Text resultTitleText;
         [SerializeField] private Text resultMessageText;
         [SerializeField] private Button restartButton;
+        [SerializeField] private Button pauseButton;
 
         private float remainingSeconds;
 
@@ -29,6 +31,7 @@ namespace EcoGarden.Level
 
             AutoWireReferences();
             WireRestartButton();
+            WirePauseButton();
         }
 
         private void OnEnable()
@@ -80,7 +83,9 @@ namespace EcoGarden.Level
             State = LevelPlayState.Playing;
             SetResultPanelVisible(false);
             SetFeedback(string.Empty);
+            RefreshObjective();
             RefreshTimer();
+            RefreshPauseButton();
         }
 
         public void CompleteLevel()
@@ -91,6 +96,7 @@ namespace EcoGarden.Level
             }
 
             State = LevelPlayState.Completed;
+            RefreshPauseButton();
             ShowResult("Level Complete", "Blooming Lotus delivered.");
         }
 
@@ -102,7 +108,26 @@ namespace EcoGarden.Level
             }
 
             State = LevelPlayState.Failed;
+            RefreshPauseButton();
             ShowResult("Time Up", "The customer left before the order was delivered.");
+        }
+
+        public void TogglePause()
+        {
+            if (State == LevelPlayState.Playing)
+            {
+                State = LevelPlayState.Paused;
+                SetFeedback("Paused");
+                RefreshPauseButton();
+                return;
+            }
+
+            if (State == LevelPlayState.Paused)
+            {
+                State = LevelPlayState.Playing;
+                SetFeedback(string.Empty);
+                RefreshPauseButton();
+            }
         }
 
         public void RestartLevel()
@@ -129,6 +154,30 @@ namespace EcoGarden.Level
             int minutes = totalSeconds / 60;
             int seconds = totalSeconds % 60;
             timerText.text = minutes.ToString("00") + ":" + seconds.ToString("00");
+        }
+
+        private void RefreshObjective()
+        {
+            if (objectiveText == null || boardController == null || boardController.LevelDefinition == null)
+            {
+                return;
+            }
+
+            var order = boardController.LevelDefinition.NpcOrder;
+            if (order == null)
+            {
+                objectiveText.text = "Deliver order";
+                return;
+            }
+
+            string itemName = order.FamilyId;
+            var itemDefinition = boardController.LevelDefinition.GetItemDefinitionForLevel(order.Level);
+            if (itemDefinition != null && !string.IsNullOrEmpty(itemDefinition.DisplayName))
+            {
+                itemName = itemDefinition.DisplayName;
+            }
+
+            objectiveText.text = "Deliver: " + itemName + " x" + order.Quantity;
         }
 
         private void ShowResult(string title, string message)
@@ -160,6 +209,11 @@ namespace EcoGarden.Level
                 feedbackText = FindText("FeedbackText");
             }
 
+            if (objectiveText == null)
+            {
+                objectiveText = FindText("ObjectiveText");
+            }
+
             if (resultPanel == null)
             {
                 GameObject resultObject = GameObject.Find("ResultPanel");
@@ -187,6 +241,15 @@ namespace EcoGarden.Level
                     restartButton = restartObject.GetComponent<Button>();
                 }
             }
+
+            if (pauseButton == null)
+            {
+                GameObject pauseObject = GameObject.Find("PauseButton");
+                if (pauseObject != null)
+                {
+                    pauseButton = pauseObject.GetComponent<Button>();
+                }
+            }
         }
 
         private void WireRestartButton()
@@ -198,6 +261,34 @@ namespace EcoGarden.Level
 
             restartButton.onClick.RemoveListener(RestartLevel);
             restartButton.onClick.AddListener(RestartLevel);
+        }
+
+        private void WirePauseButton()
+        {
+            if (pauseButton == null)
+            {
+                return;
+            }
+
+            pauseButton.onClick.RemoveListener(TogglePause);
+            pauseButton.onClick.AddListener(TogglePause);
+            RefreshPauseButton();
+        }
+
+        private void RefreshPauseButton()
+        {
+            if (pauseButton == null)
+            {
+                return;
+            }
+
+            pauseButton.interactable = State == LevelPlayState.Playing || State == LevelPlayState.Paused;
+
+            Text label = pauseButton.GetComponentInChildren<Text>();
+            if (label != null)
+            {
+                label.text = State == LevelPlayState.Paused ? "Resume" : "Pause";
+            }
         }
 
         private void SetResultPanelVisible(bool visible)

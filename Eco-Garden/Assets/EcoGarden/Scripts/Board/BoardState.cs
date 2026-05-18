@@ -65,6 +65,29 @@ namespace EcoGarden.Board
             }
         }
 
+        public void ClearItems()
+        {
+            foreach (BoardCell cell in GetCells())
+            {
+                if (cell != null)
+                {
+                    cell.Item = null;
+                }
+            }
+        }
+
+        public bool TryPlaceItem(GridPosition position, BoardItem item)
+        {
+            BoardCell cell = GetCell(position);
+            if (cell == null || item == null || cell.Kind != CellKind.Empty)
+            {
+                return false;
+            }
+
+            cell.Item = item;
+            return true;
+        }
+
         public bool TryMoveItem(GridPosition from, GridPosition to)
         {
             BoardCell source = GetCell(from);

@@ -14,6 +14,7 @@ namespace EcoGarden.Board
         [SerializeField] private bool frameCameraOnLoad = true;
         [SerializeField] private float cameraPadding = 1.25f;
         [SerializeField] private float hudTopWorldPadding = 1.15f;
+        [SerializeField] private float hudBottomWorldPadding = 1.05f;
 
         public BoardState BoardState { get; private set; }
         public LevelDefinition LevelDefinition { get { return levelDefinition; } }
@@ -21,6 +22,7 @@ namespace EcoGarden.Board
         public AbilityInventory AbilityInventory { get; private set; }
 
         public event Action ObjectiveCompleted;
+        public event Action BoardChanged;
 
         private AbilityService abilityService;
 
@@ -97,18 +99,43 @@ namespace EcoGarden.Board
                 return false;
             }
 
-            bool changed = BoardState.TryMergeItem(from, to) || BoardState.TryMoveItem(from, to);
-            if (!changed)
-            {
-                changed = TryDeliverToNpc(from, to);
-            }
+            bool changed = TryDeliverToNpc(from, to) || BoardState.TryMergeItem(from, to) || BoardState.TryMoveItem(from, to);
 
             if (changed && refreshView)
             {
                 RefreshView();
             }
 
+            if (changed)
+            {
+                BoardChanged?.Invoke();
+            }
+
             return changed;
+        }
+
+        public bool TryDeliverOrder(GridPosition from, bool refreshView = true)
+        {
+            if (BoardState == null)
+            {
+                return false;
+            }
+
+            BoardCell source = BoardState.GetCell(from);
+            if (!CanDeliverOrder(source))
+            {
+                return false;
+            }
+
+            source.Item = null;
+            if (refreshView)
+            {
+                RefreshView();
+            }
+
+            BoardChanged?.Invoke();
+            ObjectiveCompleted?.Invoke();
+            return true;
         }
 
         public bool TrySpawnFromProducer(GridPosition producerPosition, float currentTime)
@@ -122,6 +149,7 @@ namespace EcoGarden.Board
             if (changed)
             {
                 RefreshView();
+                BoardChanged?.Invoke();
             }
 
             return changed;
@@ -154,6 +182,7 @@ namespace EcoGarden.Board
             if (changed)
             {
                 RefreshView();
+                BoardChanged?.Invoke();
             }
 
             return changed;
@@ -173,14 +202,48 @@ namespace EcoGarden.Board
                 RefreshView();
             }
 
+            if (changed)
+            {
+                BoardChanged?.Invoke();
+            }
+
             return changed;
+        }
+
+        public void SetAbilityCount(AbilityKind abilityKind, int count)
+        {
+            if (AbilityInventory != null)
+            {
+                AbilityInventory.SetCount(abilityKind, count);
+            }
+        }
+
+        public void RestoreBoardItems(System.Collections.Generic.IEnumerable<EcoGarden.Items.BoardItem> items, System.Collections.Generic.IEnumerable<GridPosition> positions)
+        {
+            if (BoardState == null || items == null || positions == null)
+            {
+                return;
+            }
+
+            BoardState.ClearItems();
+
+            using (System.Collections.Generic.IEnumerator<EcoGarden.Items.BoardItem> itemEnumerator = items.GetEnumerator())
+            using (System.Collections.Generic.IEnumerator<GridPosition> positionEnumerator = positions.GetEnumerator())
+            {
+                while (itemEnumerator.MoveNext() && positionEnumerator.MoveNext())
+                {
+                    BoardState.TryPlaceItem(positionEnumerator.Current, itemEnumerator.Current);
+                }
+            }
+
+            RefreshView();
         }
 
         public void RefreshView()
         {
             if (BoardState != null && boardView != null)
             {
-                boardView.Render(BoardState);
+                boardView.Sync(BoardState);
             }
         }
 
@@ -195,14 +258,14 @@ namespace EcoGarden.Board
             float boardHeight = boardView.GetBoardWorldHeight(BoardState);
             float boardWidth = boardView.GetBoardWorldWidth(BoardState);
             float aspect = mainCamera.aspect > 0f ? mainCamera.aspect : 1f;
-            float sizeByHeight = boardHeight * 0.5f + cameraPadding + hudTopWorldPadding * 0.5f;
+            float sizeByHeight = boardHeight * 0.5f + cameraPadding + (hudTopWorldPadding + hudBottomWorldPadding) * 0.5f;
             float sizeByWidth = boardWidth * 0.5f / aspect + cameraPadding;
             mainCamera.orthographicSize = Mathf.Max(sizeByHeight, sizeByWidth);
 
-            // Offset upward so the board sits slightly below center, leaving room for overlay HUD.
+            // Offset toward available play space between top and bottom HUD.
             mainCamera.transform.position = new Vector3(
                 boardView.transform.position.x,
-                boardView.transform.position.y + hudTopWorldPadding * 0.5f,
+                boardView.transform.position.y + (hudTopWorldPadding - hudBottomWorldPadding) * 0.5f,
                 mainCamera.transform.position.z);
         }
 
@@ -230,25 +293,25 @@ namespace EcoGarden.Board
             BoardCell source = BoardState.GetCell(from);
             BoardCell target = BoardState.GetCell(to);
 
-            if (source == null ||
-                target == null ||
-                source.Item == null ||
-                target.Kind != CellKind.NpcOrderPoint ||
-                levelDefinition == null ||
-                levelDefinition.NpcOrder == null)
-            {
-                return false;
-            }
-
-            if (source.Item.FamilyId != levelDefinition.NpcOrder.FamilyId ||
-                source.Item.Level != levelDefinition.NpcOrder.Level)
+            if (target == null || target.Kind != CellKind.NpcOrderPoint || !CanDeliverOrder(source))
             {
                 return false;
             }
 
             source.Item = null;
+            BoardChanged?.Invoke();
             ObjectiveCompleted?.Invoke();
             return true;
+        }
+
+        private bool CanDeliverOrder(BoardCell source)
+        {
+            return source != null &&
+                   source.Item != null &&
+                   levelDefinition != null &&
+                   levelDefinition.NpcOrder != null &&
+                   source.Item.FamilyId == levelDefinition.NpcOrder.FamilyId &&
+                   source.Item.Level == levelDefinition.NpcOrder.Level;
         }
     }
 }

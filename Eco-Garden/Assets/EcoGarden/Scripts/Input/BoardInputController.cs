@@ -2,11 +2,13 @@ using EcoGarden.Board;
 using EcoGarden.UI;
 using EcoGarden.Level;
 using EcoGarden.Economy;
+using EcoGarden.Utilities;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
+using UnityEngine.UI;
 
 namespace EcoGarden.Input
 {
@@ -17,11 +19,14 @@ namespace EcoGarden.Input
         [SerializeField] private LevelStateController levelStateController;
         [SerializeField] private EconomyController economyController;
         [SerializeField] private CoinBurstFeedback coinBurstFeedback;
+        [SerializeField] private GameplayFeedbackController gameplayFeedbackController;
         [SerializeField] private DraggedItemCanvasGhost draggedItemCanvasGhost;
         [SerializeField] private Camera inputCamera;
         [SerializeField] private Color selectedItemTint = new Color(1f, 1f, 1f, 0.65f);
         [SerializeField] private float dropAnimationSeconds = 0.12f;
         [SerializeField] private float sellAnimationSeconds = 0.22f;
+        [SerializeField] private AudioSource feedbackAudioSource;
+        [SerializeField] private AudioClip sellAudioClip;
 
         private bool isDraggingItem;
         private GridPosition dragStartPosition;
@@ -40,8 +45,10 @@ namespace EcoGarden.Input
             levelStateController = FindAnyObjectByType<LevelStateController>();
             economyController = FindAnyObjectByType<EconomyController>();
             coinBurstFeedback = FindAnyObjectByType<CoinBurstFeedback>();
+            gameplayFeedbackController = FindAnyObjectByType<GameplayFeedbackController>();
             draggedItemCanvasGhost = FindAnyObjectByType<DraggedItemCanvasGhost>();
             inputCamera = Camera.main;
+            feedbackAudioSource = GetComponent<AudioSource>();
         }
 
         private void Awake()
@@ -71,6 +78,17 @@ namespace EcoGarden.Input
                 coinBurstFeedback = FindAnyObjectByType<CoinBurstFeedback>();
             }
 
+            if (gameplayFeedbackController == null)
+            {
+                gameplayFeedbackController = FindAnyObjectByType<GameplayFeedbackController>();
+            }
+
+            if (gameplayFeedbackController == null)
+            {
+                GameObject feedbackObject = new GameObject("GameplayFeedbackController");
+                gameplayFeedbackController = feedbackObject.AddComponent<GameplayFeedbackController>();
+            }
+
             if (draggedItemCanvasGhost == null)
             {
                 draggedItemCanvasGhost = FindAnyObjectByType<DraggedItemCanvasGhost>();
@@ -80,6 +98,19 @@ namespace EcoGarden.Input
             {
                 inputCamera = Camera.main;
             }
+
+            if (feedbackAudioSource == null)
+            {
+                feedbackAudioSource = GetComponent<AudioSource>();
+            }
+
+            if (feedbackAudioSource == null)
+            {
+                feedbackAudioSource = gameObject.AddComponent<AudioSource>();
+                feedbackAudioSource.playOnAwake = false;
+            }
+
+            EnsureDeliveryDropZone();
         }
 
         private void Update()
@@ -149,7 +180,18 @@ namespace EcoGarden.Input
 
             if (cell.Kind == CellKind.Producer)
             {
-                boardController.TrySpawnFromProducer(gridPosition, Time.time);
+                bool spawned = boardController.TrySpawnFromProducer(gridPosition, Time.time);
+                Vector3 producerWorld = boardController.GetCellWorldPosition(gridPosition);
+                if (spawned)
+                {
+                    PlayWorldFeedback(producerWorld, "Spawn", new Color(0.68f, 0.92f, 1f, 1f));
+                    gameplayFeedbackController.PlayHudMessage("Lotus seed spawned");
+                }
+                else
+                {
+                    PlayWorldFeedback(producerWorld, "Blocked", new Color(1f, 0.55f, 0.42f, 1f));
+                    gameplayFeedbackController.PlayHudMessage("Producer is blocked");
+                }
             }
         }
 
@@ -171,6 +213,7 @@ namespace EcoGarden.Input
 
             if (IsPointerOverUi())
             {
+                PlayInvalidDropFeedback();
                 AnimateDrop(dragStartPosition, false);
                 return;
             }
@@ -178,11 +221,32 @@ namespace EcoGarden.Input
             if (!TryScreenToGrid(screenPosition, out GridPosition targetPosition) ||
                 targetPosition == dragStartPosition)
             {
+                PlayInvalidDropFeedback();
                 AnimateDrop(dragStartPosition, false);
                 return;
             }
 
+            bool willMerge = WillMerge(dragStartPosition, targetPosition);
+            bool willMove = WillMove(dragStartPosition, targetPosition);
             bool changed = boardController.TryMoveOrMerge(dragStartPosition, targetPosition, false);
+            if (changed)
+            {
+                Vector3 targetWorld = boardController.GetCellWorldPosition(targetPosition);
+                if (willMerge)
+                {
+                    PlayWorldFeedback(targetWorld, "Merge", new Color(1f, 0.82f, 0.42f, 1f));
+                    gameplayFeedbackController.PlayHudMessage("Merged");
+                }
+                else if (willMove)
+                {
+                    PlayWorldFeedback(targetWorld, "Move", new Color(0.78f, 0.92f, 0.76f, 1f));
+                }
+            }
+            else
+            {
+                PlayInvalidDropFeedback();
+            }
+
             AnimateDrop(changed ? targetPosition : dragStartPosition, changed);
         }
 
@@ -196,7 +260,9 @@ namespace EcoGarden.Input
             Vector3 world = ScreenToWorld(screenPosition);
             UpdateExternalDropZoneHighlight(screenPosition);
 
-            if (highlightedDropZone != null && highlightedDropZone.ZoneKind == ExternalDropZoneKind.SellBasket)
+            if (highlightedDropZone != null &&
+                (highlightedDropZone.ZoneKind == ExternalDropZoneKind.SellBasket ||
+                 highlightedDropZone.ZoneKind == ExternalDropZoneKind.Delivery))
             {
                 ShowExternalDragGhost(screenPosition);
                 return;
@@ -368,7 +434,7 @@ namespace EcoGarden.Input
                 yield return null;
             }
 
-            itemView.EndDrag(destinationWorld, boardController.BoardView.CellSize * 0.68f);
+            itemView.EndDrag(destinationWorld, boardController.BoardView.ItemWorldSize);
 
             if (refreshAfterDrop)
             {
@@ -381,6 +447,12 @@ namespace EcoGarden.Input
 
         private void HandleExternalDrop(ExternalDropZone externalDropZone)
         {
+            if (externalDropZone.ZoneKind == ExternalDropZoneKind.Delivery)
+            {
+                HandleDeliveryDrop(externalDropZone);
+                return;
+            }
+
             if (externalDropZone.ZoneKind != ExternalDropZoneKind.SellBasket)
             {
                 AnimateDrop(dragStartPosition, false);
@@ -389,6 +461,7 @@ namespace EcoGarden.Input
 
             if (!boardController.TrySellItem(dragStartPosition, out int goldValue, false))
             {
+                gameplayFeedbackController.PlayHudMessage("Cannot sell this");
                 AnimateDrop(dragStartPosition, false);
                 return;
             }
@@ -398,6 +471,8 @@ namespace EcoGarden.Input
                 economyController.AddGold(goldValue);
             }
 
+            PlaySellAudio();
+            gameplayFeedbackController.PlayHudMessage("Sold +" + goldValue + " gold");
             PlaySellAnimation(externalDropZone);
 
             if (coinBurstFeedback != null)
@@ -406,20 +481,22 @@ namespace EcoGarden.Input
             }
         }
 
-        private bool TryGetExternalDropZone(Vector2 screenPosition, out ExternalDropZone dropZone)
+        private void HandleDeliveryDrop(ExternalDropZone externalDropZone)
         {
-            ExternalDropZone[] zones = FindObjectsByType<ExternalDropZone>(FindObjectsInactive.Exclude);
-            for (int i = 0; i < zones.Length; i++)
+            if (!boardController.TryDeliverOrder(dragStartPosition, false))
             {
-                if (zones[i].ContainsScreenPoint(screenPosition, null))
-                {
-                    dropZone = zones[i];
-                    return true;
-                }
+                gameplayFeedbackController.PlayHudMessage("Need Blooming Lotus");
+                AnimateDrop(dragStartPosition, false);
+                return;
             }
 
-            dropZone = null;
-            return false;
+            gameplayFeedbackController.PlayHudMessage("Order delivered");
+            PlayDeliveryAnimation(externalDropZone);
+        }
+
+        private bool TryGetExternalDropZone(Vector2 screenPosition, out ExternalDropZone dropZone)
+        {
+            return ExternalDropZone.TryGetAtScreenPosition(screenPosition, null, out dropZone);
         }
 
         private void UpdateExternalDropZoneHighlight(Vector2 screenPosition)
@@ -493,6 +570,19 @@ namespace EcoGarden.Input
             boardController.RefreshView();
             ClearSelectedVisual();
             dropRoutine = null;
+        }
+
+        private void PlayDeliveryAnimation(ExternalDropZone externalDropZone)
+        {
+            if (selectedItemView == null)
+            {
+                boardController.RefreshView();
+                ClearSelectedVisual();
+                return;
+            }
+
+            Vector3 targetWorld = ScreenToWorld(externalDropZone.GetScreenCenter(null));
+            AnimateExternalDrop(targetWorld, true);
         }
 
         private void ShowExternalDragGhost(Vector2 screenPosition)
@@ -584,6 +674,14 @@ namespace EcoGarden.Input
             dropRoutine = null;
         }
 
+        private void PlaySellAudio()
+        {
+            if (feedbackAudioSource != null && sellAudioClip != null)
+            {
+                feedbackAudioSource.PlayOneShot(sellAudioClip);
+            }
+        }
+
         private static bool TryGetPointerPosition(out Vector2 screenPosition)
         {
             if (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.isPressed)
@@ -600,6 +698,105 @@ namespace EcoGarden.Input
 
             screenPosition = default;
             return false;
+        }
+
+        private bool WillMerge(GridPosition from, GridPosition to)
+        {
+            BoardCell source = boardController.BoardState.GetCell(from);
+            BoardCell target = boardController.BoardState.GetCell(to);
+            return source != null &&
+                   target != null &&
+                   source.Item != null &&
+                   target.Item != null &&
+                   source.Item.CanMergeWith(target.Item, boardController.BoardState.MaxItemLevel);
+        }
+
+        private bool WillMove(GridPosition from, GridPosition to)
+        {
+            BoardCell source = boardController.BoardState.GetCell(from);
+            BoardCell target = boardController.BoardState.GetCell(to);
+            return source != null &&
+                   target != null &&
+                   source.Item != null &&
+                   target.CanReceiveItem;
+        }
+
+        private void PlayInvalidDropFeedback()
+        {
+            Vector3 world = selectedItemView != null
+                ? selectedItemView.transform.position
+                : boardController.GetCellWorldPosition(dragStartPosition);
+
+            PlayWorldFeedback(world, "No", new Color(1f, 0.45f, 0.45f, 1f));
+            gameplayFeedbackController.PlayHudMessage("Invalid move");
+        }
+
+        private void PlayWorldFeedback(Vector3 worldPosition, string message, Color color)
+        {
+            if (gameplayFeedbackController != null)
+            {
+                gameplayFeedbackController.PlayWorldText(worldPosition, message, color);
+            }
+        }
+
+        private void EnsureDeliveryDropZone()
+        {
+            ExternalDropZone[] existingZones = FindObjectsByType<ExternalDropZone>(FindObjectsInactive.Include);
+            for (int i = 0; i < existingZones.Length; i++)
+            {
+                if (existingZones[i] != null && existingZones[i].ZoneKind == ExternalDropZoneKind.Delivery)
+                {
+                    return;
+                }
+            }
+
+            Canvas canvas = FindAnyObjectByType<Canvas>();
+            if (canvas == null)
+            {
+                return;
+            }
+
+            Transform parent = canvas.transform.Find("HUDRoot");
+            if (parent == null)
+            {
+                parent = canvas.transform;
+            }
+
+            GameObject deliveryObject = new GameObject("DeliveryDropZone", typeof(RectTransform), typeof(Image));
+            deliveryObject.transform.SetParent(parent, false);
+
+            RectTransform rect = deliveryObject.GetComponent<RectTransform>();
+            rect.anchorMin = new Vector2(0.04f, 0.16f);
+            rect.anchorMax = new Vector2(0.28f, 0.29f);
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = Vector2.zero;
+            rect.sizeDelta = Vector2.zero;
+
+            ExternalDropZone zone = deliveryObject.AddComponent<ExternalDropZone>();
+            Image image = deliveryObject.GetComponent<Image>();
+            image.sprite = PlaceholderSpriteFactory.DeliverZoneSprite;
+            image.color = Color.white;
+            zone.Configure(
+                ExternalDropZoneKind.Delivery,
+                Color.white,
+                new Color(1f, 0.76f, 1f, 1f));
+
+            GameObject labelObject = new GameObject("DeliveryDropZoneLabel", typeof(RectTransform));
+            labelObject.transform.SetParent(deliveryObject.transform, false);
+            RectTransform labelRect = labelObject.GetComponent<RectTransform>();
+            labelRect.anchorMin = Vector2.zero;
+            labelRect.anchorMax = Vector2.one;
+            labelRect.pivot = new Vector2(0.5f, 0.5f);
+            labelRect.anchoredPosition = Vector2.zero;
+            labelRect.sizeDelta = Vector2.zero;
+
+            Text label = labelObject.AddComponent<Text>();
+            label.text = "Deliver";
+            label.alignment = TextAnchor.MiddleCenter;
+            label.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            label.fontSize = 30;
+            label.color = Color.white;
+            label.raycastTarget = false;
         }
     }
 }

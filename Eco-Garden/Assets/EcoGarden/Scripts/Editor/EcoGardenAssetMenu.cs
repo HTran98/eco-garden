@@ -46,7 +46,7 @@ namespace EcoGarden.Editor
                     "LL----LL",
                     "L--21--L",
                     "--W--W--",
-                    "S-PPPP-N",
+                    "S-PPPP--",
                     "--PPPP--",
                     "--W--W--",
                     "L--11--L",

@@ -6,6 +6,7 @@ using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 using EcoGarden.UI;
 using EcoGarden.Input;
+using EcoGarden.Utilities;
 
 namespace EcoGarden.Editor
 {
@@ -20,12 +21,15 @@ namespace EcoGarden.Editor
             CreateTopBar(hudRoot.transform);
             CreateObjectivePanel(hudRoot.transform);
             CreateAbilityBar(hudRoot.transform);
+            CreateDeliveryDropZone(hudRoot.transform);
             CreateSellBasket(hudRoot.transform);
             CreateFeedbackText(hudRoot.transform);
             CreateCoinFeedback(hudRoot.transform);
             CreateResultPanel(hudRoot.transform);
             hudRoot.AddComponent<AbilityHudController>();
             hudRoot.AddComponent<DraggedItemCanvasGhost>();
+            hudRoot.AddComponent<HudSkinController>().Apply();
+            hudRoot.AddComponent<AndroidHudLayoutController>().ApplyLayout();
             EnsureInputSystemEventSystem();
 
             Selection.activeGameObject = hudRoot;
@@ -80,9 +84,22 @@ namespace EcoGarden.Editor
         {
             GameObject basket = CreatePanel("SellBasket", parent, new Vector2(0.72f, 0.16f), new Vector2(0.96f, 0.29f), new Vector2(0.5f, 0.5f), Vector2.zero);
             Image image = basket.GetComponent<Image>();
-            image.color = new Color(0.30f, 0.44f, 0.34f, 0.92f);
+            image.sprite = PlaceholderSpriteFactory.SellBasketSprite;
+            image.color = Color.white;
             ExternalDropZone zone = basket.AddComponent<ExternalDropZone>();
+            zone.Configure(ExternalDropZoneKind.SellBasket, Color.white, new Color(0.84f, 1f, 0.54f, 1f));
             CreateText("SellBasketLabel", basket.transform, "Sell", TextAnchor.MiddleCenter, Vector2.zero, Vector2.one);
+        }
+
+        private static void CreateDeliveryDropZone(Transform parent)
+        {
+            GameObject delivery = CreatePanel("DeliveryDropZone", parent, new Vector2(0.04f, 0.16f), new Vector2(0.28f, 0.29f), new Vector2(0.5f, 0.5f), Vector2.zero);
+            Image image = delivery.GetComponent<Image>();
+            image.sprite = PlaceholderSpriteFactory.DeliverZoneSprite;
+            image.color = Color.white;
+            ExternalDropZone zone = delivery.AddComponent<ExternalDropZone>();
+            zone.Configure(ExternalDropZoneKind.Delivery, Color.white, new Color(1f, 0.76f, 1f, 1f));
+            CreateText("DeliveryDropZoneLabel", delivery.transform, "Deliver", TextAnchor.MiddleCenter, Vector2.zero, Vector2.one);
         }
 
         private static void CreateFeedbackText(Transform parent)
@@ -122,7 +139,8 @@ namespace EcoGarden.Editor
         {
             GameObject panel = CreateRect(name, parent, anchorMin, anchorMax, pivot, anchoredPosition);
             Image image = panel.AddComponent<Image>();
-            image.color = new Color(0.12f, 0.16f, 0.20f, 0.78f);
+            image.sprite = PlaceholderSpriteFactory.HudPanelSprite;
+            image.color = Color.white;
             return panel;
         }
 
@@ -130,7 +148,8 @@ namespace EcoGarden.Editor
         {
             GameObject buttonObject = CreateRect(name, parent, anchorMin, anchorMax, new Vector2(0.5f, 0.5f), Vector2.zero);
             Image image = buttonObject.AddComponent<Image>();
-            image.color = new Color(0.24f, 0.48f, 0.62f, 1f);
+            image.sprite = PlaceholderSpriteFactory.HudButtonSprite;
+            image.color = Color.white;
             buttonObject.AddComponent<Button>();
             CreateText("Label", buttonObject.transform, label, TextAnchor.MiddleCenter, Vector2.zero, Vector2.one);
             return buttonObject;

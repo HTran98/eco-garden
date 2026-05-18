@@ -12,6 +12,7 @@ namespace EcoGarden.UI
         [SerializeField] private Button magicWandButton;
         [SerializeField] private Button sortingMagnetButton;
         [SerializeField] private Text feedbackText;
+        [SerializeField] private GameplayFeedbackController gameplayFeedbackController;
 
         public bool HasSelectedAbility { get; private set; }
         public AbilityKind SelectedAbility { get; private set; }
@@ -30,6 +31,7 @@ namespace EcoGarden.UI
 
         private void Start()
         {
+            EnsureGameplayFeedbackController();
             Refresh();
         }
 
@@ -43,6 +45,7 @@ namespace EcoGarden.UI
             bool used = boardController.TryUseAbility(SelectedAbility, targetPosition);
             if (used)
             {
+                PlayAbilityFeedback(targetPosition, SelectedAbility);
                 ClearSelection();
                 SetFeedback(string.Empty);
                 Refresh();
@@ -50,6 +53,10 @@ namespace EcoGarden.UI
             }
 
             SetFeedback("Invalid target");
+            if (gameplayFeedbackController != null)
+            {
+                gameplayFeedbackController.PlayHudMessage("Invalid target");
+            }
             return false;
         }
 
@@ -60,6 +67,10 @@ namespace EcoGarden.UI
                 boardController.AbilityInventory.GetCount(abilityKind) <= 0)
             {
                 SetFeedback("No uses left");
+                if (gameplayFeedbackController != null)
+                {
+                    gameplayFeedbackController.PlayHudMessage("No uses left");
+                }
                 return;
             }
 
@@ -112,6 +123,11 @@ namespace EcoGarden.UI
                 {
                     feedbackText = feedbackObject.GetComponent<Text>();
                 }
+            }
+
+            if (gameplayFeedbackController == null)
+            {
+                EnsureGameplayFeedbackController();
             }
         }
 
@@ -193,6 +209,49 @@ namespace EcoGarden.UI
             if (feedbackText != null)
             {
                 feedbackText.text = message;
+            }
+        }
+
+        private void PlayAbilityFeedback(GridPosition targetPosition, AbilityKind abilityKind)
+        {
+            if (gameplayFeedbackController == null || boardController == null || boardController.BoardState == null)
+            {
+                return;
+            }
+
+            string label;
+            switch (abilityKind)
+            {
+                case AbilityKind.Shovel:
+                    label = "Clear";
+                    break;
+                case AbilityKind.MagicWand:
+                    label = "Upgrade";
+                    break;
+                case AbilityKind.SortingMagnet:
+                    label = "Sort";
+                    break;
+                default:
+                    label = "Use";
+                    break;
+            }
+
+            Vector3 world = boardController.GetCellWorldPosition(targetPosition);
+            gameplayFeedbackController.PlayWorldText(world, label, new Color(0.72f, 0.86f, 1f, 1f));
+            gameplayFeedbackController.PlayHudMessage(label);
+        }
+
+        private void EnsureGameplayFeedbackController()
+        {
+            if (gameplayFeedbackController == null)
+            {
+                gameplayFeedbackController = FindAnyObjectByType<GameplayFeedbackController>();
+            }
+
+            if (gameplayFeedbackController == null)
+            {
+                GameObject feedbackObject = new GameObject("GameplayFeedbackController");
+                gameplayFeedbackController = feedbackObject.AddComponent<GameplayFeedbackController>();
             }
         }
 
