@@ -4,7 +4,10 @@ using EcoGarden.Input;
 using EcoGarden.Level;
 using EcoGarden.Economy;
 using EcoGarden.AI;
+using EcoGarden.IAP;
+using EcoGarden.Missions;
 using EcoGarden.Save;
+using EcoGarden.Shop;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -16,11 +19,15 @@ namespace EcoGarden.Editor
     {
         private const string Level15Path = "Assets/EcoGarden/ScriptableObjects/Levels/level_015_lotus_pond_corner.asset";
         private const string ScenePath = "Assets/EcoGarden/Scenes/EcoGarden_Level15_VerticalSlice.unity";
+        private const string ShopFolder = "Assets/EcoGarden/ScriptableObjects/Shop";
+        private const string MissionFolder = "Assets/EcoGarden/ScriptableObjects/Missions";
 
         [MenuItem("Eco Garden/Create Scene/Level 15 Vertical Slice")]
         public static void CreateLevel15Scene()
         {
             EcoGardenAssetMenu.CreateLevel15Data();
+            EcoGardenAssetMenu.CreateShopCatalogData();
+            EcoGardenAssetMenu.CreateMissionData();
 
             Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             scene.name = "EcoGarden_Level15_VerticalSlice";
@@ -37,6 +44,11 @@ namespace EcoGarden.Editor
             gameRoot.AddComponent<GameBootstrapper>();
             gameRoot.AddComponent<LevelStateController>();
             gameRoot.AddComponent<EconomyController>();
+            gameRoot.AddComponent<MockIapProvider>();
+            ShopController shopController = gameRoot.AddComponent<ShopController>();
+            shopController.SetCatalogItems(LoadShopCatalogItems());
+            MissionController missionController = gameRoot.AddComponent<MissionController>();
+            missionController.SetMissionDefinitions(LoadMissionDefinitions());
             gameRoot.AddComponent<SaveController>();
 
             GameObject npcObject = new GameObject("CustomerNpc");
@@ -55,6 +67,55 @@ namespace EcoGarden.Editor
             EditorSceneManager.MarkSceneDirty(scene);
 
             Selection.activeGameObject = boardRoot;
+        }
+
+        [MenuItem("Eco Garden/Fix Scene/Add Mission Controller")]
+        public static void AddMissionControllerToCurrentScene()
+        {
+            EcoGardenAssetMenu.CreateMissionData();
+
+            GameObject gameRoot = GameObject.Find("GameRoot");
+            if (gameRoot == null)
+            {
+                gameRoot = new GameObject("GameRoot");
+            }
+
+            MissionController missionController = gameRoot.GetComponent<MissionController>();
+            if (missionController == null)
+            {
+                missionController = gameRoot.AddComponent<MissionController>();
+            }
+
+            missionController.SetMissionDefinitions(LoadMissionDefinitions());
+            EditorUtility.SetDirty(gameRoot);
+            EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+            Selection.activeGameObject = gameRoot;
+        }
+
+        private static ShopItemDefinition[] LoadShopCatalogItems()
+        {
+            string[] guids = AssetDatabase.FindAssets("t:ShopItemDefinition", new[] { ShopFolder });
+            ShopItemDefinition[] items = new ShopItemDefinition[guids.Length];
+            for (int i = 0; i < guids.Length; i++)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guids[i]);
+                items[i] = AssetDatabase.LoadAssetAtPath<ShopItemDefinition>(path);
+            }
+
+            return items;
+        }
+
+        private static MissionDefinition[] LoadMissionDefinitions()
+        {
+            string[] guids = AssetDatabase.FindAssets("t:MissionDefinition", new[] { MissionFolder });
+            MissionDefinition[] missions = new MissionDefinition[guids.Length];
+            for (int i = 0; i < guids.Length; i++)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guids[i]);
+                missions[i] = AssetDatabase.LoadAssetAtPath<MissionDefinition>(path);
+            }
+
+            return missions;
         }
 
         private static void CreateCamera()

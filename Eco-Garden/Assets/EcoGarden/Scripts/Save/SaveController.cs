@@ -2,6 +2,9 @@ using EcoGarden.Abilities;
 using EcoGarden.Board;
 using EcoGarden.Economy;
 using EcoGarden.Items;
+using EcoGarden.Missions;
+using EcoGarden.Progression;
+using EcoGarden.Shop;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,6 +14,8 @@ namespace EcoGarden.Save
     {
         [SerializeField] private BoardController boardController;
         [SerializeField] private EconomyController economyController;
+        [SerializeField] private ShopController shopController;
+        [SerializeField] private MissionController missionController;
 
         private SaveData data;
         private bool isApplying;
@@ -59,6 +64,7 @@ namespace EcoGarden.Save
             if (economyController != null)
             {
                 economyController.SetGold(data.gold);
+                economyController.SetGem(data.gem);
             }
 
             if (boardController != null && boardController.AbilityInventory != null)
@@ -80,6 +86,10 @@ namespace EcoGarden.Save
             }
 
             ApplyBoardItems();
+            ApplyPlantTierUnlocks();
+            ApplyShopInventory();
+            ApplyMissionProgress();
+            ApplyOrderProgress();
 
             isApplying = false;
         }
@@ -91,6 +101,7 @@ namespace EcoGarden.Save
             if (economyController != null)
             {
                 data.gold = economyController.Gold;
+                data.gem = economyController.Gem;
             }
 
             if (boardController != null && boardController.LevelDefinition != null)
@@ -109,6 +120,10 @@ namespace EcoGarden.Save
             }
 
             CaptureBoardItems();
+            CapturePlantTierUnlocks();
+            CaptureShopInventory();
+            CaptureMissionProgress();
+            CaptureOrderProgress();
         }
 
         private void Subscribe()
@@ -123,17 +138,34 @@ namespace EcoGarden.Save
             if (economyController != null)
             {
                 economyController.GoldChanged += OnGoldChanged;
+                economyController.GemChanged += OnGemChanged;
             }
 
             if (boardController != null)
             {
                 boardController.BoardChanged += OnBoardChanged;
-                boardController.ObjectiveCompleted += OnObjectiveCompleted;
+                boardController.OrderProgressChanged += OnOrderProgressChanged;
+                boardController.OrderCompleted += OnOrderCompleted;
 
                 if (boardController.AbilityInventory != null)
                 {
                     boardController.AbilityInventory.CountChanged += OnAbilityCountChanged;
                 }
+
+                if (boardController.PlantUnlockService != null)
+                {
+                    boardController.PlantUnlockService.Changed += OnPlantUnlockChanged;
+                }
+            }
+
+            if (shopController != null && shopController.Inventory != null)
+            {
+                shopController.Inventory.Changed += OnShopInventoryChanged;
+            }
+
+            if (missionController != null)
+            {
+                missionController.MissionsChanged += OnMissionsChanged;
             }
 
             isSubscribed = true;
@@ -149,17 +181,34 @@ namespace EcoGarden.Save
             if (economyController != null)
             {
                 economyController.GoldChanged -= OnGoldChanged;
+                economyController.GemChanged -= OnGemChanged;
             }
 
             if (boardController != null)
             {
                 boardController.BoardChanged -= OnBoardChanged;
-                boardController.ObjectiveCompleted -= OnObjectiveCompleted;
+                boardController.OrderProgressChanged -= OnOrderProgressChanged;
+                boardController.OrderCompleted -= OnOrderCompleted;
 
                 if (boardController.AbilityInventory != null)
                 {
                     boardController.AbilityInventory.CountChanged -= OnAbilityCountChanged;
                 }
+
+                if (boardController.PlantUnlockService != null)
+                {
+                    boardController.PlantUnlockService.Changed -= OnPlantUnlockChanged;
+                }
+            }
+
+            if (shopController != null && shopController.Inventory != null)
+            {
+                shopController.Inventory.Changed -= OnShopInventoryChanged;
+            }
+
+            if (missionController != null)
+            {
+                missionController.MissionsChanged -= OnMissionsChanged;
             }
 
             isSubscribed = false;
@@ -176,6 +225,17 @@ namespace EcoGarden.Save
             SaveService.Save(data);
         }
 
+        private void OnGemChanged(int gem)
+        {
+            if (isApplying)
+            {
+                return;
+            }
+
+            data.gem = gem;
+            SaveService.Save(data);
+        }
+
         private void OnBoardChanged()
         {
             if (isApplying)
@@ -184,6 +244,61 @@ namespace EcoGarden.Save
             }
 
             CaptureBoardItems();
+            CaptureOrderProgress();
+            SaveService.Save(data);
+        }
+
+        private void OnOrderProgressChanged()
+        {
+            if (isApplying)
+            {
+                return;
+            }
+
+            CaptureOrderProgress();
+            SaveService.Save(data);
+        }
+
+        private void OnOrderCompleted()
+        {
+            if (isApplying)
+            {
+                return;
+            }
+
+            SaveCurrentState();
+        }
+
+        private void OnPlantUnlockChanged()
+        {
+            if (isApplying)
+            {
+                return;
+            }
+
+            CapturePlantTierUnlocks();
+            SaveService.Save(data);
+        }
+
+        private void OnShopInventoryChanged()
+        {
+            if (isApplying)
+            {
+                return;
+            }
+
+            CaptureShopInventory();
+            SaveService.Save(data);
+        }
+
+        private void OnMissionsChanged()
+        {
+            if (isApplying)
+            {
+                return;
+            }
+
+            CaptureMissionProgress();
             SaveService.Save(data);
         }
 
@@ -208,20 +323,6 @@ namespace EcoGarden.Save
             }
 
             SaveService.Save(data);
-        }
-
-        private void OnObjectiveCompleted()
-        {
-            if (boardController != null && boardController.LevelDefinition != null)
-            {
-                int nextLevel = boardController.LevelDefinition.LevelId + 1;
-                if (nextLevel > data.highestUnlockedLevel)
-                {
-                    data.highestUnlockedLevel = nextLevel;
-                }
-            }
-
-            SaveCurrentState();
         }
 
         private void CaptureBoardItems()
@@ -254,6 +355,102 @@ namespace EcoGarden.Save
             data.boardItems = savedItems.ToArray();
         }
 
+        private void CaptureOrderProgress()
+        {
+            if (boardController == null || boardController.ActiveOrderRequirements == null)
+            {
+                return;
+            }
+
+            data.activeOrderId = boardController.ActiveOrderId;
+            List<OrderRequirementSaveData> savedRequirements = new List<OrderRequirementSaveData>();
+            var requirements = boardController.ActiveOrderRequirements;
+            for (int i = 0; i < requirements.Count; i++)
+            {
+                var requirement = requirements[i];
+                if (requirement == null)
+                {
+                    continue;
+                }
+
+                savedRequirements.Add(new OrderRequirementSaveData
+                {
+                    familyId = requirement.FamilyId,
+                    level = requirement.Level,
+                    requiredCount = requirement.RequiredCount,
+                    submittedCount = requirement.SubmittedCount
+                });
+            }
+
+            data.orderRequirements = savedRequirements.ToArray();
+        }
+
+        private void CapturePlantTierUnlocks()
+        {
+            if (boardController == null || boardController.PlantUnlockService == null)
+            {
+                return;
+            }
+
+            PlantTierUnlockDefinition[] unlocks = boardController.PlantUnlockService.GetSavedUnlocks();
+            List<PlantTierUnlockSaveData> savedUnlocks = new List<PlantTierUnlockSaveData>();
+            for (int i = 0; i < unlocks.Length; i++)
+            {
+                PlantTierUnlockDefinition unlock = unlocks[i];
+                if (unlock == null || string.IsNullOrEmpty(unlock.FamilyId))
+                {
+                    continue;
+                }
+
+                savedUnlocks.Add(new PlantTierUnlockSaveData
+                {
+                    familyId = unlock.FamilyId,
+                    tier = unlock.Tier
+                });
+            }
+
+            data.plantTierUnlocks = savedUnlocks.ToArray();
+        }
+
+        private void CaptureShopInventory()
+        {
+            if (shopController == null || shopController.Inventory == null)
+            {
+                return;
+            }
+
+            data.purchasedShopProductIds = shopController.Inventory.GetPurchasedProductIds();
+            data.ownedDecorationIds = shopController.Inventory.GetOwnedDecorationIds();
+        }
+
+        private void CaptureMissionProgress()
+        {
+            if (missionController == null)
+            {
+                return;
+            }
+
+            MissionSaveState[] missionStates = missionController.CaptureMissionStates();
+            List<MissionProgressSaveData> savedMissions = new List<MissionProgressSaveData>();
+            for (int i = 0; i < missionStates.Length; i++)
+            {
+                MissionSaveState state = missionStates[i];
+                if (state == null || string.IsNullOrEmpty(state.MissionId))
+                {
+                    continue;
+                }
+
+                savedMissions.Add(new MissionProgressSaveData
+                {
+                    missionId = state.MissionId,
+                    progress = state.Progress,
+                    rewardClaimed = state.RewardClaimed
+                });
+            }
+
+            data.missionProgress = savedMissions.ToArray();
+        }
+
         private void ApplyBoardItems()
         {
             if (!data.hasBoardState ||
@@ -284,6 +481,92 @@ namespace EcoGarden.Save
             boardController.RestoreBoardItems(items, positions);
         }
 
+        private void ApplyOrderProgress()
+        {
+            if (data.orderRequirements == null ||
+                boardController == null ||
+                data.activeOrderId != boardController.ActiveOrderId)
+            {
+                return;
+            }
+
+            for (int i = 0; i < data.orderRequirements.Length; i++)
+            {
+                OrderRequirementSaveData requirement = data.orderRequirements[i];
+                if (requirement == null || string.IsNullOrEmpty(requirement.familyId))
+                {
+                    continue;
+                }
+
+                boardController.SetOrderSubmittedCount(requirement.familyId, requirement.level, requirement.submittedCount);
+            }
+
+            if (boardController.IsActiveOrderCompleteForSave())
+            {
+                boardController.StartNextOrder();
+            }
+        }
+
+        private void ApplyPlantTierUnlocks()
+        {
+            if (data.plantTierUnlocks == null ||
+                boardController == null ||
+                boardController.PlantUnlockService == null)
+            {
+                return;
+            }
+
+            List<PlantTierUnlockDefinition> unlocks = new List<PlantTierUnlockDefinition>();
+            for (int i = 0; i < data.plantTierUnlocks.Length; i++)
+            {
+                PlantTierUnlockSaveData unlock = data.plantTierUnlocks[i];
+                if (unlock == null || string.IsNullOrEmpty(unlock.familyId))
+                {
+                    continue;
+                }
+
+                unlocks.Add(new PlantTierUnlockDefinition(unlock.familyId, unlock.tier));
+            }
+
+            boardController.PlantUnlockService.RestoreUnlockedTiers(unlocks);
+            boardController.RebuildOrderState();
+        }
+
+        private void ApplyShopInventory()
+        {
+            if (shopController == null || shopController.Inventory == null)
+            {
+                return;
+            }
+
+            shopController.RestoreInventory(data.purchasedShopProductIds, data.ownedDecorationIds);
+        }
+
+        private void ApplyMissionProgress()
+        {
+            if (missionController == null || data.missionProgress == null)
+            {
+                return;
+            }
+
+            List<MissionSaveState> missionStates = new List<MissionSaveState>();
+            for (int i = 0; i < data.missionProgress.Length; i++)
+            {
+                MissionProgressSaveData savedMission = data.missionProgress[i];
+                if (savedMission == null || string.IsNullOrEmpty(savedMission.missionId))
+                {
+                    continue;
+                }
+
+                missionStates.Add(new MissionSaveState(
+                    savedMission.missionId,
+                    savedMission.progress,
+                    savedMission.rewardClaimed));
+            }
+
+            missionController.RestoreMissionStates(missionStates);
+        }
+
         private void ResolveReferences()
         {
             if (boardController == null)
@@ -294,6 +577,16 @@ namespace EcoGarden.Save
             if (economyController == null)
             {
                 economyController = FindAnyObjectByType<EconomyController>();
+            }
+
+            if (shopController == null)
+            {
+                shopController = FindAnyObjectByType<ShopController>();
+            }
+
+            if (missionController == null)
+            {
+                missionController = FindAnyObjectByType<MissionController>();
             }
         }
     }

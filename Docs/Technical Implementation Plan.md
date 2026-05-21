@@ -37,6 +37,9 @@ Assets/
       Board/
       Config/
       Economy/
+      Missions/
+      Shop/
+      IAP/
       Input/
       Items/
       Level/
@@ -46,6 +49,8 @@ Assets/
     ScriptableObjects/
       Abilities/
       Items/
+      Shop/
+      Missions/
       Levels/
       Producers/
     Tests/
@@ -252,10 +257,45 @@ Responsibilities:
 
 | Responsibility | Notes |
 | --- | --- |
-| Track required order | 1x Lotus Lv5 for Level 15 |
-| Validate delivery | Item dragged to NPC order point |
-| Complete level | Fires completion event |
+| Track required orders | Supports one or more order requirements per NPC order |
+| Validate delivery | Item dragged to Delivery zone is consumed only if it matches an unfilled requirement |
+| Track submitted counts | Stores partial progress such as `Lotus Lv2 1/2` |
+| Complete order | Fires order completion event and reward grant |
+| Advance order sequence | Shows next order after NPC checkout/return flow |
+| Complete level | Fires completion event when all level orders are complete |
 | Fail level | Fires failure event when timer expires |
+
+### NPC Order Data
+
+Future order definitions should support multi-item requirements and rewards.
+
+Recommended data types:
+
+| Type | Responsibility |
+| --- | --- |
+| `NpcOrderDefinition` | Defines one NPC order inside a level or order catalog |
+| `OrderRequirementDefinition` | Defines required item family, level, and quantity |
+| `OrderRuntimeState` | Tracks submitted count for each requirement |
+| `OrderRewardDefinition` | Defines automatic rewards for completing the order |
+| `LevelOrderSequence` | Holds ordered NPC orders for a level |
+
+Required fields:
+
+| Field | Type |
+| --- | --- |
+| `orderId` | string |
+| `displayName` | string |
+| `difficulty` | enum: Easy, Normal, Hard, Expert |
+| `requirements` | list of item family/level/count requirements |
+| `reward` | reward definition |
+| `timerSecondsOverride` | optional float |
+
+Delivery behavior:
+
+1. Matching item delivery removes the item from the board immediately.
+2. Submitted counts are persisted so restart does not lose delivery progress.
+3. Order completion triggers NPC checkout movement, reward grant, and next-order reveal.
+4. NPC checkout is a visual target near Sell Basket, but it must not call Sell Basket sale logic.
 
 ### ExternalDropZone
 
@@ -287,6 +327,173 @@ void AddGold(int amount);
 bool TrySpendGold(int amount);
 ```
 
+### Wallet and Currency
+
+Gold remains the normal earned currency. Gem is the premium currency.
+
+Recommended types:
+
+| Type | Responsibility |
+| --- | --- |
+| `CurrencyKind` | Enum with `Gold` and `Gem` |
+| `WalletService` or expanded `EconomyController` | Stores balances and emits balance change events |
+| `CurrencyAmount` | Serializable pair of currency kind and amount |
+| `RewardDefinition` | Grants Gold, Gem, boosters, decorations, or unlocks |
+
+Rules:
+
+1. Selling board items grants Gold only.
+2. Gem comes from rare/high-difficulty rewards, events, or IAP.
+3. Shop prices must specify Gold, Gem, or IAP product id explicitly.
+4. UI should display Gold and Gem separately.
+
+### Shop System
+
+Status: proposed, awaiting approval before implementation.
+
+The shop should be split into catalog data, purchase flow, and reward granting. Gameplay systems should only receive final granted inventory changes.
+
+Recommended runtime components:
+
+| Component | Folder | Responsibility |
+| --- | --- | --- |
+| `ShopItemDefinition` | `Scripts/Config` or `Scripts/Shop` | ScriptableObject catalog entry for a shop row |
+| `ShopCatalog` | `Scripts/Shop` | Loads and indexes available shop items |
+| `ShopController` | `Scripts/Shop` | Handles buy button requests and UI state |
+| `PurchaseService` | `Scripts/IAP` | Coordinates provider callbacks and grant application |
+| `IIapProvider` | `Scripts/IAP` | Interface for mock and platform purchase providers |
+| `MockIapProvider` | `Scripts/IAP` | Editor/test provider for success/cancel/failure |
+| `PurchaseGrantService` | `Scripts/IAP` | Adds gold/boosters after successful purchase |
+| `ShopView` | `Scripts/UI` | Product list, price labels, pending/error/success states |
+
+`ShopItemDefinition` fields:
+
+| Field | Type |
+| --- | --- |
+| `shopItemId` | string |
+| `displayName` | string |
+| `description` | string |
+| `category` | enum: Booster, Decoration, Unlock, Currency, Bundle |
+| `purchaseKind` | enum: Gold, Gem, IAP |
+| `priceCurrency` | CurrencyKind |
+| `priceAmount` | int |
+| `iapProductId` | string |
+| `grantGold` | int |
+| `grantGem` | int |
+| `grantAbilities` | list of ability/count pairs |
+| `grantDecorations` | list of decoration ids |
+| `grantPlantTierUnlocks` | list of family/tier pairs |
+| `isRepeatable` | bool |
+| `sortOrder` | int |
+
+### Mission System
+
+Missions should listen to gameplay events and update persistent progress. Mission rewards are granted only when the player claims them.
+
+Recommended runtime components:
+
+| Component | Folder | Responsibility |
+| --- | --- | --- |
+| `MissionDefinition` | `Scripts/Config` or `Scripts/Missions` | ScriptableObject mission config |
+| `MissionRuntimeState` | `Scripts/Missions` | Current progress/status for one mission |
+| `MissionController` | `Scripts/Missions` | Subscribes to gameplay events and updates progress |
+| `MissionRewardService` | `Scripts/Missions` | Applies claimed rewards through economy/ability inventory |
+| `MissionListView` | `Scripts/UI` | Lists active/completed missions and claim buttons |
+
+`MissionDefinition` fields:
+
+| Field | Type |
+| --- | --- |
+| `missionId` | string |
+| `displayName` | string |
+| `description` | string |
+| `missionType` | enum: Merge, Produce, Sell, Deliver, UseAbility |
+| `targetFamilyId` | string |
+| `targetItemLevel` | int |
+| `targetAbility` | AbilityKind |
+| `requiredCount` | int |
+| `rewardGold` | int |
+| `rewardGem` | int |
+| `rewardAbilities` | list of ability/count pairs |
+| `rewardDecorations` | list of decoration ids |
+| `rewardPlantTierUnlocks` | list of family/tier pairs |
+| `isDaily` | bool |
+| `sortOrder` | int |
+
+Gameplay event sources:
+
+| Event | Source |
+| --- | --- |
+| Item merged | `BoardController` |
+| Item produced | `BoardController` producer spawn |
+| Item sold | `BoardController` or `BoardInputController` sell path |
+| Objective delivered | `BoardController`/`LevelStateController` |
+| Ability used | `AbilityHudController` or ability service success path |
+
+### Plant Tier Unlocks
+
+Higher-tier plant availability should be explicit instead of implied by item data.
+
+Recommended components:
+
+| Component | Responsibility |
+| --- | --- |
+| `PlantTierUnlockDefinition` | Defines unlockable family/tier and display data |
+| `PlantUnlockService` | Stores unlocked tiers and answers merge/order availability checks |
+| `PlantUnlockView` | Shows locked tier state in shop or progression UI |
+
+Integration points:
+
+1. Merge rules check whether the output tier is unlocked.
+2. Order generation/selection does not request locked tiers unless the level grants a temporary override.
+3. Shop unlock products can grant family/tier unlocks.
+4. Save data stores unlocked family/tier pairs.
+
+### Difficulty Config
+
+Level difficulty should be data-driven so obstacle count, locked cells, temporary locks, order complexity, timer, and rewards can scale predictably.
+
+Recommended types:
+
+| Type | Responsibility |
+| --- | --- |
+| `DifficultyKind` | Easy, Normal, Hard, Expert |
+| `DifficultyDefinition` | Balancing values for board pressure, order complexity, timer, reward multiplier |
+| `TemporaryLockDefinition` | Cells that start locked and unlock through level/order events |
+
+Difficulty levers:
+
+| Lever | Controlled By |
+| --- | --- |
+| Obstacle count | Level layout or generator |
+| Locked cells | Level layout |
+| Temporary locked cells | Level runtime events |
+| Order count | Level order sequence |
+| Requested item level and quantity | NPC order definitions |
+| Reward value | Reward definition and difficulty multiplier |
+| Timer pressure | Level or order timer |
+
+### IAP Provider Boundary
+
+The IAP system must be isolated from gameplay and UI through interfaces.
+
+```csharp
+public interface IIapProvider
+{
+    bool IsProductAvailable(string storeProductId);
+    IapPurchaseResult Purchase(string storeProductId);
+}
+```
+
+Implementation notes:
+
+1. `MockIapProvider` is required first so shop flow can be tested without store setup.
+2. Android production provider decision: use Unity IAP through a future `UnityIapProvider` behind this interface.
+3. `PurchaseService` validates product id against `ShopCatalog` before purchase.
+4. `PurchaseGrantService` should grant once per transaction id when one is provided.
+5. All purchase outcomes must be surfaced to UI without blocking gameplay.
+6. `com.unity.purchasing` is not installed yet; package installation and Google Play product configuration are production setup tasks.
+
 ### SellZoneController
 
 Responsibilities:
@@ -308,8 +515,11 @@ For vertical slice, pathing can be deterministic:
 
 1. Spawn at world position corresponding to grid-adjacent `(-1,4)`.
 2. Move to NPC order point `(7,4)`.
-3. Idle until fulfilled or timer expires.
-4. Exit after fulfillment.
+3. Idle until the active order is fulfilled or timer expires.
+4. Move to checkout point near the Sell Basket after all requirements are submitted.
+5. Grant the order reward.
+6. Return to delivery position or respawn for the next order.
+7. Exit after the final level order is fulfilled.
 
 ### ButterflyController
 
@@ -476,6 +686,29 @@ Acceptance:
 2. UI fits common Android portrait resolutions.
 3. No recurring GC spikes from board interaction.
 
+### Milestone 8: Shop, Missions, and IAP Planning
+
+Status: documentation only until approved.
+
+Deliverables:
+
+1. Shop item data model and catalog plan.
+2. Gold/Gem currency rules and wallet plan.
+3. Multi-item NPC order and reward plan.
+4. Mission definition, progress tracking, and reward claim plan.
+5. Plant tier unlock plan.
+6. Difficulty scaling plan.
+7. IAP provider abstraction and mock provider plan.
+8. Save data extension plan for missions and processed purchases.
+9. UI entry point plan for Shop and Missions.
+
+Acceptance:
+
+1. Product/design rules are documented.
+2. Architecture boundaries are documented.
+3. Implementation tasks are broken down and ready for approval.
+4. No runtime implementation starts until approval is given.
+
 ## 11. Test Plan
 
 ### EditMode Tests
@@ -543,7 +776,22 @@ Initial simple algorithm:
 | UI updates | Event-driven, not every-frame text rebuilds except timer |
 | Android | Test portrait layout and touch target sizes early |
 
-## 15. Known Open Decisions
+## 15. Save Extensions for Meta Systems
+
+Additional save fields for the proposed meta systems:
+
+| Field | Purpose |
+| --- | --- |
+| `missionStates` | Stores mission id, progress, status, and claimed state |
+| `processedPurchaseTransactions` | Prevents duplicate IAP grants when transaction ids exist |
+| `ownedShopFlags` | Tracks one-time shop items or future non-consumables |
+| `lastMissionRefreshUtc` | Supports daily mission refresh later |
+| `gem` | Stores premium currency balance |
+| `activeOrderState` | Stores current NPC order id and submitted counts |
+| `plantTierUnlocks` | Stores unlocked family/tier pairs |
+| `ownedDecorations` | Stores cosmetic ownership |
+
+## 16. Known Open Decisions
 
 These should be resolved before production expansion, but are not blockers for the Level 15 vertical slice:
 
@@ -551,10 +799,16 @@ These should be resolved before production expansion, but are not blockers for t
 2. Whether producer uses gold, energy, cooldown upgrades, or random spawn tables.
 3. Whether obstacles can have HP greater than 1.
 4. Whether levels beyond Level 15 use multiple NPC orders.
-5. Whether monetization is handled through Unity LevelPlay, AdMob, Unity IAP, or another SDK.
+5. Resolved for IAP: Android real-money purchases should use Unity IAP behind `IIapProvider`; rewarded ads remain a separate later decision.
 6. Whether mid-level board state should persist after app close.
+7. Whether missions are static, daily rotating, or both for the first release.
+8. Which products are consumable versus non-consumable.
+9. Whether purchase receipt validation is local-only for prototype or backend-backed for production.
+10. Whether Gem can be earned from hard missions only, events only, or both.
+11. Whether high-tier plant unlocks are level-gated, shop-gated, mission-gated, or mixed.
+12. Whether temporary locked cells unlock from order completion, timer milestones, paid unlocks, or all of these.
 
-## 16. Recommended Build Order
+## 17. Recommended Build Order
 
 Start with gameplay logic before art polish:
 
@@ -565,3 +819,6 @@ Start with gameplay logic before art polish:
 5. Producer and abilities.
 6. NPC objective and timer.
 7. Save, audio, VFX, Android polish.
+8. Shop catalog and mock purchase flow after approval.
+9. Mission progress and reward claim flow after approval.
+10. Platform IAP provider after shop flow is validated.

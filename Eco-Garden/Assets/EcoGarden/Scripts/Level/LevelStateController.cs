@@ -1,4 +1,5 @@
 using EcoGarden.Board;
+using EcoGarden.Config;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -38,7 +39,7 @@ namespace EcoGarden.Level
         {
             if (boardController != null)
             {
-                boardController.ObjectiveCompleted += CompleteLevel;
+                boardController.OrderProgressChanged += RefreshObjective;
             }
         }
 
@@ -46,7 +47,7 @@ namespace EcoGarden.Level
         {
             if (boardController != null)
             {
-                boardController.ObjectiveCompleted -= CompleteLevel;
+                boardController.OrderProgressChanged -= RefreshObjective;
             }
         }
 
@@ -170,14 +171,58 @@ namespace EcoGarden.Level
                 return;
             }
 
-            string itemName = order.FamilyId;
-            var itemDefinition = boardController.LevelDefinition.GetItemDefinitionForLevel(order.Level);
+            objectiveText.text = "Deliver: " + BuildOrderDescription(order);
+        }
+
+        private string BuildOrderDescription(NpcOrderDefinition order)
+        {
+            System.Text.StringBuilder builder = new System.Text.StringBuilder();
+            var runtimeRequirements = boardController.ActiveOrderRequirements;
+            if (runtimeRequirements != null && runtimeRequirements.Count > 0)
+            {
+                for (int i = 0; i < runtimeRequirements.Count; i++)
+                {
+                    var requirement = runtimeRequirements[i];
+                    AppendRequirement(builder, requirement.FamilyId, requirement.Level, requirement.RequiredCount, requirement.SubmittedCount);
+                }
+
+                return builder.Length > 0 ? builder.ToString() : "order";
+            }
+
+            var requirements = order.Requirements;
+            for (int i = 0; i < requirements.Count; i++)
+            {
+                OrderRequirementDefinition requirement = requirements[i];
+                if (requirement == null)
+                {
+                    continue;
+                }
+
+                AppendRequirement(builder, requirement.FamilyId, requirement.Level, requirement.Quantity, 0);
+            }
+
+            return builder.Length > 0 ? builder.ToString() : "order";
+        }
+
+        private void AppendRequirement(System.Text.StringBuilder builder, string familyId, int level, int requiredCount, int submittedCount)
+        {
+            if (builder.Length > 0)
+            {
+                builder.Append(", ");
+            }
+
+            string itemName = familyId;
+            var itemDefinition = boardController.LevelDefinition.GetItemDefinitionForLevel(level);
             if (itemDefinition != null && !string.IsNullOrEmpty(itemDefinition.DisplayName))
             {
                 itemName = itemDefinition.DisplayName;
             }
 
-            objectiveText.text = "Deliver: " + itemName + " x" + order.Quantity;
+            builder.Append(itemName);
+            builder.Append(" ");
+            builder.Append(submittedCount);
+            builder.Append("/");
+            builder.Append(requiredCount);
         }
 
         private void ShowResult(string title, string message)

@@ -17,6 +17,7 @@ namespace EcoGarden.AI
         [SerializeField] private Color npcColor = new Color(0.72f, 0.44f, 0.82f, 1f);
 
         private Vector3 idleBasePosition;
+        private Vector3 checkoutPosition;
         private Vector3 exitPosition;
         private Coroutine movementRoutine;
         private bool isIdle;
@@ -52,7 +53,7 @@ namespace EcoGarden.AI
 
             if (boardController != null)
             {
-                boardController.ObjectiveCompleted += ExitAfterFulfillment;
+                boardController.OrderCompleted += CheckoutAfterFulfillment;
             }
         }
 
@@ -60,7 +61,7 @@ namespace EcoGarden.AI
         {
             if (boardController != null)
             {
-                boardController.ObjectiveCompleted -= ExitAfterFulfillment;
+                boardController.OrderCompleted -= CheckoutAfterFulfillment;
             }
         }
 
@@ -84,14 +85,14 @@ namespace EcoGarden.AI
         {
             if (boardController != null)
             {
-                boardController.ObjectiveCompleted -= ExitAfterFulfillment;
+                boardController.OrderCompleted -= CheckoutAfterFulfillment;
             }
 
             boardController = controller;
 
             if (isActiveAndEnabled && boardController != null)
             {
-                boardController.ObjectiveCompleted += ExitAfterFulfillment;
+                boardController.OrderCompleted += CheckoutAfterFulfillment;
             }
         }
 
@@ -122,7 +123,7 @@ namespace EcoGarden.AI
             movementRoutine = null;
         }
 
-        private void ExitAfterFulfillment()
+        private void CheckoutAfterFulfillment()
         {
             if (!isActiveAndEnabled || boardController == null || boardController.BoardState == null)
             {
@@ -135,13 +136,16 @@ namespace EcoGarden.AI
             }
 
             isIdle = false;
-            movementRoutine = StartCoroutine(ExitRoutine());
+            movementRoutine = StartCoroutine(CheckoutRoutine());
         }
 
-        private IEnumerator ExitRoutine()
+        private IEnumerator CheckoutRoutine()
         {
-            yield return MoveTo(exitPosition);
-            gameObject.SetActive(false);
+            yield return MoveTo(checkoutPosition);
+            yield return new WaitForSeconds(0.25f);
+            yield return MoveTo(idleBasePosition);
+            isIdle = true;
+            boardController.StartNextOrder();
             movementRoutine = null;
         }
 
@@ -188,8 +192,22 @@ namespace EcoGarden.AI
             float halfWidth = camera.orthographicSize * camera.aspect;
             Vector3 entryPosition = centerWorld + new Vector3(-halfWidth * 1.2f, 0f, 0f);
             exitPosition = centerWorld + new Vector3(halfWidth * 1.2f, 0f, 0f);
+            checkoutPosition = ResolveCheckoutPosition(camera, centerWorld);
             idleBasePosition = centerWorld;
             transform.position = entryPosition;
+        }
+
+        private static Vector3 ResolveCheckoutPosition(Camera camera, Vector3 fallback)
+        {
+            if (ExternalDropZone.TryGetFirst(ExternalDropZoneKind.SellBasket, out ExternalDropZone sellBasket))
+            {
+                Vector2 centerScreen = sellBasket.GetScreenCenter(null);
+                Vector3 centerWorld = camera.ScreenToWorldPoint(new Vector3(centerScreen.x, centerScreen.y, -camera.transform.position.z));
+                centerWorld.z = -0.15f;
+                return centerWorld + new Vector3(0f, 0.85f, 0f);
+            }
+
+            return fallback + new Vector3(1.5f, 0f, 0f);
         }
 
         private bool TryConfigureBoardFallbackMovement()
@@ -203,6 +221,7 @@ namespace EcoGarden.AI
             Vector3 entryPosition = boardController.BoardView.GridToWorld(boardController.BoardState, new GridPosition(-1, orderPosition.Y));
             idleBasePosition = boardController.BoardView.GridToWorld(boardController.BoardState, orderPosition);
             exitPosition = boardController.BoardView.GridToWorld(boardController.BoardState, new GridPosition(boardController.BoardState.Width, orderPosition.Y));
+            checkoutPosition = exitPosition + new Vector3(-0.8f, 0f, 0f);
 
             transform.position = entryPosition + new Vector3(0f, 0f, -0.15f);
             idleBasePosition += new Vector3(0f, 0f, -0.15f);

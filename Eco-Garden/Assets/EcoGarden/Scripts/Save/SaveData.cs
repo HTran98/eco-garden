@@ -6,6 +6,7 @@ namespace EcoGarden.Save
     public sealed class SaveData
     {
         public int gold;
+        public int gem;
         public int highestUnlockedLevel;
         public int shovelCount = -1;
         public int magicWandCount = -1;
@@ -13,6 +14,12 @@ namespace EcoGarden.Save
         public bool hasBoardState;
         public int plantCount;
         public BoardItemSaveData[] boardItems;
+        public string activeOrderId;
+        public OrderRequirementSaveData[] orderRequirements;
+        public PlantTierUnlockSaveData[] plantTierUnlocks;
+        public string[] purchasedShopProductIds;
+        public string[] ownedDecorationIds;
+        public MissionProgressSaveData[] missionProgress;
         public bool soundEnabled = true;
         public bool musicEnabled = true;
     }
@@ -25,5 +32,29 @@ namespace EcoGarden.Save
         public string familyId;
         public int level;
         public string itemId;
+    }
+
+    [Serializable]
+    public sealed class OrderRequirementSaveData
+    {
+        public string familyId;
+        public int level;
+        public int requiredCount;
+        public int submittedCount;
+    }
+
+    [Serializable]
+    public sealed class PlantTierUnlockSaveData
+    {
+        public string familyId;
+        public int tier;
+    }
+
+    [Serializable]
+    public sealed class MissionProgressSaveData
+    {
+        public string missionId;
+        public int progress;
+        public bool rewardClaimed;
     }
 }

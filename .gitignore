@@ -14,6 +14,9 @@ Eco-Garden/ExportedObj/
 Eco-Garden/*.apk
 Eco-Garden/*.aab
 Eco-Garden/*.unitypackage
+Eco-Garden/.utmp/
+Eco-Garden/*_BurstDebugInformation_DoNotShip/
+Eco-Garden/*_BackUpThisFolder_ButDontShipItWithYourGame/
 
 # Unity generated project files
 Eco-Garden/*.csproj

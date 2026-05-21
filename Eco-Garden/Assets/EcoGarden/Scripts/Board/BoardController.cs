@@ -1,7 +1,12 @@
 using EcoGarden.Config;
 using EcoGarden.Level;
 using EcoGarden.Abilities;
+using EcoGarden.Economy;
+using EcoGarden.Items;
+using EcoGarden.Progression;
+using EcoGarden.Rewards;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace EcoGarden.Board
@@ -20,11 +25,29 @@ namespace EcoGarden.Board
         public LevelDefinition LevelDefinition { get { return levelDefinition; } }
         public BoardView BoardView { get { return boardView; } }
         public AbilityInventory AbilityInventory { get; private set; }
+        public PlantUnlockService PlantUnlockService { get; private set; }
+        public IReadOnlyList<OrderRequirementRuntimeState> ActiveOrderRequirements { get { return activeOrderRequirements; } }
+        public string ActiveOrderId
+        {
+            get
+            {
+                return levelDefinition != null && levelDefinition.NpcOrder != null
+                    ? levelDefinition.NpcOrder.OrderId
+                    : string.Empty;
+            }
+        }
 
-        public event Action ObjectiveCompleted;
         public event Action BoardChanged;
+        public event Action OrderProgressChanged;
+        public event Action OrderCompleted;
+        public event Action<BoardItem> ItemMerged;
+        public event Action<BoardItem> ItemProduced;
+        public event Action<BoardItem> ItemSold;
+        public event Action<BoardItem> ItemDelivered;
+        public event Action<AbilityKind> AbilityUsed;
 
         private AbilityService abilityService;
+        private readonly List<OrderRequirementRuntimeState> activeOrderRequirements = new List<OrderRequirementRuntimeState>();
 
         private void Reset()
         {
@@ -63,8 +86,10 @@ namespace EcoGarden.Board
                 return;
             }
 
-            BoardState = LevelParser.Parse(levelDefinition);
+            BuildPlantUnlockService();
+            BoardState = LevelParser.Parse(levelDefinition, PlantUnlockService);
             BuildAbilityService();
+            BuildOrderState();
             RefreshView();
 
             if (frameCameraOnLoad)
@@ -99,6 +124,8 @@ namespace EcoGarden.Board
                 return false;
             }
 
+            BoardItem sourceItem = BoardState.GetCell(from) != null ? BoardState.GetCell(from).Item : null;
+            bool willMerge = WillMerge(from, to);
             bool changed = TryDeliverToNpc(from, to) || BoardState.TryMergeItem(from, to) || BoardState.TryMoveItem(from, to);
 
             if (changed && refreshView)
@@ -109,6 +136,10 @@ namespace EcoGarden.Board
             if (changed)
             {
                 BoardChanged?.Invoke();
+                if (willMerge)
+                {
+                    ItemMerged?.Invoke(sourceItem);
+                }
             }
 
             return changed;
@@ -122,11 +153,12 @@ namespace EcoGarden.Board
             }
 
             BoardCell source = BoardState.GetCell(from);
-            if (!CanDeliverOrder(source))
+            if (source == null || source.Item == null || !TrySubmitOrderItem(source.Item))
             {
                 return false;
             }
 
+            BoardItem deliveredItem = source.Item;
             source.Item = null;
             if (refreshView)
             {
@@ -134,7 +166,15 @@ namespace EcoGarden.Board
             }
 
             BoardChanged?.Invoke();
-            ObjectiveCompleted?.Invoke();
+            OrderProgressChanged?.Invoke();
+            ItemDelivered?.Invoke(deliveredItem);
+
+            if (IsActiveOrderComplete())
+            {
+                GrantOrderReward();
+                OrderCompleted?.Invoke();
+            }
+
             return true;
         }
 
@@ -145,11 +185,16 @@ namespace EcoGarden.Board
                 return false;
             }
 
-            bool changed = BoardState.TrySpawnFromProducer(producerPosition, currentTime, out _);
+            bool changed = BoardState.TrySpawnFromProducer(producerPosition, currentTime, out GridPosition spawnPosition);
             if (changed)
             {
                 RefreshView();
                 BoardChanged?.Invoke();
+                BoardCell spawnedCell = BoardState.GetCell(spawnPosition);
+                if (spawnedCell != null)
+                {
+                    ItemProduced?.Invoke(spawnedCell.Item);
+                }
             }
 
             return changed;
@@ -183,6 +228,7 @@ namespace EcoGarden.Board
             {
                 RefreshView();
                 BoardChanged?.Invoke();
+                AbilityUsed?.Invoke(abilityKind);
             }
 
             return changed;
@@ -196,6 +242,8 @@ namespace EcoGarden.Board
                 return false;
             }
 
+            BoardCell source = BoardState.GetCell(from);
+            BoardItem soldItem = source != null ? source.Item : null;
             bool changed = BoardState.TrySellItem(from, out goldValue);
             if (changed && refreshView)
             {
@@ -205,6 +253,7 @@ namespace EcoGarden.Board
             if (changed)
             {
                 BoardChanged?.Invoke();
+                ItemSold?.Invoke(soldItem);
             }
 
             return changed;
@@ -216,6 +265,38 @@ namespace EcoGarden.Board
             {
                 AbilityInventory.SetCount(abilityKind, count);
             }
+        }
+
+        public void SetOrderSubmittedCount(string familyId, int level, int submittedCount)
+        {
+            for (int i = 0; i < activeOrderRequirements.Count; i++)
+            {
+                OrderRequirementRuntimeState requirement = activeOrderRequirements[i];
+                if (requirement.FamilyId == familyId && requirement.Level == level)
+                {
+                    requirement.SetSubmittedCount(submittedCount);
+                    OrderProgressChanged?.Invoke();
+                    return;
+                }
+            }
+        }
+
+        public void RebuildOrderState()
+        {
+            BuildOrderState();
+            OrderProgressChanged?.Invoke();
+        }
+
+        public void StartNextOrder()
+        {
+            BuildOrderState();
+            OrderProgressChanged?.Invoke();
+            BoardChanged?.Invoke();
+        }
+
+        public bool IsActiveOrderCompleteForSave()
+        {
+            return IsActiveOrderComplete();
         }
 
         public void RestoreBoardItems(System.Collections.Generic.IEnumerable<EcoGarden.Items.BoardItem> items, System.Collections.Generic.IEnumerable<GridPosition> positions)
@@ -288,20 +369,75 @@ namespace EcoGarden.Board
             abilityService = new AbilityService(BoardState, AbilityInventory);
         }
 
+        private void BuildPlantUnlockService()
+        {
+            PlantUnlockService = new PlantUnlockService();
+            if (levelDefinition != null)
+            {
+                PlantUnlockService.SetTemporaryAllowedTiers(levelDefinition.TemporaryAllowedPlantTiers);
+            }
+        }
+
+        private void BuildOrderState()
+        {
+            activeOrderRequirements.Clear();
+            if (levelDefinition == null || levelDefinition.NpcOrder == null)
+            {
+                return;
+            }
+
+            IReadOnlyList<OrderRequirementDefinition> requirements = levelDefinition.NpcOrder.Requirements;
+            for (int i = 0; i < requirements.Count; i++)
+            {
+                OrderRequirementDefinition requirement = requirements[i];
+                if (requirement != null)
+                {
+                    if (PlantUnlockService == null || PlantUnlockService.IsRequirementAllowed(requirement))
+                    {
+                        activeOrderRequirements.Add(new OrderRequirementRuntimeState(requirement));
+                    }
+                }
+            }
+        }
+
         private bool TryDeliverToNpc(GridPosition from, GridPosition to)
         {
             BoardCell source = BoardState.GetCell(from);
             BoardCell target = BoardState.GetCell(to);
 
-            if (target == null || target.Kind != CellKind.NpcOrderPoint || !CanDeliverOrder(source))
+            if (target == null ||
+                target.Kind != CellKind.NpcOrderPoint ||
+                source == null ||
+                source.Item == null ||
+                !TrySubmitOrderItem(source.Item))
             {
                 return false;
             }
 
+            BoardItem deliveredItem = source.Item;
             source.Item = null;
             BoardChanged?.Invoke();
-            ObjectiveCompleted?.Invoke();
+            OrderProgressChanged?.Invoke();
+            ItemDelivered?.Invoke(deliveredItem);
+
+            if (IsActiveOrderComplete())
+            {
+                GrantOrderReward();
+                OrderCompleted?.Invoke();
+            }
+
             return true;
+        }
+
+        private bool WillMerge(GridPosition from, GridPosition to)
+        {
+            BoardCell source = BoardState.GetCell(from);
+            BoardCell target = BoardState.GetCell(to);
+            return source != null &&
+                   target != null &&
+                   source.Item != null &&
+                   target.Item != null &&
+                   source.Item.CanMergeWith(target.Item, BoardState.MaxItemLevel);
         }
 
         private bool CanDeliverOrder(BoardCell source)
@@ -310,8 +446,98 @@ namespace EcoGarden.Board
                    source.Item != null &&
                    levelDefinition != null &&
                    levelDefinition.NpcOrder != null &&
-                   source.Item.FamilyId == levelDefinition.NpcOrder.FamilyId &&
-                   source.Item.Level == levelDefinition.NpcOrder.Level;
+                   CanSubmitOrderItem(source.Item);
+        }
+
+        private bool CanSubmitOrderItem(EcoGarden.Items.BoardItem item)
+        {
+            if (item == null)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < activeOrderRequirements.Count; i++)
+            {
+                OrderRequirementRuntimeState requirement = activeOrderRequirements[i];
+                if (!requirement.IsComplete &&
+                    requirement.FamilyId == item.FamilyId &&
+                    requirement.Level == item.Level)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool TrySubmitOrderItem(EcoGarden.Items.BoardItem item)
+        {
+            if (item == null)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < activeOrderRequirements.Count; i++)
+            {
+                if (activeOrderRequirements[i].TrySubmit(item))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool IsActiveOrderComplete()
+        {
+            if (activeOrderRequirements.Count == 0)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < activeOrderRequirements.Count; i++)
+            {
+                if (!activeOrderRequirements[i].IsComplete)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private void GrantOrderReward()
+        {
+            if (levelDefinition == null || levelDefinition.NpcOrder == null)
+            {
+                return;
+            }
+
+            EconomyController economyController = FindAnyObjectByType<EconomyController>();
+            if (levelDefinition.NpcOrder.Reward != null)
+            {
+                RewardService.Grant(levelDefinition.NpcOrder.Reward, economyController, AbilityInventory, PlantUnlockService);
+                return;
+            }
+
+            if (economyController != null)
+            {
+                economyController.AddGold(BuildFallbackOrderRewardGold());
+            }
+        }
+
+        private int BuildFallbackOrderRewardGold()
+        {
+            int totalValue = 0;
+            for (int i = 0; i < activeOrderRequirements.Count; i++)
+            {
+                OrderRequirementRuntimeState requirement = activeOrderRequirements[i];
+                ItemDefinition itemDefinition = levelDefinition.GetItemDefinitionForLevel(requirement.Level);
+                int itemValue = itemDefinition != null ? itemDefinition.SellValue : requirement.Level;
+                totalValue += itemValue * requirement.RequiredCount;
+            }
+
+            return Mathf.Max(1, totalValue * 2);
         }
     }
 }

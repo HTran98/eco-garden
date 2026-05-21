@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80c4db1a9f1447a2a36e0efd2dc5c59d, type: 3}
+  m_Name: shop_unlock_lotus_tier_5
+  m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Shop.ShopItemDefinition
+  productId: shop_unlock_lotus_tier_5
+  displayName: Unlock Lotus Tier 5
+  description: Allows Lotus Lv5 creation and orders.
+  category: 2
+  price:
+    purchaseKind: 1
+    currencyKind: 1
+    amount: 60
+    iapProductId: 
+  grant:
+    currencies: []
+    abilities: []
+    decorationIds: []
+    plantTierUnlocks:
+    - familyId: lotus
+      tier: 5
+  repeatable: 0

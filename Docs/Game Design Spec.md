@@ -212,6 +212,19 @@ Moves matching loose items closer together automatically.
 | Fulfillment | Drag requested item onto NPC/order point |
 | Completion behavior | NPC exits and level completes |
 
+Future order flow should support multi-item NPC orders:
+
+1. An NPC order can request one or more item requirements, such as `2x Lotus Lv2`.
+2. Each valid delivered item is consumed immediately and increments submitted progress.
+3. The objective panel shows requirement progress such as `Lotus Lv2 1/2`.
+4. When all requirements are submitted, the NPC moves to a checkout point near the Sell Basket area.
+5. Completion rewards are granted after the order completes.
+6. The NPC returns to the delivery position or respawns from its entry path.
+7. The next order for the current level appears.
+8. The level completes when all level orders are fulfilled.
+
+The checkout movement is visual and reward-driven. It must not reuse Sell Basket item-sale logic, because selling player items and fulfilling NPC orders are separate systems.
+
 ### Zen Butterflies
 
 Butterflies are cosmetic AI and do not affect gameplay.
@@ -229,9 +242,14 @@ Initial vertical slice:
 
 | Currency | Source | Use |
 | --- | --- | --- |
-| Gold | Level completion, item sell value later | Future producer costs, boosters, unlocks |
+| Gold | Selling plants, normal mission rewards, NPC order rewards, level completion | Booster purchases, selected unlocks, selected decorations |
+| Gem | Rare missions, special rewards, IAP | Premium boosters, premium decorations, faster unlocks, bundles |
 
-Lotus sell values are defined, but selling can be deferred until after the vertical slice.
+Gold is the normal earned currency. Selling plants always grants Gold, never Gem.
+
+Gem is the premium currency. It should be scarce in regular play and primarily come from special missions/events or IAP. Core level completion must not require Gem.
+
+Lotus sell values are defined in Gold.
 
 ### Sell Basket
 
@@ -281,7 +299,165 @@ Acceptable later hooks:
 
 Design constraint: the first playable implementation must be completable without ads or IAP.
 
-## 15. UX Requirements
+## 15. Shop, Missions, and IAP Expansion
+
+Status: In implementation. Shop, missions, mock IAP, and mission UI are implemented for the vertical slice; production Android IAP remains a setup task.
+
+The next product expansion adds a lightweight meta layer around the Level 15 vertical slice. It should remain optional for level completion and should not block the core merge loop.
+
+### Currency Rules
+
+| Currency | Acquisition | Primary Uses | Constraints |
+| --- | --- | --- | --- |
+| Gold | Sell plants, complete normal NPC orders, complete normal missions, level rewards | Common boosters, some decorations, basic unlocks | Earnable through regular play |
+| Gem | Rare/high-difficulty missions, events, IAP | Premium cosmetics, premium booster bundles, optional faster unlocks | Never earned from selling plants |
+
+Currency design constraints:
+
+1. Gold and Gem must be displayed separately in UI.
+2. Every shop item must declare exactly one purchase currency or IAP product id.
+3. Failed purchases never modify Gold, Gem, boosters, unlocks, or save data.
+4. Level objectives must remain completable without Gem or IAP.
+
+### Shop Items
+
+The shop sells player-helping items, not required progression gates.
+
+| Category | Example Items | Purchase Currency | Purpose |
+| --- | --- | --- | --- |
+| Booster items | Shovel pack, Magic Wand pack, Sorting Magnet pack | Gold, Gem, or IAP bundle | Helps complete levels |
+| Decoration items | Butterfly skin, bird visitor, board skin, NPC skin, pond background | Gold or Gem | Cosmetic customization |
+| Unlock items | Plant tier unlock, producer upgrade unlock | Gold or Gem | Progression acceleration |
+| Currency packs | Small/medium Gem pack, optional Gold bundle | IAP | Monetization and convenience |
+| Bundles | Starter bundle, booster bundle, decoration bundle | Gem or IAP | Combined value packs |
+
+Initial shop catalog proposal:
+
+| Shop Item | Category | Purchase Currency | Grant |
+| --- | --- | --- | --- |
+| Small Shovel Pack | Booster | Gold | Shovel count |
+| Small Magic Wand Pack | Booster | Gold | Magic Wand count |
+| Small Sorting Magnet Pack | Booster | Gold | Sorting Magnet count |
+| Premium Booster Bundle | Booster | Gem or IAP | All booster counts |
+| Butterfly Decoration | Decoration | Gold | Cosmetic butterfly variant |
+| Bird Visitor Decoration | Decoration | Gem | Cosmetic ambient visitor |
+| Board Skin: Moss Stone | Decoration | Gem | Board tile skin |
+| NPC Skin: Traveler | Decoration | Gem | NPC appearance skin |
+| Unlock Lotus Tier 4 | Unlock | Gold or Gem | Allows Lv4 Lotus creation/orders |
+| Unlock Lotus Tier 5 | Unlock | Gold or Gem | Allows Lv5 Lotus creation/orders |
+| Small Gem Pack | Currency | IAP | Gem |
+| Medium Gem Pack | Currency | IAP | Gem |
+
+Shop design constraints:
+
+1. Shop purchases must be data-driven so item price, quantity, product id, and display name can be edited without code changes.
+2. Shop UI must clearly distinguish Gold, Gem, and real-money purchases.
+3. Failed purchases must not change save data.
+4. Restore purchase support is required before production release for any non-consumable product.
+5. The first implementation can use a mock purchase provider in Editor and a real IAP provider later.
+
+### Plant Tier Unlocks
+
+Higher-tier plants should unlock over progression instead of being fully available from the start.
+
+| Unlock | Effect | Proposed Unlock Source |
+| --- | --- | --- |
+| Lotus Lv1-Lv3 | Basic merge chain | Available by default |
+| Lotus Lv4 | Allows merging into Lv4 and receiving Lv4 orders | Level progression, Gold, or mission reward |
+| Lotus Lv5 | Allows merging into Lv5 and receiving Lv5 orders | Later level progression, Gold/Gem, or special mission reward |
+
+Rules:
+
+1. Locked tiers cannot be produced by merge unless the level explicitly grants a temporary tutorial override.
+2. NPC orders should not request locked tiers unless the level is designed to unlock that tier during the level.
+3. Locked tier UI should explain the unlock requirement.
+4. Unlock state is saved per item family and tier.
+
+### Mission List and Mission Rewards
+
+Missions provide short-term goals and rewards outside the single NPC order.
+
+| Mission Type | Example | Progress Source | Difficulty | Reward |
+| --- | --- | --- | --- | --- |
+| Merge count | Merge 5 Lotus items | Board merge events | Easy | Gold |
+| Produce count | Spawn 10 Lotus seeds | Producer spawn events | Easy | Gold |
+| Sell count | Sell 3 items | Sell Basket events | Normal | Gold |
+| Deliver order | Deliver 2 Lotus Lv2 | NPC order completion event | Normal | Gold or booster |
+| Use ability | Use Shovel 2 times | Ability success events | Normal | Gold |
+| High-tier delivery | Deliver Lotus Lv5 | NPC order completion event | Hard | Gold, Gem, or booster |
+
+Mission rules:
+
+1. Mission progress is event-driven from gameplay systems.
+2. A mission can be `Locked`, `Active`, `Completed`, or `Claimed`.
+3. Rewards are claimed manually from the mission list to keep reward feedback clear.
+4. Claimed rewards are persisted in save data.
+5. Initial implementation should support daily-style and static missions, but only static missions are required for the vertical slice.
+
+### NPC Order Difficulty and Rewards
+
+NPC orders should scale with level difficulty.
+
+| Difficulty | Order Shape | Board Pressure | Reward |
+| --- | --- | --- | --- |
+| Easy | Low tier, low quantity, such as `2x Lotus Lv2` | Few obstacles, few locked cells | Gold |
+| Normal | Mid tier or multiple requirements | Moderate obstacles and temporary locks | Gold plus small booster chance |
+| Hard | High tier or higher quantity | More obstacles, fewer open cells, tighter timer | Gold plus booster or rare Gem |
+| Expert | Multiple high-tier requirements | Many obstacles/locks, short timer | Gold plus Gem or premium reward |
+
+Reward rules:
+
+1. Reward value should scale with item level, quantity, board pressure, and timer pressure.
+2. Gem rewards should be rare and reserved for high difficulty missions/orders.
+3. Completing an NPC order grants rewards automatically after order completion feedback.
+4. Mission rewards remain manually claimable from the mission list.
+
+### Level Difficulty Scaling
+
+Level data should scale difficulty through board layout and order requirements.
+
+| Lever | Easy | Normal | Hard | Expert |
+| --- | --- | --- | --- | --- |
+| Obstacle count | Low | Moderate | High | High |
+| Locked cells | Few | Some | Many | Many |
+| Temporary locked cells | None | Few | Some | Many |
+| Order count | 1 | 2-3 | 3-4 | 4+ |
+| Requested item level | Lv2-Lv3 | Lv3-Lv4 | Lv4-Lv5 | Lv5+ future families |
+| Requested quantity | 1-2 | 2-3 | 3-4 | 4+ |
+| Timer pressure | Loose | Moderate | Tight | Very tight |
+
+Temporary locked cells are cells that start unavailable but can unlock during the level through order completion, timer events, or paid/unpaid unlock mechanics.
+
+### IAP Mechanism
+
+IAP should be abstracted behind a provider interface so gameplay code never calls store SDK APIs directly.
+
+| Layer | Responsibility |
+| --- | --- |
+| Product catalog | Defines product ids, type, price label, and grants |
+| Purchase provider | Starts purchase, receives success/failure callbacks |
+| Receipt validator | Validates receipts when production backend or SDK support is available |
+| Grant service | Applies purchased currency/boosters once per successful transaction |
+| Save service | Persists purchase grants and inventory changes |
+| Shop UI | Shows products, purchase buttons, pending state, and errors |
+
+Initial implementation decisions:
+
+1. Editor uses a mock IAP provider that can simulate success, cancel, and failure.
+2. Runtime Android implementation will target Unity IAP behind the existing `IIapProvider` boundary unless a different store SDK is chosen before production store integration.
+3. Consumable products can grant Gem, Gold, boosters, or bundles.
+4. Non-consumable products are not required for the first IAP pass.
+5. Purchase grants must be idempotent by transaction id when transaction ids are available.
+6. Real-money purchase support must remain optional; Level 15 and core objectives must be completable without IAP.
+
+Initial Android store product ids:
+
+| Store Product ID | Type | Grant |
+| --- | --- | --- |
+| `eco_garden_gems_small` | Consumable | 80 Gem |
+| `eco_garden_gems_medium` | Consumable | 220 Gem |
+
+## 16. UX Requirements
 
 Required game screen elements:
 
@@ -291,8 +467,11 @@ Required game screen elements:
 | Timer | Shows NPC wait time |
 | Objective panel | Shows required item and quantity |
 | Booster bar | Shovel, Magic Wand, Sorting Magnet counts |
-| Currency display | Shows current gold |
+| Gold display | Shows current earned currency |
+| Gem display | Shows current premium currency |
 | Sell Basket | External drop target for selling unwanted items |
+| Shop button | Opens shop item list |
+| Mission button | Opens mission list and claimable rewards |
 | Pause button | Opens pause menu |
 | Feedback text/toast | Invalid move, board full, objective complete |
 
@@ -306,9 +485,15 @@ Required interaction feedback:
 | Producer tap | Spawn pulse |
 | Ability selected | Board target highlights |
 | Objective delivered | NPC happy animation and completion panel |
+| Partial NPC delivery | Objective panel updates submitted count |
+| NPC order completed | NPC moves to checkout, reward is granted, next order appears |
 | Item sold | Item flies to basket, coin burst appears, gold counter increments |
+| Mission completed | Badge or toast appears on mission button |
+| Reward claimed | Currency or booster count animates to HUD |
+| Purchase completed | Shop closes or product row confirms grant |
+| Purchase failed/cancelled | Non-blocking message, no inventory change |
 
-## 16. Audio Requirements
+## 17. Audio Requirements
 
 Minimum audio set:
 
@@ -320,8 +505,10 @@ Minimum audio set:
 | Ability use | Magical soft burst |
 | Objective complete | Warm success sting |
 | Timer warning | Subtle tick or pulse under 20 seconds |
+| Mission reward claim | Soft reward chime |
+| Shop purchase success | Clear but calm confirmation |
 
-## 17. Save Data Requirements
+## 18. Save Data Requirements
 
 For the vertical slice, save:
 
@@ -329,12 +516,19 @@ For the vertical slice, save:
 | --- | --- |
 | Highest unlocked level | Progression |
 | Gold | Currency |
+| Gem | Premium currency |
 | Booster counts | Inventory |
 | Settings | Audio and haptics preferences |
+| Active missions | Mission progress, completion, and claimed state |
+| Active NPC order | Current order id and submitted requirement counts |
+| Plant tier unlocks | Unlocked item family/tier state |
+| Decoration ownership | Owned board/NPC/ambient cosmetics |
+| Shop inventory grants | Purchased/claimed booster, Gold, Gem, decoration, and unlock changes |
+| Processed transactions | IAP transaction ids already granted when available |
 
 Board-state resume can be deferred unless mid-level persistence is required.
 
-## 18. Acceptance Criteria
+## 19. Acceptance Criteria
 
 Level 15 is accepted when:
 

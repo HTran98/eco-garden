@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using EcoGarden.Config;
 using EcoGarden.Items;
+using EcoGarden.Progression;
 
 namespace EcoGarden.Board
 {
@@ -16,16 +17,22 @@ namespace EcoGarden.Board
 
         private readonly BoardCell[,] cells;
         private readonly Dictionary<int, ItemDefinition> itemDefinitionsByLevel;
+        private readonly PlantUnlockService plantUnlockService;
 
         public int Width { get; }
         public int Height { get; }
         public int MaxItemLevel { get; }
 
-        public BoardState(int width, int height, Dictionary<int, ItemDefinition> itemDefinitionsByLevel)
+        public BoardState(
+            int width,
+            int height,
+            Dictionary<int, ItemDefinition> itemDefinitionsByLevel,
+            PlantUnlockService plantUnlockService = null)
         {
             Width = width;
             Height = height;
             this.itemDefinitionsByLevel = itemDefinitionsByLevel ?? new Dictionary<int, ItemDefinition>();
+            this.plantUnlockService = plantUnlockService;
             MaxItemLevel = 0;
 
             foreach (int level in this.itemDefinitionsByLevel.Keys)
@@ -118,6 +125,11 @@ namespace EcoGarden.Board
                 return false;
             }
 
+            if (plantUnlockService != null && !plantUnlockService.IsMergeOutputAllowed(target.Item))
+            {
+                return false;
+            }
+
             int nextLevel = target.Item.Level + 1;
             string nextItemId = GetItemId(nextLevel, target.Item);
             target.Item = target.Item.CreateUpgraded(nextItemId);
@@ -142,6 +154,11 @@ namespace EcoGarden.Board
         {
             BoardCell cell = GetCell(position);
             if (cell == null || cell.Item == null || cell.Item.Level >= MaxItemLevel)
+            {
+                return false;
+            }
+
+            if (plantUnlockService != null && !plantUnlockService.IsMergeOutputAllowed(cell.Item))
             {
                 return false;
             }

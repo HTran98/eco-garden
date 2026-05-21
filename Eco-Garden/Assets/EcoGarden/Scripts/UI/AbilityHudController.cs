@@ -55,13 +55,30 @@ namespace EcoGarden.UI
             SetFeedback("Invalid target");
             if (gameplayFeedbackController != null)
             {
-                gameplayFeedbackController.PlayHudMessage("Invalid target");
+                gameplayFeedbackController.PlayHudMessage("Invalid target - cancelled");
             }
+
+            ClearSelection();
+            Refresh();
             return false;
         }
 
         public void SelectAbility(AbilityKind abilityKind)
         {
+            EnsureBoardControllerReady();
+
+            if (HasSelectedAbility && SelectedAbility == abilityKind)
+            {
+                ClearSelection();
+                SetFeedback(string.Empty);
+                if (gameplayFeedbackController != null)
+                {
+                    gameplayFeedbackController.PlayHudMessage("Ability cancelled");
+                }
+
+                return;
+            }
+
             if (boardController == null ||
                 boardController.AbilityInventory == null ||
                 boardController.AbilityInventory.GetCount(abilityKind) <= 0)
@@ -88,6 +105,8 @@ namespace EcoGarden.UI
 
         public void Refresh()
         {
+            EnsureBoardControllerReady();
+
             if (boardController == null || boardController.AbilityInventory == null)
             {
                 return;
@@ -252,6 +271,21 @@ namespace EcoGarden.UI
             {
                 GameObject feedbackObject = new GameObject("GameplayFeedbackController");
                 gameplayFeedbackController = feedbackObject.AddComponent<GameplayFeedbackController>();
+            }
+        }
+
+        private void EnsureBoardControllerReady()
+        {
+            if (boardController == null)
+            {
+                boardController = FindAnyObjectByType<BoardController>();
+            }
+
+            if (boardController != null &&
+                boardController.AbilityInventory == null &&
+                boardController.LevelDefinition != null)
+            {
+                boardController.LoadLevel();
             }
         }
 

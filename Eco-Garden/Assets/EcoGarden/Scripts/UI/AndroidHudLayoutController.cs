@@ -80,6 +80,9 @@ namespace EcoGarden.UI
             SetAnchoredBox("SellBasket", new Vector2(0.71f, 0.165f), new Vector2(0.96f, 0.305f));
             SetAnchoredBox("FeedbackText", new Vector2(0.04f, 0.43f), new Vector2(0.96f, 0.53f));
             SetAnchoredBox("ResultPanel", new Vector2(0.10f, 0.35f), new Vector2(0.90f, 0.65f));
+            SetAnchoredBox("ShopPanel", new Vector2(0.06f, 0.19f), new Vector2(0.94f, 0.82f));
+            SetAnchoredBox("MissionPanel", new Vector2(0.06f, 0.19f), new Vector2(0.94f, 0.82f));
+            SetAnchoredBox("MissionTrackerPanel", new Vector2(0.70f, 0.31f), new Vector2(0.96f, 0.72f));
         }
 
         private void ApplyTextRules()

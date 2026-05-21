@@ -20,7 +20,7 @@ MonoBehaviour:
   - LL----LL
   - L--21--L
   - --W--W--
-  - S-PPPP-N
+  - S-PPPP--
   - --PPPP--
   - --W--W--
   - L--11--L
@@ -33,6 +33,19 @@ MonoBehaviour:
   - {fileID: 11400000, guid: bdd00989e51c1884aa2ebcf7f7c95fcb, type: 2}
   - {fileID: 11400000, guid: 627a4203074a8564cb1e4fbb70b44ad2, type: 2}
   npcOrder:
+    orderId: lotus_lv05_order
+    displayName: Blooming Lotus
+    requirements:
+    - familyId: lotus
+      level: 5
+      quantity: 1
+    reward:
+      currencies:
+      - currencyKind: 0
+        amount: 100
+      abilities: []
+      decorationIds: []
+      plantTierUnlocks: []
     familyId: lotus
     level: 5
     quantity: 1
@@ -43,5 +56,25 @@ MonoBehaviour:
     count: 1
   - abilityKind: 2
     count: 1
+  temporaryAllowedPlantTiers:
+  - familyId: lotus
+    tier: 4
+  - familyId: lotus
+    tier: 5
+  difficulty:
+    difficultyKind: 2
+    obstacleCount: 8
+    lockedCellCount: 4
+    temporaryLockCount: 1
+    orderComplexityScore: 5
+    timerPressureMultiplier: 0.75
+    rewardMultiplier: 2
+    notes: 'Level 15 vertical slice: high-tier order, clustered blockers, and limited
+      board space.'
+  temporaryLocks:
+  - x: 1
+    y: 6
+    unlockTrigger: 1
+    unlockSourceId: lotus_lv05_order
   timerSeconds: 180
   themeId: pastel_zen

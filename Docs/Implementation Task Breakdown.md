@@ -472,6 +472,243 @@ Production asset checklist:
 | Output | Android build attempt and issue list. |
 | Done When | Build succeeds or all blocking build errors are documented with fixes. |
 
+## Phase 8: Shop, Missions, and IAP Expansion
+
+Status: Initial implementation complete through Task 8.16. Production IAP package integration remains a documented follow-up.
+
+This phase adds a meta layer around the playable vertical slice. It should not make IAP or shop purchases required for Level 15 completion.
+
+### Task 8.0 - Approve Shop, Mission, and IAP Scope
+
+| Field | Detail |
+| --- | --- |
+| Goal | Confirm exact scope before writing runtime code. |
+| Files/Area | `Docs/Game Design Spec.md`, `Docs/Technical Implementation Plan.md`, `Docs/Implementation Task Breakdown.md` |
+| Dependencies | Task 7.3 |
+| Output | Approved scope for shop items, mission types, rewards, and IAP provider approach. |
+| Done When | Product owner approves the proposed design and confirms implementation can begin. |
+
+Approval checklist:
+
+| Decision | Proposed Default |
+| --- | --- |
+| Earned currency | Gold |
+| Premium currency | Gem |
+| Gold sources | Selling plants, normal orders, normal missions |
+| Gem sources | Rare/high-difficulty missions, events, IAP |
+| First shop categories | Booster, Decoration, Unlock, Currency, Bundle |
+| First shop products | Booster packs, decoration items, plant tier unlocks, Gem packs |
+| Mission types | Merge, produce, sell, deliver, use ability |
+| NPC order shape | Multi-item requirements with submitted counts |
+| Reward types | Gold, Gem, boosters, decorations, plant tier unlocks |
+| Difficulty scaling | Obstacles, locked cells, temporary locks, order count, item level, quantity, timer |
+| IAP provider first pass | Mock provider in Editor, Unity IAP-compatible boundary |
+| Non-consumables | Deferred |
+| Receipt validation | Interface only, production validation deferred |
+
+### Task 8.1 - Add Gold and Gem Currency Model
+
+| Field | Detail |
+| --- | --- |
+| Goal | Split normal earned currency from premium currency while keeping existing Gold naming. |
+| Files/Area | `Assets/EcoGarden/Scripts/Economy`, `Save`, `UI`, tests |
+| Dependencies | Task 8.0, Task 7.1 |
+| Output | `CurrencyKind`, multi-currency wallet/economy API, Gold and Gem save fields, UI update plan. |
+| Done When | Gold and Gem balances can be stored, displayed separately, modified independently, and persisted. |
+
+Rules:
+
+| Currency | Source | Use |
+| --- | --- | --- |
+| Gold | Sell plants, normal NPC orders, normal missions | Common boosters, basic decorations, basic unlocks |
+| Gem | Rare missions, events, IAP | Premium cosmetics, bundles, faster unlocks |
+
+### Task 8.2 - Add Reward Data Model
+
+| Field | Detail |
+| --- | --- |
+| Goal | Create reusable reward definitions for orders, missions, shop grants, and IAP grants. |
+| Files/Area | `Assets/EcoGarden/Scripts/Rewards`, `Economy`, `Abilities`, `Save` |
+| Dependencies | Task 8.1 |
+| Output | Reward data that can grant Gold, Gem, boosters, decorations, and plant tier unlocks. |
+| Done When | A reward can be applied once, updates relevant services, emits feedback events, and persists through save/load. |
+
+### Task 8.3 - Add Multi-Item NPC Order Model
+
+| Field | Detail |
+| --- | --- |
+| Goal | Support NPC orders like `2x Lotus Lv2` and multiple requirements per order. |
+| Files/Area | `Assets/EcoGarden/Scripts/Level`, `Config`, `Board`, `Save` |
+| Dependencies | Task 8.2 |
+| Output | `NpcOrderDefinition`, `OrderRequirementDefinition`, runtime submitted counts, order reward data. |
+| Done When | Order data can represent multiple required item types/levels/quantities and persist partial submitted progress. |
+
+### Task 8.4 - Implement NPC Delivery Progress and Checkout Flow
+
+| Field | Detail |
+| --- | --- |
+| Goal | Consume delivered items one by one, complete orders when all requirements are submitted, and move NPC to checkout. |
+| Files/Area | `Assets/EcoGarden/Scripts/AI`, `Level`, `Input`, `Board`, `UI` |
+| Dependencies | Task 8.3, Task 6.1 |
+| Output | Partial delivery validation, objective progress UI, NPC checkout movement near Sell Basket, reward trigger, next-order reveal. |
+| Done When | Delivering enough requested items completes the order, grants reward, returns/respawns NPC, and displays the next order without using Sell Basket sale logic. |
+
+### Task 8.5 - Add Plant Tier Unlock Rules
+
+| Field | Detail |
+| --- | --- |
+| Goal | Gate high-tier plant creation and orders behind explicit unlock state. |
+| Files/Area | `Assets/EcoGarden/Scripts/Items`, `Board`, `Level`, `Shop`, `Save`, `UI` |
+| Dependencies | Task 8.2 |
+| Output | `PlantUnlockService`, family/tier unlock save data, merge/output validation, locked-tier UI state. |
+| Done When | Locked tiers cannot be merged into or requested unless explicitly unlocked or temporarily allowed by level data. |
+
+Initial unlock proposal:
+
+| Tier | Availability |
+| --- | --- |
+| Lotus Lv1-Lv3 | Available by default |
+| Lotus Lv4 | Unlock through level progression, Gold, or mission reward |
+| Lotus Lv5 | Unlock through later progression, Gold/Gem, or special mission reward |
+
+### Task 8.6 - Add Difficulty and Reward Scaling Data
+
+| Field | Detail |
+| --- | --- |
+| Goal | Make level/order difficulty explicit and use it to tune board pressure and rewards. |
+| Files/Area | `Assets/EcoGarden/Scripts/Level`, `Config`, `Rewards`, `ScriptableObjects` |
+| Dependencies | Task 8.2, Task 8.3 |
+| Output | `DifficultyKind`, optional `DifficultyDefinition`, temporary lock config, reward scaling notes. |
+| Done When | Level/order data can describe Easy/Normal/Hard/Expert difficulty, including obstacle pressure, locked cells, temporary locks, order complexity, timer pressure, and reward scale. |
+
+### Task 8.7 - Add Shop Data Model
+
+| Field | Detail |
+| --- | --- |
+| Goal | Define data-driven shop catalog entries. |
+| Files/Area | `Assets/EcoGarden/Scripts/Shop`, `Assets/EcoGarden/Scripts/Config`, `Assets/EcoGarden/ScriptableObjects/Shop` |
+| Dependencies | Task 8.1, Task 8.2, Task 8.5 |
+| Output | `ShopItemDefinition`, category enum, purchase kind enum, price currency, grant data, and catalog lookup service. |
+| Done When | Shop products can be authored as assets and queried by id without scene dependencies. |
+
+Initial product set:
+
+| Product | Category | Purchase Kind | Grant |
+| --- | --- | --- | --- |
+| Small Shovel Pack | Booster | Gold | Shovel count |
+| Small Magic Wand Pack | Booster | Gold | Magic Wand count |
+| Small Sorting Magnet Pack | Booster | Gold | Sorting Magnet count |
+| Premium Booster Bundle | Booster | Gem or IAP | All booster counts |
+| Butterfly Decoration | Decoration | Gold | Cosmetic butterfly variant |
+| Bird Visitor Decoration | Decoration | Gem | Cosmetic ambient visitor |
+| Board Skin: Moss Stone | Decoration | Gem | Board tile skin |
+| NPC Skin: Traveler | Decoration | Gem | NPC appearance skin |
+| Unlock Lotus Tier 4 | Unlock | Gold or Gem | Lotus Lv4 unlock |
+| Unlock Lotus Tier 5 | Unlock | Gold or Gem | Lotus Lv5 unlock |
+| Small Gem Pack | Currency | IAP | Gem |
+| Medium Gem Pack | Currency | IAP | Gem |
+
+### Task 8.8 - Implement Shop Purchase Flow With Gold and Gem
+
+| Field | Detail |
+| --- | --- |
+| Goal | Let player buy soft-currency shop items using saved Gold or Gem. |
+| Files/Area | `Assets/EcoGarden/Scripts/Shop`, `Assets/EcoGarden/Scripts/Economy`, `Assets/EcoGarden/Scripts/Abilities`, `Assets/EcoGarden/Scripts/UI` |
+| Dependencies | Task 8.7 |
+| Output | `ShopController` that validates price, spends currency, applies rewards/unlocks/decorations, and updates save data. |
+| Done When | Buying a Gold/Gem-priced item decreases the correct balance, grants the configured reward, persists after restart, and fails cleanly if currency is insufficient. |
+
+### Task 8.9 - Add Shop UI
+
+| Field | Detail |
+| --- | --- |
+| Goal | Add an Android-friendly shop panel and HUD entry point. |
+| Files/Area | `Assets/EcoGarden/Scripts/UI`, `Prefabs/UI`, editor UI creation tools |
+| Dependencies | Task 8.8, Task 7.2 |
+| Output | Shop button, category tabs, product list, Gold/Gem/IAP price labels, buy buttons, success/error feedback. |
+| Done When | Player can open/close shop, buy available gold-priced items, and see inventory/currency updates without layout overlap at portrait sizes. |
+
+### Task 8.10 - Add Mission Data Model
+
+| Field | Detail |
+| --- | --- |
+| Goal | Define data-driven mission objectives and rewards. |
+| Files/Area | `Assets/EcoGarden/Scripts/Missions`, `Assets/EcoGarden/Scripts/Config`, `Assets/EcoGarden/ScriptableObjects/Missions` |
+| Dependencies | Task 8.2, Task 8.6 |
+| Output | `MissionDefinition`, mission type enum, difficulty, reward data, runtime mission state. |
+| Done When | Missions can be authored as assets and loaded into runtime state with saved progress. |
+
+Initial mission set:
+
+| Mission | Target | Reward |
+| --- | --- | --- |
+| Merge Lotus | Merge 5 lotus pairs | Gold |
+| Grow Seeds | Produce 10 Lotus Lv1 | Gold |
+| Clear Space | Sell 3 items | Gold |
+| Finish Order | Deliver 2 Lotus Lv2 | Gold or booster |
+| High-Tier Order | Deliver Lotus Lv5 | Gold plus rare Gem |
+| Use Tools | Use Shovel 2 times | Gold |
+
+### Task 8.11 - Track Mission Progress From Gameplay Events
+
+| Field | Detail |
+| --- | --- |
+| Goal | Update mission progress from existing gameplay actions. |
+| Files/Area | `Assets/EcoGarden/Scripts/Missions`, `Board`, `Input`, `Abilities`, `Level` |
+| Dependencies | Task 8.10, Task 6.3 |
+| Output | `MissionController` subscriptions for merge, produce, sell, deliver, and ability-use events. |
+| Done When | Mission progress increments only on successful gameplay actions and persists through save/load. |
+
+### Task 8.12 - Implement Mission Rewards and Claim Flow
+
+| Field | Detail |
+| --- | --- |
+| Goal | Let player claim rewards after mission completion. |
+| Files/Area | `Assets/EcoGarden/Scripts/Missions`, `Economy`, `Abilities`, `Save`, `UI` |
+| Dependencies | Task 8.11 |
+| Output | Reward grant service, claimed-state persistence, claim feedback. |
+| Done When | Completed missions can be claimed once, rewards are added correctly, and claimed missions cannot double-grant rewards after restart. |
+
+### Task 8.13 - Add Mission List UI
+
+| Field | Detail |
+| --- | --- |
+| Goal | Show active/completed missions and claimable rewards. |
+| Files/Area | `Assets/EcoGarden/Scripts/UI`, `Prefabs/UI`, editor UI creation tools |
+| Dependencies | Task 8.12, Task 7.2 |
+| Output | Mission button, mission list panel, progress text/bars, claim buttons, completion badge. |
+| Done When | Player can inspect mission progress, claim rewards, and see the HUD badge update on Android portrait layouts. |
+
+### Task 8.14 - Add IAP Provider Abstraction and Mock Provider
+
+| Field | Detail |
+| --- | --- |
+| Goal | Prepare real-money purchase flow without binding gameplay to a store SDK. |
+| Files/Area | `Assets/EcoGarden/Scripts/IAP`, `Shop`, `Save`, tests |
+| Dependencies | Task 8.7 |
+| Output | `IIapProvider`, purchase result types, `MockIapProvider`, `PurchaseService`, transaction grant path. |
+| Done When | Editor can simulate IAP success, cancel, and failure; only success grants configured products. |
+
+### Task 8.15 - Connect IAP Products to Shop UI
+
+| Field | Detail |
+| --- | --- |
+| Goal | Let IAP shop products use the provider abstraction. |
+| Files/Area | `Assets/EcoGarden/Scripts/Shop`, `IAP`, `UI` |
+| Dependencies | Task 8.9, Task 8.14 |
+| Output | IAP product rows, pending purchase state, success/failure messages, idempotent grant handling. |
+| Done When | Mock IAP products can be purchased in Editor, grants persist, failed/cancelled purchases do not change inventory, and repeated transaction ids do not double-grant. |
+
+### Task 8.16 - Platform IAP Integration Decision and Build Check
+
+| Field | Detail |
+| --- | --- |
+| Goal | Decide and verify the Android IAP provider path. |
+| Files/Area | `Packages`, `ProjectSettings`, `Assets/EcoGarden/Scripts/IAP`, Android build settings |
+| Dependencies | Task 8.15, Task 7.4 |
+| Output | Unity IAP or selected SDK integration plan, build notes, required store product ids. |
+| Done When | Android build either succeeds with the selected IAP package or all blocking SDK/store setup issues are documented. |
+
 ## Suggested First Sprint
 
 Start with these tasks only:
@@ -503,6 +740,14 @@ Sprint 1 is complete when Level 15 exists as data and can be parsed into a valid
 5.5 -> 7.1
 5.4 -> 7.2
 6.3 -> 7.3 -> 7.4
+7.3 -> 8.0
+8.0 -> 8.1 -> 8.2
+8.2 -> 8.3 -> 8.4
+8.2 -> 8.5
+8.2 + 8.3 -> 8.6
+8.1 + 8.2 + 8.5 -> 8.7 -> 8.8 -> 8.9
+8.2 + 8.6 -> 8.10 -> 8.11 -> 8.12 -> 8.13
+8.7 -> 8.14 -> 8.15 -> 8.16
 ```
 
 ## Definition of Done for the Vertical Slice
@@ -518,3 +763,29 @@ The vertical slice is done when:
 7. HUD communicates the objective and state.
 8. The game can be played with touch-style input.
 9. Android build blockers are resolved or explicitly documented.
+
+## Definition of Done for Phase 8
+
+Phase 8 is approved for implementation when:
+
+1. Shop products and prices are approved.
+2. Gold/Gem source and sink rules are approved.
+3. Multi-item NPC order and reward flow is approved.
+4. Mission types, initial mission list, difficulty, and rewards are approved.
+5. Plant tier unlock rules are approved.
+6. Difficulty scaling rules are approved.
+7. IAP provider strategy is approved.
+8. Save data additions are accepted.
+9. UI entry points for Shop and Missions are accepted.
+
+Phase 8 implementation is done when:
+
+1. Shop purchases with gold work and persist.
+2. Shop purchases with Gem work and persist.
+3. Multi-item NPC orders track partial deliveries, grant rewards, and advance to the next order.
+4. Plant tier unlocks block/allow high-tier merges and orders correctly.
+5. Difficulty data can drive obstacle/lock/order/reward scaling.
+6. Mock IAP purchases work in Editor and do not double-grant.
+7. Mission progress updates from real gameplay events.
+8. Mission rewards can be claimed once and persist.
+9. Shop and Mission UI fit Android portrait layouts.

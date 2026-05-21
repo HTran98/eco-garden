@@ -2,12 +2,13 @@ using System.Collections.Generic;
 using EcoGarden.Board;
 using EcoGarden.Config;
 using EcoGarden.Items;
+using EcoGarden.Progression;
 
 namespace EcoGarden.Level
 {
     public static class LevelParser
     {
-        public static BoardState Parse(LevelDefinition levelDefinition)
+        public static BoardState Parse(LevelDefinition levelDefinition, PlantUnlockService plantUnlockService = null)
         {
             if (levelDefinition == null)
             {
@@ -30,7 +31,7 @@ namespace EcoGarden.Level
                 }
             }
 
-            BoardState board = new BoardState(levelDefinition.Width, levelDefinition.Height, itemsByLevel);
+            BoardState board = new BoardState(levelDefinition.Width, levelDefinition.Height, itemsByLevel, plantUnlockService);
 
             for (int row = 0; row < rows.Count; row++)
             {

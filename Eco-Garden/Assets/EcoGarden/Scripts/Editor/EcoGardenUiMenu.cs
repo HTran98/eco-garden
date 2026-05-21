@@ -25,8 +25,13 @@ namespace EcoGarden.Editor
             CreateSellBasket(hudRoot.transform);
             CreateFeedbackText(hudRoot.transform);
             CreateCoinFeedback(hudRoot.transform);
+            CreateShopPanel(hudRoot.transform);
+            CreateMissionPanel(hudRoot.transform);
+            CreateMissionTracker(hudRoot.transform);
             CreateResultPanel(hudRoot.transform);
             hudRoot.AddComponent<AbilityHudController>();
+            hudRoot.AddComponent<ShopUiController>();
+            hudRoot.AddComponent<MissionUiController>();
             hudRoot.AddComponent<DraggedItemCanvasGhost>();
             hudRoot.AddComponent<HudSkinController>().Apply();
             hudRoot.AddComponent<AndroidHudLayoutController>().ApplyLayout();
@@ -56,9 +61,12 @@ namespace EcoGarden.Editor
             RectTransform rect = topBar.GetComponent<RectTransform>();
             rect.sizeDelta = new Vector2(0f, 92f);
 
-            CreateText("TimerText", topBar.transform, "03:00", TextAnchor.MiddleLeft, new Vector2(0f, 0f), new Vector2(0.33f, 1f));
-            CreateText("GoldText", topBar.transform, "Gold 0", TextAnchor.MiddleCenter, new Vector2(0.33f, 0f), new Vector2(0.66f, 1f));
-            CreateButton("PauseButton", topBar.transform, "Pause", new Vector2(0.78f, 0.15f), new Vector2(0.98f, 0.85f));
+            CreateText("TimerText", topBar.transform, "03:00", TextAnchor.MiddleLeft, new Vector2(0f, 0f), new Vector2(0.21f, 1f));
+            CreateText("GoldText", topBar.transform, "Gold 0", TextAnchor.MiddleCenter, new Vector2(0.21f, 0f), new Vector2(0.42f, 1f));
+            CreateText("GemText", topBar.transform, "Gem 0", TextAnchor.MiddleCenter, new Vector2(0.42f, 0f), new Vector2(0.62f, 1f));
+            CreateButton("MissionButton", topBar.transform, "Mission", new Vector2(0.64f, 0.15f), new Vector2(0.76f, 0.85f));
+            CreateButton("ShopButton", topBar.transform, "Shop", new Vector2(0.78f, 0.15f), new Vector2(0.88f, 0.85f));
+            CreateButton("PauseButton", topBar.transform, "Pause", new Vector2(0.90f, 0.15f), new Vector2(0.99f, 0.85f));
         }
 
         private static void CreateObjectivePanel(Transform parent)
@@ -133,6 +141,106 @@ namespace EcoGarden.Editor
 
             CreateButton("RestartButton", panel.transform, "Restart", new Vector2(0.28f, 0.08f), new Vector2(0.72f, 0.30f));
             panel.SetActive(false);
+        }
+
+        private static void CreateShopPanel(Transform parent)
+        {
+            GameObject panel = CreatePanel("ShopPanel", parent, new Vector2(0.07f, 0.20f), new Vector2(0.93f, 0.82f), new Vector2(0.5f, 0.5f), Vector2.zero);
+            Image image = panel.GetComponent<Image>();
+            image.sprite = PlaceholderSpriteFactory.ShopPanelSprite;
+            image.color = Color.white;
+
+            Text title = CreateText("ShopTitleText", panel.transform, "Shop", TextAnchor.MiddleLeft, new Vector2(0.05f, 0.90f), new Vector2(0.55f, 0.98f)).GetComponent<Text>();
+            title.fontSize = 36;
+            CreateButton("ShopCloseButton", panel.transform, "X", new Vector2(0.86f, 0.90f), new Vector2(0.96f, 0.98f));
+
+            GameObject categoryBar = CreateRect("ShopCategoryBar", panel.transform, new Vector2(0.04f, 0.80f), new Vector2(0.96f, 0.89f), new Vector2(0.5f, 0.5f), Vector2.zero);
+            CreateButton("ShopCategoryBoosterButton", categoryBar.transform, "Boost", new Vector2(0.00f, 0.05f), new Vector2(0.19f, 0.95f));
+            CreateButton("ShopCategoryDecorationButton", categoryBar.transform, "Decor", new Vector2(0.205f, 0.05f), new Vector2(0.395f, 0.95f));
+            CreateButton("ShopCategoryUnlockButton", categoryBar.transform, "Unlock", new Vector2(0.41f, 0.05f), new Vector2(0.60f, 0.95f));
+            CreateButton("ShopCategoryCurrencyButton", categoryBar.transform, "Gem", new Vector2(0.615f, 0.05f), new Vector2(0.805f, 0.95f));
+            CreateButton("ShopCategoryBundleButton", categoryBar.transform, "Bundle", new Vector2(0.82f, 0.05f), new Vector2(1f, 0.95f));
+
+            GameObject viewport = CreatePanel("ShopProductViewport", panel.transform, new Vector2(0.04f, 0.06f), new Vector2(0.96f, 0.78f), new Vector2(0.5f, 0.5f), Vector2.zero);
+            viewport.GetComponent<Image>().color = new Color(0.06f, 0.09f, 0.10f, 0.70f);
+            Mask mask = viewport.AddComponent<Mask>();
+            mask.showMaskGraphic = true;
+
+            GameObject list = CreateRect("ShopProductList", viewport.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), Vector2.zero);
+            VerticalLayoutGroup layout = list.AddComponent<VerticalLayoutGroup>();
+            layout.childControlWidth = true;
+            layout.childControlHeight = false;
+            layout.childForceExpandWidth = true;
+            layout.childForceExpandHeight = false;
+            layout.spacing = 12f;
+            layout.padding = new RectOffset(14, 14, 14, 14);
+            ContentSizeFitter fitter = list.AddComponent<ContentSizeFitter>();
+            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            ScrollRect scrollRect = viewport.AddComponent<ScrollRect>();
+            scrollRect.content = list.GetComponent<RectTransform>();
+            scrollRect.viewport = viewport.GetComponent<RectTransform>();
+            scrollRect.horizontal = false;
+            scrollRect.vertical = true;
+            scrollRect.movementType = ScrollRect.MovementType.Clamped;
+
+            panel.SetActive(false);
+        }
+
+        private static void CreateMissionPanel(Transform parent)
+        {
+            GameObject panel = CreatePanel("MissionPanel", parent, new Vector2(0.07f, 0.20f), new Vector2(0.93f, 0.82f), new Vector2(0.5f, 0.5f), Vector2.zero);
+            Image image = panel.GetComponent<Image>();
+            image.color = new Color(0.12f, 0.16f, 0.18f, 0.97f);
+
+            Text title = CreateText("MissionTitleText", panel.transform, "Missions", TextAnchor.MiddleLeft, new Vector2(0.05f, 0.90f), new Vector2(0.62f, 0.98f)).GetComponent<Text>();
+            title.fontSize = 36;
+            CreateButton("MissionCloseButton", panel.transform, "X", new Vector2(0.86f, 0.90f), new Vector2(0.96f, 0.98f));
+
+            GameObject viewport = CreatePanel("MissionViewport", panel.transform, new Vector2(0.04f, 0.06f), new Vector2(0.96f, 0.88f), new Vector2(0.5f, 0.5f), Vector2.zero);
+            viewport.GetComponent<Image>().color = new Color(0.06f, 0.08f, 0.10f, 0.55f);
+            Mask mask = viewport.AddComponent<Mask>();
+            mask.showMaskGraphic = true;
+
+            GameObject list = CreateRect("MissionList", viewport.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), Vector2.zero);
+            VerticalLayoutGroup layout = list.AddComponent<VerticalLayoutGroup>();
+            layout.childControlWidth = true;
+            layout.childControlHeight = false;
+            layout.childForceExpandWidth = true;
+            layout.childForceExpandHeight = false;
+            layout.spacing = 10f;
+            layout.padding = new RectOffset(12, 12, 12, 12);
+            ContentSizeFitter fitter = list.AddComponent<ContentSizeFitter>();
+            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            ScrollRect scrollRect = viewport.AddComponent<ScrollRect>();
+            scrollRect.content = list.GetComponent<RectTransform>();
+            scrollRect.viewport = viewport.GetComponent<RectTransform>();
+            scrollRect.horizontal = false;
+            scrollRect.vertical = true;
+            scrollRect.movementType = ScrollRect.MovementType.Clamped;
+
+            panel.SetActive(false);
+        }
+
+        private static void CreateMissionTracker(Transform parent)
+        {
+            GameObject panel = CreatePanel("MissionTrackerPanel", parent, new Vector2(0.70f, 0.31f), new Vector2(0.96f, 0.72f), new Vector2(0.5f, 0.5f), Vector2.zero);
+            Image image = panel.GetComponent<Image>();
+            image.color = new Color(0.12f, 0.16f, 0.18f, 0.90f);
+
+            Text title = CreateText("MissionTrackerTitleText", panel.transform, "Missions", TextAnchor.MiddleLeft, new Vector2(0.07f, 0.88f), new Vector2(0.66f, 0.98f)).GetComponent<Text>();
+            title.fontSize = 26;
+            CreateButton("MissionTrackerOpenButton", panel.transform, "All", new Vector2(0.70f, 0.88f), new Vector2(0.96f, 0.98f));
+
+            GameObject list = CreateRect("MissionTrackerList", panel.transform, new Vector2(0.04f, 0.04f), new Vector2(0.96f, 0.86f), new Vector2(0.5f, 0.5f), Vector2.zero);
+            VerticalLayoutGroup layout = list.AddComponent<VerticalLayoutGroup>();
+            layout.childControlWidth = true;
+            layout.childControlHeight = false;
+            layout.childForceExpandWidth = true;
+            layout.childForceExpandHeight = false;
+            layout.spacing = 6f;
+            layout.padding = new RectOffset(6, 6, 6, 6);
         }
 
         private static GameObject CreatePanel(string name, Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot, Vector2 anchoredPosition)

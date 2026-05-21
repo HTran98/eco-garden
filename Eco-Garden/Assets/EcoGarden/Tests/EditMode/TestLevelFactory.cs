@@ -45,7 +45,13 @@ namespace EcoGarden.Tests
                     new AbilityCountDefinition(AbilityKind.SortingMagnet, 1)
                 },
                 180f,
-                "pastel_zen");
+                "pastel_zen",
+                null,
+                new DifficultyDefinition(DifficultyKind.Hard, 8, 4, 1, 5, 0.75f, 2f),
+                new List<TemporaryLockDefinition>
+                {
+                    new TemporaryLockDefinition(1, 6, TemporaryLockUnlockTrigger.OrderCompleted, "lotus_lv05_x1")
+                });
 
             return level;
         }
@@ -76,7 +82,10 @@ namespace EcoGarden.Tests
                     new AbilityCountDefinition(AbilityKind.SortingMagnet, 1)
                 },
                 level.TimerSeconds,
-                level.ThemeId);
+                level.ThemeId,
+                null,
+                level.Difficulty,
+                new List<TemporaryLockDefinition>(level.TemporaryLocks));
             return level;
         }
 

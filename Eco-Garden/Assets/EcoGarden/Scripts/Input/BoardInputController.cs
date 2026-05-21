@@ -166,8 +166,10 @@ namespace EcoGarden.Input
 
             if (abilityHudController != null && abilityHudController.HasSelectedAbility)
             {
-                abilityHudController.TryUseSelectedAbility(gridPosition);
-                return;
+                if (abilityHudController.TryUseSelectedAbility(gridPosition))
+                {
+                    return;
+                }
             }
 
             if (cell.Item != null)
@@ -485,12 +487,12 @@ namespace EcoGarden.Input
         {
             if (!boardController.TryDeliverOrder(dragStartPosition, false))
             {
-                gameplayFeedbackController.PlayHudMessage("Need Blooming Lotus");
+                gameplayFeedbackController.PlayHudMessage("Need requested item");
                 AnimateDrop(dragStartPosition, false);
                 return;
             }
 
-            gameplayFeedbackController.PlayHudMessage("Order delivered");
+            gameplayFeedbackController.PlayHudMessage("Delivered");
             PlayDeliveryAnimation(externalDropZone);
         }
 

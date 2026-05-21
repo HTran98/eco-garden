@@ -17,6 +17,10 @@ namespace EcoGarden.Utilities
         private static Sprite hudTopBarSprite;
         private static Sprite hudPanelSprite;
         private static Sprite hudButtonSprite;
+        private static Sprite shopPanelSprite;
+        private static Sprite shopProductRowSprite;
+        private static Sprite shopPriceBadgeSprite;
+        private static Sprite shopIconBadgeSprite;
         private static Sprite deliverZoneSprite;
         private static Sprite sellBasketSprite;
         private static readonly Sprite[] lotusSprites = new Sprite[6];
@@ -193,6 +197,78 @@ namespace EcoGarden.Utilities
                 }
 
                 return hudButtonSprite;
+            }
+        }
+
+        public static Sprite ShopPanelSprite
+        {
+            get
+            {
+                if (shopPanelSprite == null)
+                {
+                    shopPanelSprite = CreateRoundedRectSprite(
+                        "ui_shop_panel_runtime",
+                        new Color(0.10f, 0.16f, 0.18f, 0.98f),
+                        new Color(0.76f, 0.92f, 0.82f, 1f),
+                        10,
+                        4);
+                }
+
+                return shopPanelSprite;
+            }
+        }
+
+        public static Sprite ShopProductRowSprite
+        {
+            get
+            {
+                if (shopProductRowSprite == null)
+                {
+                    shopProductRowSprite = CreateRoundedRectSprite(
+                        "ui_shop_product_row_runtime",
+                        new Color(0.14f, 0.20f, 0.19f, 0.96f),
+                        new Color(0.51f, 0.74f, 0.62f, 1f),
+                        8,
+                        3);
+                }
+
+                return shopProductRowSprite;
+            }
+        }
+
+        public static Sprite ShopPriceBadgeSprite
+        {
+            get
+            {
+                if (shopPriceBadgeSprite == null)
+                {
+                    shopPriceBadgeSprite = CreateRoundedRectSprite(
+                        "ui_shop_price_badge_runtime",
+                        new Color(0.20f, 0.25f, 0.20f, 0.96f),
+                        new Color(0.96f, 0.78f, 0.34f, 1f),
+                        8,
+                        3);
+                }
+
+                return shopPriceBadgeSprite;
+            }
+        }
+
+        public static Sprite ShopIconBadgeSprite
+        {
+            get
+            {
+                if (shopIconBadgeSprite == null)
+                {
+                    shopIconBadgeSprite = CreateRoundedRectSprite(
+                        "ui_shop_icon_badge_runtime",
+                        new Color(0.18f, 0.30f, 0.28f, 0.96f),
+                        new Color(0.80f, 0.95f, 0.74f, 1f),
+                        10,
+                        4);
+                }
+
+                return shopIconBadgeSprite;
             }
         }
 
