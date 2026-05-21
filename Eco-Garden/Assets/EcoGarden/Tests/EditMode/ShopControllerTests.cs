@@ -161,6 +161,28 @@ namespace EcoGarden.Tests.EditMode
             Assert.AreEqual(0, economyController.Gem);
         }
 
+        [Test]
+        public void TryPurchase_RestoredIapTransactionRejectsDuplicateAfterRestart()
+        {
+            MockIapProvider provider = gameObject.AddComponent<MockIapProvider>();
+            provider.SetFixedTransactionId("mock_tx_saved");
+            shopController.RestoreProcessedIapTransactionIds(new[] { "mock_tx_saved" });
+            shopController.SetCatalogItems(new[]
+            {
+                CreateItem(
+                    "shop_iap_gems_small",
+                    ShopItemCategory.Currency,
+                    new ShopPriceDefinition(ShopPurchaseKind.Iap, 0, "eco_garden_gems_small"),
+                    new RewardDefinition(new[] { new CurrencyReward(CurrencyKind.Gem, 80) }, null),
+                    true)
+            });
+
+            ShopPurchaseResult result = shopController.TryPurchase("shop_iap_gems_small");
+
+            Assert.AreEqual(ShopPurchaseStatus.DuplicateTransaction, result.Status);
+            Assert.AreEqual(0, economyController.Gem);
+        }
+
         private static ShopItemDefinition CreateItem(
             string productId,
             ShopItemCategory category,

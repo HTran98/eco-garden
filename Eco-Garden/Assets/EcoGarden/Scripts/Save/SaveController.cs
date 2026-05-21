@@ -161,6 +161,7 @@ namespace EcoGarden.Save
             if (shopController != null && shopController.Inventory != null)
             {
                 shopController.Inventory.Changed += OnShopInventoryChanged;
+                shopController.ProcessedIapTransactionsChanged += OnProcessedIapTransactionsChanged;
             }
 
             if (missionController != null)
@@ -204,6 +205,7 @@ namespace EcoGarden.Save
             if (shopController != null && shopController.Inventory != null)
             {
                 shopController.Inventory.Changed -= OnShopInventoryChanged;
+                shopController.ProcessedIapTransactionsChanged -= OnProcessedIapTransactionsChanged;
             }
 
             if (missionController != null)
@@ -222,6 +224,7 @@ namespace EcoGarden.Save
             }
 
             data.gold = gold;
+            CaptureShopInventory();
             SaveService.Save(data);
         }
 
@@ -233,6 +236,7 @@ namespace EcoGarden.Save
             }
 
             data.gem = gem;
+            CaptureShopInventory();
             SaveService.Save(data);
         }
 
@@ -281,6 +285,17 @@ namespace EcoGarden.Save
         }
 
         private void OnShopInventoryChanged()
+        {
+            if (isApplying)
+            {
+                return;
+            }
+
+            CaptureShopInventory();
+            SaveService.Save(data);
+        }
+
+        private void OnProcessedIapTransactionsChanged()
         {
             if (isApplying)
             {
@@ -421,6 +436,7 @@ namespace EcoGarden.Save
 
             data.purchasedShopProductIds = shopController.Inventory.GetPurchasedProductIds();
             data.ownedDecorationIds = shopController.Inventory.GetOwnedDecorationIds();
+            data.processedIapTransactionIds = shopController.GetProcessedIapTransactionIds();
         }
 
         private void CaptureMissionProgress()
@@ -540,6 +556,7 @@ namespace EcoGarden.Save
             }
 
             shopController.RestoreInventory(data.purchasedShopProductIds, data.ownedDecorationIds);
+            shopController.RestoreProcessedIapTransactionIds(data.processedIapTransactionIds);
         }
 
         private void ApplyMissionProgress()

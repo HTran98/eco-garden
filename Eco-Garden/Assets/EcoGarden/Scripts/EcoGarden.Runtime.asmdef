@@ -2,7 +2,8 @@
     "name": "EcoGarden.Runtime",
     "rootNamespace": "EcoGarden",
     "references": [
-        "Unity.InputSystem"
+        "Unity.InputSystem",
+        "Unity.Purchasing"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

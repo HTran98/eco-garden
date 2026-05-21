@@ -178,6 +178,8 @@ namespace EcoGarden.UI
             {
                 case ShopPurchaseStatus.Success:
                     return "Purchased";
+                case ShopPurchaseStatus.Pending:
+                    return "Purchase pending";
                 case ShopPurchaseStatus.AlreadyOwned:
                     return "Already owned";
                 case ShopPurchaseStatus.InsufficientCurrency:

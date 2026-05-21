@@ -24,12 +24,12 @@ References:
 | IAP product catalog rows | Implemented as shop products |
 | Runtime grant path | Implemented through `IapPurchaseService` and `RewardService` |
 | Duplicate transaction protection | Implemented in runtime service memory |
-| Persistent processed transaction ids | Not implemented yet |
-| Unity IAP package | Not installed |
-| Android store provider | Deferred |
+| Persistent processed transaction ids | Implemented in save data |
+| Unity IAP package | Installed as `com.unity.purchasing` 5.3.0 |
+| Android store provider | First-pass `UnityIapProvider` implemented |
 | Receipt validation | Deferred |
 
-`Eco-Garden/Packages/manifest.json` does not currently include `com.unity.purchasing`.
+`Eco-Garden/Packages/manifest.json` includes `com.unity.purchasing`; `packages-lock.json` resolves Unity IAP 5.3.0 and Unity Services Core 1.16.0.
 
 ## Required Store Product IDs
 
@@ -44,15 +44,29 @@ The shop catalog maps these store ids through `ShopPriceDefinition.iapProductId`
 
 1. Install Unity IAP in Unity Package Manager:
    `Window > Package Manager > Unity Registry > In-App Purchasing`.
-2. Confirm `Packages/manifest.json` contains `com.unity.purchasing`.
+2. Confirm `Packages/manifest.json` contains `com.unity.purchasing`. Completed.
 3. Link the Unity project to a Unity Project ID if Unity services, IAP analytics, or Google license key setup through the Editor is required.
 4. Add Google Play managed products with the product ids listed above.
-5. Add `UnityIapProvider` implementing `IIapProvider`.
-6. Register consumable products from the shop catalog at provider initialization.
-7. Map Unity purchase success, cancel, failure, and unavailable outcomes into `IapPurchaseStatus`.
-8. Persist processed transaction ids in save data before enabling real store purchases.
+5. Add `UnityIapProvider` implementing `IIapProvider`. Completed first pass.
+6. Register consumable products from the shop catalog at provider initialization. Current provider registers the two release product ids; next pass should derive them from catalog data or serialized release-scene config.
+7. Map Unity purchase success, cancel, failure, and unavailable outcomes into `IapPurchaseStatus`. First-pass mapping exists for pending, success, cancel, unavailable, duplicate, and generic failure.
+8. Persist processed transaction ids in save data before enabling real store purchases. Completed.
 9. Add receipt validation path before production release. Backend validation is preferred for production.
 10. Build Android and run a Google Play internal test purchase.
+
+## Product ID Verification
+
+Automated checks:
+
+- Unity menu: `Eco Garden/Validation/Audit IAP Catalog`
+- EditMode test: `EcoGarden.Tests.EditMode.IapCatalogAuditTests.ShopCatalog_UsesRequiredGooglePlayProductIds`
+
+The audit loads `Assets/EcoGarden/ScriptableObjects/Shop`, finds IAP shop items, and verifies:
+
+- Required ids exist: `eco_garden_gems_small`, `eco_garden_gems_medium`.
+- IAP ids are not empty.
+- IAP ids are documented release ids.
+- Duplicate IAP ids are reported.
 
 ## Build Check
 
@@ -69,12 +83,13 @@ Android store build check:
 | Check | Result |
 | --- | --- |
 | Existing Android build without Unity IAP | Previously confirmed manually in Unity Editor |
-| Android build with Unity IAP package | Not run because `com.unity.purchasing` is not installed |
+| Android build with Unity IAP package | Not run; package and assemblies compile, device/internal-track test remains required |
 
 ## Open Production Risks
 
 1. Google Play Billing compliance depends on the installed Unity IAP package version at release time.
 2. Receipt validation is currently not production-safe.
-3. Processed IAP transaction ids are not yet saved across app restarts.
+3. `UnityIapProvider` is not yet wired into the release scene; the vertical-slice scene still uses `MockIapProvider` for editor testing.
 4. Non-consumable restore purchase flow is not implemented.
 5. Store product ids must exactly match Google Play Console configuration before device testing.
+6. Android internal-track purchase, cancel/fail, restart persistence, and duplicate transaction checks are not yet run on device.

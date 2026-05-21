@@ -1,3 +1,4 @@
+using EcoGarden.Abilities;
 using EcoGarden.Board;
 using EcoGarden.Items;
 using EcoGarden.Progression;
@@ -45,6 +46,22 @@ namespace EcoGarden.Tests.EditMode
 
             Assert.IsTrue(merged);
             Assert.AreEqual(4, boardState.GetCell(new GridPosition(1, 0)).Item.Level);
+        }
+
+        [Test]
+        public void MagicWand_BlocksLockedOutputTierAndDoesNotConsume()
+        {
+            BoardState boardState = CreateBoardState(new PlantUnlockService());
+            boardState.TryPlaceItem(new GridPosition(0, 0), new BoardItem("lotus", 3, "lotus_lv03"));
+            AbilityInventory inventory = new AbilityInventory();
+            inventory.SetCount(AbilityKind.MagicWand, 1);
+            AbilityService service = new AbilityService(boardState, inventory);
+
+            bool upgraded = service.TryUseMagicWand(new GridPosition(0, 0));
+
+            Assert.IsFalse(upgraded);
+            Assert.AreEqual(1, inventory.GetCount(AbilityKind.MagicWand));
+            Assert.AreEqual(3, boardState.GetCell(new GridPosition(0, 0)).Item.Level);
         }
 
         private static BoardState CreateBoardState(PlantUnlockService unlockService)

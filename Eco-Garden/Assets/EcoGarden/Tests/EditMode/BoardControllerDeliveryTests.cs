@@ -69,12 +69,24 @@ namespace EcoGarden.Tests.EditMode
                 "two_sprouts",
                 "Two Sprouts",
                 new[] { new OrderRequirementDefinition("lotus", 2, 1) }));
+            int boardChangedCount = 0;
+            int deliveredCount = 0;
+            int progressChangedCount = 0;
+            int completedCount = 0;
+            boardController.BoardChanged += () => boardChangedCount++;
+            boardController.ItemDelivered += _ => deliveredCount++;
+            boardController.OrderProgressChanged += () => progressChangedCount++;
+            boardController.OrderCompleted += () => completedCount++;
 
             bool delivered = boardController.TryDeliverOrder(new GridPosition(3, 1), false);
 
             Assert.IsFalse(delivered);
             Assert.IsNotNull(boardController.BoardState.GetCell(new GridPosition(3, 1)).Item);
             Assert.AreEqual(0, boardController.ActiveOrderRequirements[0].SubmittedCount);
+            Assert.AreEqual(0, boardChangedCount);
+            Assert.AreEqual(0, deliveredCount);
+            Assert.AreEqual(0, progressChangedCount);
+            Assert.AreEqual(0, completedCount);
         }
 
         private void CreateBoardControllerWithOrder(NpcOrderDefinition order)

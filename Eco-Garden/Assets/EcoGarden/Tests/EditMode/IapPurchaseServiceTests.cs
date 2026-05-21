@@ -91,6 +91,64 @@ namespace EcoGarden.Tests.EditMode
         }
 
         [Test]
+        public void Purchase_SeededProcessedTransactionDoesNotGrantAfterRestart()
+        {
+            provider.SetFixedTransactionId("mock_tx_saved");
+            ShopItemDefinition item = CreateIapItem(
+                "shop_iap_gems_small",
+                true,
+                new RewardDefinition(new[] { new CurrencyReward(CurrencyKind.Gem, 80) }, null));
+            IapPurchaseService service = CreateService(new[] { "mock_tx_saved" });
+
+            IapProductPurchaseResult result = service.Purchase(item);
+
+            Assert.AreEqual(IapPurchaseStatus.DuplicateTransaction, result.Status);
+            Assert.AreEqual(0, economyController.Gem);
+            Object.DestroyImmediate(item);
+        }
+
+        [Test]
+        public void Purchase_SuccessExposesProcessedTransactionForSave()
+        {
+            provider.SetFixedTransactionId("mock_tx_to_save");
+            ShopItemDefinition item = CreateIapItem(
+                "shop_iap_gems_small",
+                true,
+                new RewardDefinition(new[] { new CurrencyReward(CurrencyKind.Gem, 80) }, null));
+            string capturedTransactionId = string.Empty;
+            IapPurchaseService service = CreateService(null, id => capturedTransactionId = id);
+
+            IapProductPurchaseResult result = service.Purchase(item);
+
+            Assert.AreEqual(IapPurchaseStatus.Success, result.Status);
+            CollectionAssert.Contains(service.GetProcessedTransactionIds(), "mock_tx_to_save");
+            Assert.AreEqual("mock_tx_to_save", capturedTransactionId);
+            Object.DestroyImmediate(item);
+        }
+
+        [Test]
+        public void CompletePurchase_PendingUnityResultGrantsOnce()
+        {
+            ShopItemDefinition item = CreateIapItem(
+                "shop_iap_gems_small",
+                true,
+                new RewardDefinition(new[] { new CurrencyReward(CurrencyKind.Gem, 80) }, null));
+            IapPurchaseService service = CreateService();
+
+            IapProductPurchaseResult first = service.CompletePurchase(
+                item,
+                new IapPurchaseResult(IapPurchaseStatus.Success, item.Price.IapProductId, "unity_tx_001"));
+            IapProductPurchaseResult duplicate = service.CompletePurchase(
+                item,
+                new IapPurchaseResult(IapPurchaseStatus.Success, item.Price.IapProductId, "unity_tx_001"));
+
+            Assert.AreEqual(IapPurchaseStatus.Success, first.Status);
+            Assert.AreEqual(IapPurchaseStatus.DuplicateTransaction, duplicate.Status);
+            Assert.AreEqual(80, economyController.Gem);
+            Object.DestroyImmediate(item);
+        }
+
+        [Test]
         public void Purchase_NonRepeatableProductMarksInventory()
         {
             ShopItemDefinition item = CreateIapItem(
@@ -109,14 +167,18 @@ namespace EcoGarden.Tests.EditMode
             Object.DestroyImmediate(item);
         }
 
-        private IapPurchaseService CreateService()
+        private IapPurchaseService CreateService(
+            string[] processedTransactionIds = null,
+            System.Action<string> processedTransactionAdded = null)
         {
             return new IapPurchaseService(
                 provider,
                 economyController,
                 boardController.AbilityInventory,
                 boardController.PlantUnlockService,
-                inventory);
+                inventory,
+                processedTransactionIds,
+                processedTransactionAdded);
         }
 
         private static ShopItemDefinition CreateIapItem(

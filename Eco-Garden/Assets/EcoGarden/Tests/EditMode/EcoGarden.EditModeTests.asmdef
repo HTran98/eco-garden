@@ -2,7 +2,8 @@
     "name": "EcoGarden.EditModeTests",
     "rootNamespace": "EcoGarden.Tests",
     "references": [
-        "EcoGarden.Runtime"
+        "EcoGarden.Runtime",
+        "EcoGarden.Editor"
     ],
     "includePlatforms": [
         "Editor"

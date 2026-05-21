@@ -4,6 +4,8 @@ using EcoGarden.Economy;
 using EcoGarden.IAP;
 using EcoGarden.Progression;
 using EcoGarden.Rewards;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace EcoGarden.Shop
@@ -14,10 +16,16 @@ namespace EcoGarden.Shop
         [SerializeField] private EconomyController economyController;
         [SerializeField] private BoardController boardController;
         [SerializeField] private MockIapProvider mockIapProvider;
+        [SerializeField] private MonoBehaviour iapProviderBehaviour;
 
         private ShopCatalogService catalog;
         private IapPurchaseService iapPurchaseService;
+        private IIapProvider activeIapProvider;
+        private IIapPurchaseEventSource activeIapEventSource;
+        private readonly HashSet<string> processedIapTransactionIds = new HashSet<string>();
 
+        public event Action ProcessedIapTransactionsChanged;
+        public event Action<ShopPurchaseResult> IapPurchaseCompleted;
         public ShopInventory Inventory { get; private set; } = new ShopInventory();
         public ShopCatalogService Catalog
         {
@@ -47,6 +55,35 @@ namespace EcoGarden.Shop
         public void RestoreInventory(string[] purchasedProductIds, string[] ownedDecorationIds)
         {
             Inventory.Restore(purchasedProductIds, ownedDecorationIds);
+        }
+
+        public void RestoreProcessedIapTransactionIds(string[] transactionIds)
+        {
+            processedIapTransactionIds.Clear();
+            if (transactionIds != null)
+            {
+                for (int i = 0; i < transactionIds.Length; i++)
+                {
+                    if (!string.IsNullOrWhiteSpace(transactionIds[i]))
+                    {
+                        processedIapTransactionIds.Add(transactionIds[i]);
+                    }
+                }
+            }
+
+            iapPurchaseService = null;
+        }
+
+        public string[] GetProcessedIapTransactionIds()
+        {
+            if (iapPurchaseService != null)
+            {
+                return iapPurchaseService.GetProcessedTransactionIds();
+            }
+
+            string[] result = new string[processedIapTransactionIds.Count];
+            processedIapTransactionIds.CopyTo(result);
+            return result;
         }
 
         public ShopPurchaseResult TryPurchase(string productId)
@@ -99,7 +136,8 @@ namespace EcoGarden.Shop
 
         private ShopPurchaseResult TryPurchaseIap(ShopItemDefinition item)
         {
-            if (mockIapProvider == null)
+            IIapProvider provider = ResolveIapProvider();
+            if (provider == null)
             {
                 return new ShopPurchaseResult(ShopPurchaseStatus.UnsupportedPurchaseKind, item);
             }
@@ -109,16 +147,91 @@ namespace EcoGarden.Shop
             if (iapPurchaseService == null)
             {
                 iapPurchaseService = new IapPurchaseService(
-                    mockIapProvider,
+                    provider,
                     economyController,
                     abilityInventory,
                     plantUnlockService,
-                    Inventory);
+                    Inventory,
+                    processedIapTransactionIds,
+                    OnProcessedIapTransactionAdded);
             }
 
             IapPurchaseService service = iapPurchaseService;
             IapProductPurchaseResult result = service.Purchase(item);
             return new ShopPurchaseResult(MapIapStatus(result.Status), item);
+        }
+
+        private IIapProvider ResolveIapProvider()
+        {
+            IIapProvider provider = iapProviderBehaviour as IIapProvider;
+            if (provider == null)
+            {
+                provider = mockIapProvider;
+            }
+
+            if (ReferenceEquals(provider, activeIapProvider))
+            {
+                return provider;
+            }
+
+            if (activeIapEventSource != null)
+            {
+                activeIapEventSource.PurchaseCompleted -= OnIapProviderPurchaseCompleted;
+            }
+
+            activeIapProvider = provider;
+            activeIapEventSource = provider as IIapPurchaseEventSource;
+            if (activeIapEventSource != null)
+            {
+                activeIapEventSource.PurchaseCompleted += OnIapProviderPurchaseCompleted;
+            }
+
+            iapPurchaseService = null;
+            return provider;
+        }
+
+        private void OnIapProviderPurchaseCompleted(IapPurchaseResult purchaseResult)
+        {
+            if (iapPurchaseService == null || string.IsNullOrWhiteSpace(purchaseResult.StoreProductId))
+            {
+                return;
+            }
+
+            ShopItemDefinition item = FindIapItemByStoreProductId(purchaseResult.StoreProductId);
+            if (item == null)
+            {
+                IapPurchaseCompleted?.Invoke(new ShopPurchaseResult(ShopPurchaseStatus.ProductNotFound, null));
+                return;
+            }
+
+            IapProductPurchaseResult result = iapPurchaseService.CompletePurchase(item, purchaseResult);
+            IapPurchaseCompleted?.Invoke(new ShopPurchaseResult(MapIapStatus(result.Status), item));
+        }
+
+        private ShopItemDefinition FindIapItemByStoreProductId(string storeProductId)
+        {
+            IReadOnlyList<ShopItemDefinition> items = Catalog.Items;
+            for (int i = 0; i < items.Count; i++)
+            {
+                ShopItemDefinition item = items[i];
+                if (item != null &&
+                    item.Price != null &&
+                    item.Price.PurchaseKind == ShopPurchaseKind.Iap &&
+                    item.Price.IapProductId == storeProductId)
+                {
+                    return item;
+                }
+            }
+
+            return null;
+        }
+
+        private void OnProcessedIapTransactionAdded(string transactionId)
+        {
+            if (!string.IsNullOrWhiteSpace(transactionId) && processedIapTransactionIds.Add(transactionId))
+            {
+                ProcessedIapTransactionsChanged?.Invoke();
+            }
         }
 
         private static ShopPurchaseStatus MapIapStatus(IapPurchaseStatus status)
@@ -127,6 +240,8 @@ namespace EcoGarden.Shop
             {
                 case IapPurchaseStatus.Success:
                     return ShopPurchaseStatus.Success;
+                case IapPurchaseStatus.Pending:
+                    return ShopPurchaseStatus.Pending;
                 case IapPurchaseStatus.Cancelled:
                     return ShopPurchaseStatus.IapCancelled;
                 case IapPurchaseStatus.DuplicateTransaction:
@@ -155,6 +270,15 @@ namespace EcoGarden.Shop
             if (mockIapProvider == null)
             {
                 mockIapProvider = FindAnyObjectByType<MockIapProvider>();
+            }
+
+            if (iapProviderBehaviour == null)
+            {
+                UnityIapProvider unityIapProvider = FindAnyObjectByType<UnityIapProvider>();
+                if (unityIapProvider != null)
+                {
+                    iapProviderBehaviour = unityIapProvider;
+                }
             }
         }
     }
