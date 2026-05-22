@@ -6,6 +6,7 @@ using EcoGarden.Economy;
 using EcoGarden.AI;
 using EcoGarden.IAP;
 using EcoGarden.Missions;
+using EcoGarden.Progression;
 using EcoGarden.Save;
 using EcoGarden.Shop;
 using UnityEditor;
@@ -18,7 +19,10 @@ namespace EcoGarden.Editor
     public static class EcoGardenSceneMenu
     {
         private const string Level15Path = "Assets/EcoGarden/ScriptableObjects/Levels/level_015_lotus_pond_corner.asset";
+        private const string Level1Path = "Assets/EcoGarden/ScriptableObjects/Levels/level_001_first_sprouts.asset";
+        private const string FirstReleaseLevelCatalogPath = "Assets/EcoGarden/ScriptableObjects/Levels/first_release_level_catalog.asset";
         private const string ScenePath = "Assets/EcoGarden/Scenes/EcoGarden_Level15_VerticalSlice.unity";
+        private const string FirstReleaseScenePath = "Assets/EcoGarden/Scenes/EcoGarden_FirstRelease_Progression.unity";
         private const string ShopFolder = "Assets/EcoGarden/ScriptableObjects/Shop";
         private const string MissionFolder = "Assets/EcoGarden/ScriptableObjects/Missions";
 
@@ -43,6 +47,7 @@ namespace EcoGarden.Editor
             GameObject gameRoot = new GameObject("GameRoot");
             gameRoot.AddComponent<GameBootstrapper>();
             gameRoot.AddComponent<LevelStateController>();
+            gameRoot.AddComponent<LevelPlaytestMetricsController>();
             gameRoot.AddComponent<EconomyController>();
             gameRoot.AddComponent<MockIapProvider>();
             ShopController shopController = gameRoot.AddComponent<ShopController>();
@@ -67,6 +72,90 @@ namespace EcoGarden.Editor
             EditorSceneManager.MarkSceneDirty(scene);
 
             Selection.activeGameObject = boardRoot;
+        }
+
+        [MenuItem("Eco Garden/Create Scene/First Release Progression")]
+        public static void CreateFirstReleaseProgressionScene()
+        {
+            EcoGardenAssetMenu.CreateFirstReleaseLevelSetData();
+            EcoGardenAssetMenu.CreateFirstReleaseLevelCatalogData();
+            EcoGardenAssetMenu.CreateShopCatalogData();
+            EcoGardenAssetMenu.CreateMissionData();
+
+            Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            scene.name = "EcoGarden_FirstRelease_Progression";
+
+            CreateCamera();
+
+            GameObject boardRoot = new GameObject("BoardRoot");
+            boardRoot.transform.position = new Vector3(0f, -0.45f, 0f);
+            boardRoot.AddComponent<BoardView>();
+            BoardController boardController = boardRoot.AddComponent<BoardController>();
+            boardController.SetLevelDefinition(AssetDatabase.LoadAssetAtPath<LevelDefinition>(Level1Path));
+
+            GameObject gameRoot = new GameObject("GameRoot");
+            gameRoot.AddComponent<GameBootstrapper>();
+            gameRoot.AddComponent<LevelStateController>();
+            gameRoot.AddComponent<LevelPlaytestMetricsController>();
+            gameRoot.AddComponent<EconomyController>();
+            gameRoot.AddComponent<MockIapProvider>();
+
+            LevelCatalogController levelCatalogController = gameRoot.AddComponent<LevelCatalogController>();
+            levelCatalogController.SetBoardController(boardController);
+            levelCatalogController.SetCatalog(AssetDatabase.LoadAssetAtPath<LevelCatalogDefinition>(FirstReleaseLevelCatalogPath));
+
+            ShopController shopController = gameRoot.AddComponent<ShopController>();
+            shopController.SetCatalogItems(LoadShopCatalogItems());
+            MissionController missionController = gameRoot.AddComponent<MissionController>();
+            missionController.SetMissionDefinitions(LoadMissionDefinitions());
+            gameRoot.AddComponent<SaveController>();
+
+            GameObject npcObject = new GameObject("CustomerNpc");
+            NpcMovementController npc = npcObject.AddComponent<NpcMovementController>();
+            npc.SetBoardController(boardController);
+
+            CreateButterflies(boardRoot.transform.position);
+
+            GameObject inputRoot = new GameObject("InputRoot");
+            inputRoot.AddComponent<BoardInputController>();
+
+            EcoGardenUiMenu.CreateGameHudSkeleton();
+            boardController.LoadLevel();
+
+            EditorSceneManager.SaveScene(scene, FirstReleaseScenePath);
+            EditorSceneManager.MarkSceneDirty(scene);
+
+            Selection.activeGameObject = gameRoot;
+        }
+
+        [MenuItem("Eco Garden/Fix Scene/Add First Release Level Loader")]
+        public static void AddFirstReleaseLevelLoaderToCurrentScene()
+        {
+            EcoGardenAssetMenu.CreateFirstReleaseLevelCatalogData();
+
+            GameObject gameRoot = GameObject.Find("GameRoot");
+            if (gameRoot == null)
+            {
+                gameRoot = new GameObject("GameRoot");
+            }
+
+            LevelCatalogController levelCatalogController = gameRoot.GetComponent<LevelCatalogController>();
+            if (levelCatalogController == null)
+            {
+                levelCatalogController = gameRoot.AddComponent<LevelCatalogController>();
+            }
+
+            levelCatalogController.SetBoardController(Object.FindAnyObjectByType<BoardController>());
+            levelCatalogController.SetCatalog(AssetDatabase.LoadAssetAtPath<LevelCatalogDefinition>(FirstReleaseLevelCatalogPath));
+
+            if (gameRoot.GetComponent<LevelPlaytestMetricsController>() == null)
+            {
+                gameRoot.AddComponent<LevelPlaytestMetricsController>();
+            }
+
+            EditorUtility.SetDirty(gameRoot);
+            EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+            Selection.activeGameObject = gameRoot;
         }
 
         [MenuItem("Eco Garden/Fix Scene/Add Mission Controller")]
