@@ -16,6 +16,7 @@ namespace EcoGarden.Editor
         private const string ItemFolder = "Assets/EcoGarden/ScriptableObjects/Items";
         private const string ProducerFolder = "Assets/EcoGarden/ScriptableObjects/Producers";
         private const string LevelFolder = "Assets/EcoGarden/ScriptableObjects/Levels";
+        private const string FirstReleaseLevelCatalogPath = LevelFolder + "/first_release_level_catalog.asset";
         private const string ShopFolder = "Assets/EcoGarden/ScriptableObjects/Shop";
         private const string MissionFolder = "Assets/EcoGarden/ScriptableObjects/Missions";
 
@@ -97,6 +98,336 @@ namespace EcoGarden.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             Selection.activeObject = level;
+        }
+
+        [MenuItem("Eco Garden/Create Default Data/First Release Level Set")]
+        public static void CreateFirstReleaseLevelSetData()
+        {
+            EnsureFolder("Assets/EcoGarden");
+            EnsureFolder("Assets/EcoGarden/ScriptableObjects");
+            EnsureFolder(ItemFolder);
+            EnsureFolder(ProducerFolder);
+            EnsureFolder(LevelFolder);
+
+            ItemDefinition lv5 = CreateOrLoadItem(
+                "item_lotus_lv05_blooming_lotus",
+                "lotus",
+                5,
+                "Blooming Lotus",
+                50,
+                null);
+            ItemDefinition lv4 = CreateOrLoadItem("item_lotus_lv04_flower_bud", "lotus", 4, "Flower Bud", 20, lv5);
+            ItemDefinition lv3 = CreateOrLoadItem("item_lotus_lv03_baby_leaf", "lotus", 3, "Baby Leaf", 8, lv4);
+            ItemDefinition lv2 = CreateOrLoadItem("item_lotus_lv02_sprout", "lotus", 2, "Sprout", 3, lv3);
+            ItemDefinition lv1 = CreateOrLoadItem("item_lotus_lv01_dried_seed", "lotus", 1, "Dried Seed", 1, lv2);
+            List<ItemDefinition> lotusItems = new List<ItemDefinition> { lv1, lv2, lv3, lv4, lv5 };
+            ProducerDefinition producer = CreateOrLoadProducer("producer_lotus_seed_01", lv1);
+
+            CreateOrUpdateReleaseLevel(
+                1,
+                "First Sprouts",
+                "level_001_first_sprouts.asset",
+                new[]
+                {
+                    "--------",
+                    "--PPPP--",
+                    "--PPPP--",
+                    "--PSPP--",
+                    "--PPPP--",
+                    "--PPPP--",
+                    "--------",
+                    "--------"
+                },
+                producer,
+                lotusItems,
+                CreateOrder("lotus_lv02_x1", "Sprout", new[] { new OrderRequirementDefinition("lotus", 2, 1) }, 25),
+                CreateAbilities((AbilityKind.Shovel, 1)),
+                240f,
+                DifficultyKind.Easy,
+                1f,
+                1f,
+                "Teach producer tap, drag, and merge.");
+
+            CreateOrUpdateReleaseLevel(
+                2,
+                "Tidy Pond Edge",
+                "level_002_tidy_pond_edge.asset",
+                new[]
+                {
+                    "--------",
+                    "--PPPP--",
+                    "--P1PP--",
+                    "--PSPP--",
+                    "--PPWP--",
+                    "--PPPP--",
+                    "--------",
+                    "--------"
+                },
+                producer,
+                lotusItems,
+                CreateOrder("lotus_lv02_x2", "Sprouts", new[] { new OrderRequirementDefinition("lotus", 2, 2) }, 35),
+                CreateAbilities((AbilityKind.Shovel, 1)),
+                230f,
+                DifficultyKind.Easy,
+                1f,
+                1.1f,
+                "Introduce selling spare items and light cleanup.");
+
+            CreateOrUpdateReleaseLevel(
+                3,
+                "Young Leaves",
+                "level_003_young_leaves.asset",
+                new[]
+                {
+                    "--------",
+                    "-PPPPP--",
+                    "-P1PPP--",
+                    "-PPSPP--",
+                    "-PPP1P--",
+                    "-PPPPP--",
+                    "--------",
+                    "--------"
+                },
+                producer,
+                lotusItems,
+                CreateOrder("lotus_lv03_x1", "Baby Leaf", new[] { new OrderRequirementDefinition("lotus", 3, 1) }, 45),
+                CreateAbilities((AbilityKind.MagicWand, 1)),
+                220f,
+                DifficultyKind.Easy,
+                1.05f,
+                1.2f,
+                "Teach reaching Lv3 and optional booster targeting.");
+
+            CreateOrUpdateReleaseLevel(
+                4,
+                "Weed Patch",
+                "level_004_weed_patch.asset",
+                new[]
+                {
+                    "---LL---",
+                    "--PPPP--",
+                    "-PWPPW--",
+                    "-PPSPP--",
+                    "-PWPPW--",
+                    "--PPPP--",
+                    "---LL---",
+                    "--------"
+                },
+                producer,
+                lotusItems,
+                CreateOrder("lotus_lv03_x2", "Baby Leaves", new[] { new OrderRequirementDefinition("lotus", 3, 2) }, 60),
+                CreateAbilities((AbilityKind.Shovel, 2)),
+                210f,
+                DifficultyKind.Normal,
+                1.15f,
+                1.35f,
+                "Add moderate obstacle pressure.");
+
+            CreateOrUpdateReleaseLevel(
+                5,
+                "Visitor Request",
+                "level_005_visitor_request.asset",
+                new[]
+                {
+                    "--LLLL--",
+                    "-PPPPPP-",
+                    "-P1WPPP-",
+                    "-PPSPPP-",
+                    "-PPPW1P-",
+                    "-PPPPPP-",
+                    "--LLLL--",
+                    "--------"
+                },
+                producer,
+                lotusItems,
+                CreateOrder(
+                    "lotus_mixed_lv02_lv03",
+                    "Sprout and Baby Leaf",
+                    new[]
+                    {
+                        new OrderRequirementDefinition("lotus", 2, 1),
+                        new OrderRequirementDefinition("lotus", 3, 1)
+                    },
+                    70),
+                CreateAbilities((AbilityKind.SortingMagnet, 1)),
+                210f,
+                DifficultyKind.Normal,
+                1.2f,
+                1.45f,
+                "Introduce multi-requirement order flow.");
+
+            CreateOrUpdateReleaseLevel(
+                6,
+                "Narrow Channels",
+                "level_006_narrow_channels.asset",
+                new[]
+                {
+                    "LL----LL",
+                    "L-PPPP-L",
+                    "--PWWP--",
+                    "--PSPP--",
+                    "--PPWW--",
+                    "L-PPPP-L",
+                    "LL----LL",
+                    "--------"
+                },
+                producer,
+                lotusItems,
+                CreateOrder("lotus_lv03_x2_narrow", "Baby Leaves", new[] { new OrderRequirementDefinition("lotus", 3, 2) }, 80),
+                CreateAbilities((AbilityKind.Shovel, 1), (AbilityKind.MagicWand, 1)),
+                200f,
+                DifficultyKind.Normal,
+                1.3f,
+                1.55f,
+                "Teach planning with fewer central cells.");
+
+            CreateOrUpdateReleaseLevel(
+                7,
+                "Bud Unlock",
+                "level_007_bud_unlock.asset",
+                new[]
+                {
+                    "LL----LL",
+                    "L-PPPP-L",
+                    "--W11W--",
+                    "--PSPP--",
+                    "--PPPP--",
+                    "--WPPW--",
+                    "L-PPPP-L",
+                    "LL----LL"
+                },
+                producer,
+                lotusItems,
+                CreateOrder("lotus_lv04_x1_intro", "Flower Bud", new[] { new OrderRequirementDefinition("lotus", 4, 1) }, 100),
+                CreateAbilities(),
+                200f,
+                DifficultyKind.Normal,
+                1.35f,
+                1.75f,
+                "First Lv4 order with a level-scoped tier unlock.",
+                CreateTemporaryUnlocks(4));
+
+            CreateOrUpdateReleaseLevel(
+                8,
+                "Busy Crossing",
+                "level_008_busy_crossing.asset",
+                new[]
+                {
+                    "LL----LL",
+                    "L-PPPP-L",
+                    "--W2PW--",
+                    "--PSPP--",
+                    "--PPW2--",
+                    "--WPPP--",
+                    "L-PPPP-L",
+                    "LL----LL"
+                },
+                producer,
+                lotusItems,
+                CreateOrder(
+                    "lotus_mixed_lv03_lv04",
+                    "Baby Leaves and Bud",
+                    new[]
+                    {
+                        new OrderRequirementDefinition("lotus", 3, 2),
+                        new OrderRequirementDefinition("lotus", 4, 1)
+                    },
+                    125),
+                CreateAbilities((AbilityKind.SortingMagnet, 1)),
+                190f,
+                DifficultyKind.Hard,
+                1.5f,
+                2f,
+                "Mix low and high tier deliveries.",
+                CreateTemporaryUnlocks(4));
+
+            CreateOrUpdateReleaseLevel(
+                9,
+                "Bloom Prep",
+                "level_009_bloom_prep.asset",
+                new[]
+                {
+                    "LL----LL",
+                    "L--PP--L",
+                    "--W22W--",
+                    "--PSPP--",
+                    "--PPPW--",
+                    "--WPPP--",
+                    "L--PP--L",
+                    "LL----LL"
+                },
+                producer,
+                lotusItems,
+                CreateOrder(
+                    "lotus_lv04_x2",
+                    "Flower Buds",
+                    new[] { new OrderRequirementDefinition("lotus", 4, 2) },
+                    new RewardDefinition(
+                        new[] { new CurrencyReward(CurrencyKind.Gold, 145) },
+                        new[] { new AbilityReward(AbilityKind.Shovel, 1) })),
+                CreateAbilities(),
+                185f,
+                DifficultyKind.Hard,
+                1.6f,
+                2.15f,
+                "High-tier quantity pressure.",
+                CreateTemporaryUnlocks(4));
+
+            CreateOrUpdateReleaseLevel(
+                10,
+                "First Bloom",
+                "level_010_first_bloom.asset",
+                new[]
+                {
+                    "LL----LL",
+                    "L--21--L",
+                    "--W--W--",
+                    "S-PPPP--",
+                    "--PPPP--",
+                    "--W--W--",
+                    "L--11--L",
+                    "LL----LL"
+                },
+                producer,
+                lotusItems,
+                CreateOrder(
+                    "lotus_lv05_x1_first_bloom",
+                    "Blooming Lotus",
+                    new[] { new OrderRequirementDefinition("lotus", 5, 1) },
+                    new RewardDefinition(new[]
+                    {
+                        new CurrencyReward(CurrencyKind.Gold, 180),
+                        new CurrencyReward(CurrencyKind.Gem, 3)
+                    }, null)),
+                CreateAbilities((AbilityKind.Shovel, 2), (AbilityKind.MagicWand, 1)),
+                180f,
+                DifficultyKind.Hard,
+                1.7f,
+                2.4f,
+                "First Lv5 milestone and premium-currency teaser.",
+                CreateTemporaryUnlocks(4, 5));
+
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+        }
+
+        [MenuItem("Eco Garden/Create Default Data/First Release Level Catalog")]
+        public static void CreateFirstReleaseLevelCatalogData()
+        {
+            EnsureFolder("Assets/EcoGarden");
+            EnsureFolder("Assets/EcoGarden/ScriptableObjects");
+            EnsureFolder(LevelFolder);
+
+            LevelCatalogDefinition catalog = CreateOrLoadAsset<LevelCatalogDefinition>(FirstReleaseLevelCatalogPath);
+            catalog.EditorSetValues(
+                "first_release_levels",
+                "First Release Levels",
+                LoadFirstReleaseLevels());
+
+            EditorUtility.SetDirty(catalog);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            Selection.activeObject = catalog;
         }
 
         [MenuItem("Eco Garden/Create Default Data/Shop Catalog")]
@@ -306,6 +637,139 @@ namespace EcoGarden.Editor
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
+        }
+
+        private static void CreateOrUpdateReleaseLevel(
+            int levelId,
+            string levelName,
+            string fileName,
+            string[] rows,
+            ProducerDefinition producer,
+            List<ItemDefinition> items,
+            NpcOrderDefinition order,
+            List<AbilityCountDefinition> abilities,
+            float timerSeconds,
+            DifficultyKind difficultyKind,
+            float timerPressureMultiplier,
+            float rewardMultiplier,
+            string notes,
+            List<PlantTierUnlockDefinition> temporaryUnlocks = null)
+        {
+            LevelDefinition level = CreateOrLoadAsset<LevelDefinition>(LevelFolder + "/" + fileName);
+            level.EditorSetValues(
+                levelId,
+                levelName,
+                8,
+                8,
+                rows,
+                producer,
+                new List<ItemDefinition>(items),
+                order,
+                abilities,
+                timerSeconds,
+                "pastel_zen",
+                temporaryUnlocks,
+                new DifficultyDefinition(
+                    difficultyKind,
+                    CountToken(rows, 'W'),
+                    CountToken(rows, 'L'),
+                    0,
+                    order != null ? order.ComplexityScore : 0,
+                    timerPressureMultiplier,
+                    rewardMultiplier,
+                    notes));
+            EditorUtility.SetDirty(level);
+        }
+
+        private static List<LevelDefinition> LoadFirstReleaseLevels()
+        {
+            List<LevelDefinition> levels = new List<LevelDefinition>();
+            string[] fileNames =
+            {
+                "level_001_first_sprouts.asset",
+                "level_002_tidy_pond_edge.asset",
+                "level_003_young_leaves.asset",
+                "level_004_weed_patch.asset",
+                "level_005_visitor_request.asset",
+                "level_006_narrow_channels.asset",
+                "level_007_bud_unlock.asset",
+                "level_008_busy_crossing.asset",
+                "level_009_bloom_prep.asset",
+                "level_010_first_bloom.asset"
+            };
+
+            for (int i = 0; i < fileNames.Length; i++)
+            {
+                LevelDefinition level = AssetDatabase.LoadAssetAtPath<LevelDefinition>(LevelFolder + "/" + fileNames[i]);
+                if (level != null)
+                {
+                    levels.Add(level);
+                }
+            }
+
+            return levels;
+        }
+
+        private static NpcOrderDefinition CreateOrder(
+            string orderId,
+            string displayName,
+            OrderRequirementDefinition[] requirements,
+            int goldReward)
+        {
+            return CreateOrder(
+                orderId,
+                displayName,
+                requirements,
+                new RewardDefinition(new[] { new CurrencyReward(CurrencyKind.Gold, goldReward) }, null));
+        }
+
+        private static NpcOrderDefinition CreateOrder(
+            string orderId,
+            string displayName,
+            OrderRequirementDefinition[] requirements,
+            RewardDefinition reward)
+        {
+            return new NpcOrderDefinition(orderId, displayName, requirements, reward);
+        }
+
+        private static List<AbilityCountDefinition> CreateAbilities(params (AbilityKind abilityKind, int count)[] abilities)
+        {
+            List<AbilityCountDefinition> result = new List<AbilityCountDefinition>();
+            for (int i = 0; i < abilities.Length; i++)
+            {
+                result.Add(new AbilityCountDefinition(abilities[i].abilityKind, abilities[i].count));
+            }
+
+            return result;
+        }
+
+        private static List<PlantTierUnlockDefinition> CreateTemporaryUnlocks(params int[] tiers)
+        {
+            List<PlantTierUnlockDefinition> result = new List<PlantTierUnlockDefinition>();
+            for (int i = 0; i < tiers.Length; i++)
+            {
+                result.Add(new PlantTierUnlockDefinition("lotus", tiers[i]));
+            }
+
+            return result;
+        }
+
+        private static int CountToken(string[] rows, char token)
+        {
+            int count = 0;
+            for (int y = 0; y < rows.Length; y++)
+            {
+                string row = rows[y];
+                for (int x = 0; x < row.Length; x++)
+                {
+                    if (row[x] == token)
+                    {
+                        count++;
+                    }
+                }
+            }
+
+            return count;
         }
 
         private static ItemDefinition CreateOrLoadItem(

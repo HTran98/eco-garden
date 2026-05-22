@@ -126,6 +126,16 @@ namespace EcoGarden.Save
             CaptureOrderProgress();
         }
 
+        private void UnlockNextLevelForCompletedOrder()
+        {
+            if (data == null || boardController == null || boardController.LevelDefinition == null)
+            {
+                return;
+            }
+
+            LevelProgressionService.TryUnlockNextLevel(data, boardController.LevelDefinition);
+        }
+
         private void Subscribe()
         {
             if (isSubscribed)
@@ -270,6 +280,7 @@ namespace EcoGarden.Save
                 return;
             }
 
+            UnlockNextLevelForCompletedOrder();
             SaveCurrentState();
         }
 

@@ -18,6 +18,8 @@ namespace EcoGarden.UI
             SkinImage("ObjectivePanel", PlaceholderSpriteFactory.HudPanelSprite, Color.white);
             SkinImage("AbilityBar", PlaceholderSpriteFactory.HudPanelSprite, Color.white);
             SkinImage("ResultPanel", PlaceholderSpriteFactory.HudPanelSprite, new Color(0.18f, 0.22f, 0.26f, 0.96f));
+            SkinImage("LevelPanel", PlaceholderSpriteFactory.HudPanelSprite, new Color(0.12f, 0.16f, 0.18f, 0.97f));
+            SkinImage("LevelViewport", PlaceholderSpriteFactory.HudPanelSprite, new Color(0.06f, 0.08f, 0.10f, 0.55f));
             SkinImage("ShopPanel", PlaceholderSpriteFactory.ShopPanelSprite, Color.white);
             SkinImage("ShopProductViewport", PlaceholderSpriteFactory.HudPanelSprite, new Color(0.06f, 0.09f, 0.10f, 0.70f));
             SkinImage("MissionPanel", PlaceholderSpriteFactory.HudPanelSprite, new Color(0.12f, 0.16f, 0.18f, 0.97f));
@@ -27,6 +29,8 @@ namespace EcoGarden.UI
             SkinDropZone("SellBasket", ExternalDropZoneKind.SellBasket);
 
             SkinButton("PauseButton");
+            SkinButton("LevelButton");
+            SkinButton("LevelCloseButton");
             SkinButton("MissionButton");
             SkinButton("MissionCloseButton");
             SkinButton("MissionTrackerOpenButton");
@@ -38,6 +42,7 @@ namespace EcoGarden.UI
             SkinButton("ShopCategoryCurrencyButton");
             SkinButton("ShopCategoryBundleButton");
             SkinButton("RestartButton");
+            SkinButton("NextLevelButton");
             SkinButton("ShovelButton");
             SkinButton("MagicWandButton");
             SkinButton("SortingMagnetButton");

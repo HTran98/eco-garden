@@ -73,16 +73,17 @@ namespace EcoGarden.UI
         {
             float sidePadding = Mathf.Max(minimumSidePadding, referenceResolution.x * 0.035f);
 
-            SetStretchTop("TopBar", 0f, 92f);
-            SetStretchTop("ObjectivePanel", sidePadding, 172f, -80f, 78f);
-            SetStretchBottom("AbilityBar", sidePadding, 112f, -80f, 142f);
-            SetAnchoredBox("DeliveryDropZone", new Vector2(0.04f, 0.165f), new Vector2(0.29f, 0.305f));
-            SetAnchoredBox("SellBasket", new Vector2(0.71f, 0.165f), new Vector2(0.96f, 0.305f));
-            SetAnchoredBox("FeedbackText", new Vector2(0.04f, 0.43f), new Vector2(0.96f, 0.53f));
-            SetAnchoredBox("ResultPanel", new Vector2(0.10f, 0.35f), new Vector2(0.90f, 0.65f));
-            SetAnchoredBox("ShopPanel", new Vector2(0.06f, 0.19f), new Vector2(0.94f, 0.82f));
-            SetAnchoredBox("MissionPanel", new Vector2(0.06f, 0.19f), new Vector2(0.94f, 0.82f));
-            SetAnchoredBox("MissionTrackerPanel", new Vector2(0.70f, 0.31f), new Vector2(0.96f, 0.72f));
+            SetStretchTop("TopBar", 0f, AndroidHudLayoutMetrics.TopBarHeight);
+            SetStretchTop("ObjectivePanel", sidePadding, AndroidHudLayoutMetrics.ObjectiveTopOffset, -80f, AndroidHudLayoutMetrics.ObjectiveHeight);
+            SetStretchBottom("AbilityBar", sidePadding, AndroidHudLayoutMetrics.AbilityBottomOffset, -80f, AndroidHudLayoutMetrics.AbilityHeight);
+            SetAnchoredBox("DeliveryDropZone", AndroidHudLayoutMetrics.DeliveryAnchorMin, AndroidHudLayoutMetrics.DeliveryAnchorMax);
+            SetAnchoredBox("SellBasket", AndroidHudLayoutMetrics.SellAnchorMin, AndroidHudLayoutMetrics.SellAnchorMax);
+            SetAnchoredBox("FeedbackText", AndroidHudLayoutMetrics.FeedbackAnchorMin, AndroidHudLayoutMetrics.FeedbackAnchorMax);
+            SetAnchoredBox("ResultPanel", AndroidHudLayoutMetrics.ResultAnchorMin, AndroidHudLayoutMetrics.ResultAnchorMax);
+            SetAnchoredBox("LevelPanel", AndroidHudLayoutMetrics.PanelAnchorMin, AndroidHudLayoutMetrics.PanelAnchorMax);
+            SetAnchoredBox("ShopPanel", AndroidHudLayoutMetrics.PanelAnchorMin, AndroidHudLayoutMetrics.PanelAnchorMax);
+            SetAnchoredBox("MissionPanel", AndroidHudLayoutMetrics.PanelAnchorMin, AndroidHudLayoutMetrics.PanelAnchorMax);
+            SetAnchoredBox("MissionTrackerPanel", AndroidHudLayoutMetrics.MissionTrackerAnchorMin, AndroidHudLayoutMetrics.MissionTrackerAnchorMax);
         }
 
         private void ApplyTextRules()

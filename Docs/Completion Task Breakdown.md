@@ -196,6 +196,26 @@ Reason: save compatibility is the dependency that protects shop, missions, unloc
 - Added first-pass `B3` outcome mapping for pending, success, cancel, unavailable, duplicate, and generic failure.
 - Added `B4 - Product ID Verification` automation through `Eco Garden/Validation/Audit IAP Catalog` and `IapCatalogAuditTests`, checking the shop catalog against `eco_garden_gems_small` and `eco_garden_gems_medium`.
 - Added `C1 - Portrait Layout Matrix` in `Docs/Android Portrait Layout Matrix.md` with target profiles and HUD/panel/touch pass criteria.
+- Started `C2 - HUD Overlap Fix Pass` by centralizing Android HUD anchors in `AndroidHudLayoutMetrics`, lowering the AbilityBar, moving Delivery/Sell above the bottom controls, aligning runtime/editor fallback UI to the same anchors, and adding portrait overlap tests.
+- Started `C3 - Shop UI Mobile Pass` by centralizing shop row metrics and adding small-portrait width coverage for category tabs, product text, price badges, and Buy/Owned buttons.
+- Started `C4 - Mission UI Mobile Pass` by widening the compact tracker on small portrait screens, limiting it to two active rows, and adding metric coverage for tracker/action button width.
+- Started `C5 - Touch Parity Pass` with metric coverage that Delivery/Sell drop zones stay large enough and separated enough for drag/drop on portrait profiles.
+- Started `D1 - First Release Level Set Spec` in `Docs/First Release Level Set Spec.md`, defining Levels 1-10 with board rows, timers, order requirements, rewards, unlock assumptions, and balance targets.
+- Started `D2 - Level Data Asset Creation` by adding `Eco Garden/Create Default Data/First Release Level Set`, an editor generator that creates `level_001_first_sprouts.asset` through `level_010_first_bloom.asset` from the D1 spec.
+- Verified `EcoGarden.Editor.csproj` builds after the D2 generator change; Unity batchmode asset generation was blocked locally by Unity Licensing Client disconnects before the execute method ran.
+- Generated D2 assets from Unity Editor: `level_001_first_sprouts.asset` through `level_010_first_bloom.asset` plus `.meta` files now exist under `Assets/EcoGarden/ScriptableObjects/Levels`.
+- Verified runtime, editor, and EditMode test assemblies build after the D2 assets were created.
+- Added first-pass level progression rule: completing the active level order unlocks `currentLevelId + 1` in save data without lowering an already higher `highestUnlockedLevel`.
+- Started D3 support work by adding `first_release_level_catalog.asset`, `LevelCatalogDefinition`, and `LevelCatalogService` so the first release level set has a single ordered source for future level selection/loading.
+- Added `LevelCatalogController` and `Eco Garden/Fix Scene/Add First Release Level Loader` so a scene can assign the highest unlocked first-release level from save before `BoardController` loads.
+- Completed first-pass finite level flow: `LevelStateController` now completes the level on order completion, generated result panels include Restart/Next buttons, and Next loads the next unlocked catalog level in-scene.
+- Hardened Next Level against event ordering by reapplying the unlock rule before selecting the next level and testing Level 1 to Level 2 catalog progression.
+- Added `Eco Garden/Create Scene/First Release Progression` and `Eco Garden/Validation/Audit First Release Scene` editor tools for generating and validating a playable Level 1-10 progression scene.
+- Unity batchmode did not generate the first-release scene locally because the editor command returned without producing a log or asset; run the scene generator menu item from Unity Editor.
+- Added Level Select UI to generated HUDs so unlocked catalog levels can be replayed/selected from a top-bar Level button; locked levels remain visible but disabled.
+- Hardened Level Select integration by hiding the compact mission tracker while the Level panel is open and making first-release scene audit require the new Level Select UI objects.
+- Started `D4 - Economy Balance Sheet` in `Docs/Economy Balance Sheet.md`, capturing Level 1-10 order rewards, mission rewards, shop sinks, IAP Gem grants, balance risks, and D5 playtest metrics.
+- Started `D5 - Difficulty Validation Playtest` support by adding `LevelPlaytestMetricsController` and making first-release scene audit require it; completion/failure logs now capture level id/name, result, remaining time, Gold/Gem, and booster counts.
 - Verified runtime, editor, and EditMode test assemblies build after Unity IAP import.
 - Re-ran `A6` scene audit after Unity IAP import; third batchmode run passed after Unity finished package/domain refresh.
 - Remaining Milestone A work: run the manual `A1` regression checklist in Play Mode.

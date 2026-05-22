@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6ccc4d42fb87ec46bcebfd2e9376f61, type: 3}
+  m_Name: level_010_first_bloom
+  m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Config.LevelDefinition
+  levelId: 10
+  levelName: First Bloom
+  width: 8
+  height: 8
+  rowsTopToBottom:
+  - LL----LL
+  - L--21--L
+  - --W--W--
+  - S-PPPP--
+  - --PPPP--
+  - --W--W--
+  - L--11--L
+  - LL----LL
+  defaultProducer: {fileID: 11400000, guid: c572022a571899f41b8c872826862242, type: 2}
+  itemDefinitions:
+  - {fileID: 11400000, guid: ff538eddbdbd6af42a5d8603a52c658a, type: 2}
+  - {fileID: 11400000, guid: 3b84a10b1a1c2804f9bc19d91fde97ec, type: 2}
+  - {fileID: 11400000, guid: 0f255671f7c8d934284506f0de51c546, type: 2}
+  - {fileID: 11400000, guid: bdd00989e51c1884aa2ebcf7f7c95fcb, type: 2}
+  - {fileID: 11400000, guid: 627a4203074a8564cb1e4fbb70b44ad2, type: 2}
+  npcOrder:
+    orderId: lotus_lv05_x1_first_bloom
+    displayName: Blooming Lotus
+    requirements:
+    - familyId: lotus
+      level: 5
+      quantity: 1
+    reward:
+      currencies:
+      - currencyKind: 0
+        amount: 180
+      - currencyKind: 1
+        amount: 3
+      abilities: []
+      decorationIds: []
+      plantTierUnlocks: []
+    familyId: lotus
+    level: 5
+    quantity: 1
+  startingAbilities:
+  - abilityKind: 0
+    count: 2
+  - abilityKind: 1
+    count: 1
+  temporaryAllowedPlantTiers:
+  - familyId: lotus
+    tier: 4
+  - familyId: lotus
+    tier: 5
+  difficulty:
+    difficultyKind: 2
+    obstacleCount: 4
+    lockedCellCount: 12
+    temporaryLockCount: 0
+    orderComplexityScore: 5
+    timerPressureMultiplier: 1.7
+    rewardMultiplier: 2.4
+    notes: First Lv5 milestone and premium-currency teaser.
+  temporaryLocks: []
+  timerSeconds: 180
+  themeId: pastel_zen

@@ -768,8 +768,8 @@ namespace EcoGarden.Input
             deliveryObject.transform.SetParent(parent, false);
 
             RectTransform rect = deliveryObject.GetComponent<RectTransform>();
-            rect.anchorMin = new Vector2(0.04f, 0.16f);
-            rect.anchorMax = new Vector2(0.28f, 0.29f);
+            rect.anchorMin = UI.AndroidHudLayoutMetrics.DeliveryAnchorMin;
+            rect.anchorMax = UI.AndroidHudLayoutMetrics.DeliveryAnchorMax;
             rect.pivot = new Vector2(0.5f, 0.5f);
             rect.anchoredPosition = Vector2.zero;
             rect.sizeDelta = Vector2.zero;

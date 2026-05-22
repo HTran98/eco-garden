@@ -1,5 +1,8 @@
 using EcoGarden.Board;
 using EcoGarden.Config;
+using EcoGarden.Progression;
+using EcoGarden.Save;
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -16,12 +19,18 @@ namespace EcoGarden.Level
         [SerializeField] private Text resultTitleText;
         [SerializeField] private Text resultMessageText;
         [SerializeField] private Button restartButton;
+        [SerializeField] private Button nextLevelButton;
         [SerializeField] private Button pauseButton;
+        [SerializeField] private LevelCatalogController levelCatalogController;
 
         private float remainingSeconds;
 
         public LevelPlayState State { get; private set; } = LevelPlayState.NotStarted;
         public bool IsPlaying { get { return State == LevelPlayState.Playing; } }
+        public float RemainingSeconds { get { return remainingSeconds; } }
+
+        public event Action LevelCompleted;
+        public event Action LevelFailed;
 
         private void Awake()
         {
@@ -32,6 +41,7 @@ namespace EcoGarden.Level
 
             AutoWireReferences();
             WireRestartButton();
+            WireNextLevelButton();
             WirePauseButton();
         }
 
@@ -40,6 +50,7 @@ namespace EcoGarden.Level
             if (boardController != null)
             {
                 boardController.OrderProgressChanged += RefreshObjective;
+                boardController.OrderCompleted += CompleteLevel;
             }
         }
 
@@ -48,6 +59,7 @@ namespace EcoGarden.Level
             if (boardController != null)
             {
                 boardController.OrderProgressChanged -= RefreshObjective;
+                boardController.OrderCompleted -= CompleteLevel;
             }
         }
 
@@ -87,6 +99,7 @@ namespace EcoGarden.Level
             RefreshObjective();
             RefreshTimer();
             RefreshPauseButton();
+            RefreshNextLevelButton();
         }
 
         public void CompleteLevel()
@@ -98,7 +111,9 @@ namespace EcoGarden.Level
 
             State = LevelPlayState.Completed;
             RefreshPauseButton();
-            ShowResult("Level Complete", "Blooming Lotus delivered.");
+            RefreshNextLevelButton();
+            ShowResult("Level Complete", BuildCompletionMessage());
+            LevelCompleted?.Invoke();
         }
 
         public void FailLevel()
@@ -110,7 +125,9 @@ namespace EcoGarden.Level
 
             State = LevelPlayState.Failed;
             RefreshPauseButton();
+            RefreshNextLevelButton();
             ShowResult("Time Up", "The customer left before the order was delivered.");
+            LevelFailed?.Invoke();
         }
 
         public void TogglePause()
@@ -141,6 +158,34 @@ namespace EcoGarden.Level
             else
             {
                 SceneManager.LoadScene(activeScene.name);
+            }
+        }
+
+        public void StartNextLevel()
+        {
+            if (boardController == null || boardController.LevelDefinition == null)
+            {
+                return;
+            }
+
+            if (levelCatalogController == null)
+            {
+                levelCatalogController = FindAnyObjectByType<LevelCatalogController>();
+            }
+
+            if (levelCatalogController == null)
+            {
+                return;
+            }
+
+            int nextLevelId = boardController.LevelDefinition.LevelId + 1;
+            SaveData saveData = SaveService.Load();
+            LevelProgressionService.TryUnlockNextLevel(saveData, boardController.LevelDefinition);
+            SaveService.Save(saveData);
+
+            if (levelCatalogController.SelectLevel(nextLevelId, saveData))
+            {
+                StartLevel();
             }
         }
 
@@ -242,6 +287,19 @@ namespace EcoGarden.Level
             SetFeedback(message);
         }
 
+        private string BuildCompletionMessage()
+        {
+            if (boardController == null || boardController.LevelDefinition == null)
+            {
+                return "Order delivered.";
+            }
+
+            string levelName = string.IsNullOrEmpty(boardController.LevelDefinition.LevelName)
+                ? "Level " + boardController.LevelDefinition.LevelId
+                : boardController.LevelDefinition.LevelName;
+            return levelName + " complete.";
+        }
+
         private void AutoWireReferences()
         {
             if (timerText == null)
@@ -287,6 +345,15 @@ namespace EcoGarden.Level
                 }
             }
 
+            if (nextLevelButton == null)
+            {
+                GameObject nextObject = GameObject.Find("NextLevelButton");
+                if (nextObject != null)
+                {
+                    nextLevelButton = nextObject.GetComponent<Button>();
+                }
+            }
+
             if (pauseButton == null)
             {
                 GameObject pauseObject = GameObject.Find("PauseButton");
@@ -294,6 +361,11 @@ namespace EcoGarden.Level
                 {
                     pauseButton = pauseObject.GetComponent<Button>();
                 }
+            }
+
+            if (levelCatalogController == null)
+            {
+                levelCatalogController = FindAnyObjectByType<LevelCatalogController>();
             }
         }
 
@@ -306,6 +378,18 @@ namespace EcoGarden.Level
 
             restartButton.onClick.RemoveListener(RestartLevel);
             restartButton.onClick.AddListener(RestartLevel);
+        }
+
+        private void WireNextLevelButton()
+        {
+            if (nextLevelButton == null)
+            {
+                return;
+            }
+
+            nextLevelButton.onClick.RemoveListener(StartNextLevel);
+            nextLevelButton.onClick.AddListener(StartNextLevel);
+            RefreshNextLevelButton();
         }
 
         private void WirePauseButton()
@@ -334,6 +418,32 @@ namespace EcoGarden.Level
             {
                 label.text = State == LevelPlayState.Paused ? "Resume" : "Pause";
             }
+        }
+
+        private void RefreshNextLevelButton()
+        {
+            if (nextLevelButton == null)
+            {
+                return;
+            }
+
+            bool canStartNext = false;
+            if (State == LevelPlayState.Completed &&
+                boardController != null &&
+                boardController.LevelDefinition != null)
+            {
+                if (levelCatalogController == null)
+                {
+                    levelCatalogController = FindAnyObjectByType<LevelCatalogController>();
+                }
+
+                int nextLevelId = boardController.LevelDefinition.LevelId + 1;
+                canStartNext = levelCatalogController != null &&
+                               levelCatalogController.Catalog.TryGetLevel(nextLevelId, out _);
+            }
+
+            nextLevelButton.gameObject.SetActive(canStartNext);
+            nextLevelButton.interactable = canStartNext;
         }
 
         private void SetResultPanelVisible(bool visible)

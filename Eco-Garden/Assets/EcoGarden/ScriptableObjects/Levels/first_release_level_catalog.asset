@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2feecf61fcb4848ac3f705b6fb60616, type: 3}
+  m_Name: first_release_level_catalog
+  m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Config.LevelCatalogDefinition
+  catalogId: first_release_levels
+  displayName: First Release Levels
+  levels:
+  - {fileID: 11400000, guid: 11b7ad8374512ef49a7bde18125350b6, type: 2}
+  - {fileID: 11400000, guid: 3c2e8edcd509d0345b455cc65ab9e66a, type: 2}
+  - {fileID: 11400000, guid: 888a71156231df94982aebafe3673d95, type: 2}
+  - {fileID: 11400000, guid: 78d14136f7028ae45ac49d603bca547a, type: 2}
+  - {fileID: 11400000, guid: 3121fad6dce5b8f41b1efafb0f208f16, type: 2}
+  - {fileID: 11400000, guid: 4cdd2f0dc4c21824dbdd3b12aec6de94, type: 2}
+  - {fileID: 11400000, guid: 8be47bff4bbfbfc45a459a9ee753e937, type: 2}
+  - {fileID: 11400000, guid: 112e438356e01b8448ea67cad2cbd63d, type: 2}
+  - {fileID: 11400000, guid: c31d4b69eb4cafc41aff846a27af805d, type: 2}
+  - {fileID: 11400000, guid: ac500d61b882e644881398669e3d6adc, type: 2}

@@ -16,6 +16,7 @@ namespace EcoGarden.UI
         [SerializeField] private GameObject missionTrackerPanel;
         [SerializeField] private Transform missionTrackerRoot;
         [SerializeField] private GameObject shopPanel;
+        [SerializeField] private GameObject levelPanel;
         [SerializeField] private GameplayFeedbackController gameplayFeedbackController;
 
         private MissionController missionController;
@@ -122,7 +123,7 @@ namespace EcoGarden.UI
 
             IReadOnlyList<MissionRuntimeState> missions = missionController.Missions;
             int createdCount = 0;
-            for (int i = 0; i < missions.Count && createdCount < 3; i++)
+            for (int i = 0; i < missions.Count && createdCount < AndroidHudLayoutMetrics.MaxCompactMissionRows; i++)
             {
                 MissionRuntimeState state = missions[i];
                 if (state == null || state.RewardClaimed)
@@ -270,6 +271,11 @@ namespace EcoGarden.UI
             {
                 shopPanel = FindObjectIncludingInactive("ShopPanel");
             }
+
+            if (levelPanel == null)
+            {
+                levelPanel = FindObjectIncludingInactive("LevelPanel");
+            }
         }
 
         private void WireButtons()
@@ -335,8 +341,9 @@ namespace EcoGarden.UI
             }
 
             bool shopOpen = shopPanel != null && shopPanel.activeSelf;
+            bool levelOpen = levelPanel != null && levelPanel.activeSelf;
             bool fullMissionOpen = missionPanel != null && missionPanel.activeSelf;
-            bool shouldShow = !shopOpen && !fullMissionOpen;
+            bool shouldShow = !shopOpen && !levelOpen && !fullMissionOpen;
             if (missionTrackerPanel.activeSelf != shouldShow)
             {
                 missionTrackerPanel.SetActive(shouldShow);
@@ -358,7 +365,7 @@ namespace EcoGarden.UI
         private void CreateRuntimeMissionPanel()
         {
             Transform parent = transform;
-            GameObject panel = CreatePanel("MissionPanel", parent, new Vector2(0.06f, 0.19f), new Vector2(0.94f, 0.82f));
+            GameObject panel = CreatePanel("MissionPanel", parent, AndroidHudLayoutMetrics.PanelAnchorMin, AndroidHudLayoutMetrics.PanelAnchorMax);
             missionPanel = panel;
 
             CreateText("MissionTitleText", panel.transform, "Missions", TextAnchor.MiddleLeft, new Vector2(0.05f, 0.90f), new Vector2(0.62f, 0.98f), 34);
@@ -401,7 +408,7 @@ namespace EcoGarden.UI
         private void CreateRuntimeMissionTracker()
         {
             Transform parent = transform;
-            GameObject panel = CreatePanel("MissionTrackerPanel", parent, new Vector2(0.70f, 0.31f), new Vector2(0.96f, 0.72f));
+            GameObject panel = CreatePanel("MissionTrackerPanel", parent, AndroidHudLayoutMetrics.MissionTrackerAnchorMin, AndroidHudLayoutMetrics.MissionTrackerAnchorMax);
             missionTrackerPanel = panel;
 
             CreateText("MissionTrackerTitleText", panel.transform, "Missions", TextAnchor.MiddleLeft, new Vector2(0.07f, 0.88f), new Vector2(0.66f, 0.98f), 24);

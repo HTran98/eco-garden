@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6ccc4d42fb87ec46bcebfd2e9376f61, type: 3}
+  m_Name: level_009_bloom_prep
+  m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Config.LevelDefinition
+  levelId: 9
+  levelName: Bloom Prep
+  width: 8
+  height: 8
+  rowsTopToBottom:
+  - LL----LL
+  - L--PP--L
+  - --W22W--
+  - --PSPP--
+  - --PPPW--
+  - --WPPP--
+  - L--PP--L
+  - LL----LL
+  defaultProducer: {fileID: 11400000, guid: c572022a571899f41b8c872826862242, type: 2}
+  itemDefinitions:
+  - {fileID: 11400000, guid: ff538eddbdbd6af42a5d8603a52c658a, type: 2}
+  - {fileID: 11400000, guid: 3b84a10b1a1c2804f9bc19d91fde97ec, type: 2}
+  - {fileID: 11400000, guid: 0f255671f7c8d934284506f0de51c546, type: 2}
+  - {fileID: 11400000, guid: bdd00989e51c1884aa2ebcf7f7c95fcb, type: 2}
+  - {fileID: 11400000, guid: 627a4203074a8564cb1e4fbb70b44ad2, type: 2}
+  npcOrder:
+    orderId: lotus_lv04_x2
+    displayName: Flower Buds
+    requirements:
+    - familyId: lotus
+      level: 4
+      quantity: 2
+    reward:
+      currencies:
+      - currencyKind: 0
+        amount: 145
+      abilities:
+      - abilityKind: 0
+        count: 1
+      decorationIds: []
+      plantTierUnlocks: []
+    familyId: lotus
+    level: 4
+    quantity: 2
+  startingAbilities: []
+  temporaryAllowedPlantTiers:
+  - familyId: lotus
+    tier: 4
+  difficulty:
+    difficultyKind: 2
+    obstacleCount: 4
+    lockedCellCount: 12
+    temporaryLockCount: 0
+    orderComplexityScore: 8
+    timerPressureMultiplier: 1.6
+    rewardMultiplier: 2.15
+    notes: High-tier quantity pressure.
+  temporaryLocks: []
+  timerSeconds: 185
+  themeId: pastel_zen

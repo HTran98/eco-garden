@@ -32,15 +32,15 @@ Purpose: define the target portrait profiles and pass criteria for Milestone C m
 | Timer/currency row |  |  |  |  |  | Top row stays inside safe area. |
 | Pause/restart controls |  |  |  |  |  | Buttons remain reachable and do not overlap currency. |
 | Shop entry |  |  |  |  |  | Button remains visible without covering board. |
-| Mission entry/tracker |  |  |  |  |  | Tracker does not cover drag paths or panels. |
-| Sell basket |  |  |  |  |  | Drop target is above bottom safe area. |
-| Delivery zone |  |  |  |  |  | NPC/order area does not collide with Sell basket. |
+| Mission entry/tracker | Code pass | Code pass | Code pass | Pending device | Pending device | Tracker avoids Delivery/Sell, keeps a readable minimum width, and shows two compact rows. |
+| Sell basket | Code pass | Code pass | Code pass | Pending device | Pending device | Drop target moved above AbilityBar and bottom safe-area root. |
+| Delivery zone | Code pass | Code pass | Code pass | Pending device | Pending device | Drop target moved above AbilityBar and kept separate from Sell basket. |
 
 ## Panel Checklist
 
 | Panel | 720x1280 | 1080x1920 | Tall | Notch | Gesture Nav | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
-| Shop |  |  |  |  |  | Category tabs, product rows, price labels, and Buy/Owned states are readable. |
+| Shop | Code pass | Code pass | Code pass | Pending device | Pending device | Metric tests cover category tab, product text, price badge, and Buy/Owned button width. |
 | Mission |  |  |  |  |  | Claim buttons stay reachable and reward text fits. |
 | Pause |  |  |  |  |  | Resume/restart controls fit without clipping. |
 | Win/fail result |  |  |  |  |  | Rewards and action buttons stay visible. |
@@ -63,3 +63,12 @@ Purpose: define the target portrait profiles and pass criteria for Milestone C m
 - Run this matrix after any HUD, panel, safe-area, board sizing, or input-layer change.
 - Record failures in `Docs/Completion Task Breakdown.md` under Milestone C execution notes.
 - Android device validation takes priority over Game view simulation when results differ.
+
+2026-05-22:
+
+- First C2 code pass moved the AbilityBar lower inside the safe-area root and moved Delivery/Sell drop zones above it.
+- `AndroidHudLayoutMetrics` now centralizes HUD anchors used by runtime layout, runtime UI fallbacks, and editor UI generation.
+- `AndroidHudLayoutMetricsTests` verifies AbilityBar does not overlap Delivery/Sell and MissionTracker does not overlap drop zones for 720x1280, 1080x1920, 1080x2400, and 720x1560 profiles.
+- C4 code pass widened the compact mission tracker on small portrait screens and limited it to two rows to avoid cramped claim buttons.
+- C3 code pass added shop row layout metrics and tests for category tab, price badge, Buy/Owned button, and product text width on 720x1280.
+- C5 code pass added touch-size and separation tests for Delivery/Sell drop zones across portrait profiles.

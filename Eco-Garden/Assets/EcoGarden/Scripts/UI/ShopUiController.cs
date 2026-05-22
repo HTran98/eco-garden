@@ -100,22 +100,22 @@ namespace EcoGarden.UI
             GameObject row = new GameObject("ShopProduct_" + item.ProductId, typeof(RectTransform), typeof(Image));
             row.transform.SetParent(productListRoot, false);
             RectTransform rowRect = row.GetComponent<RectTransform>();
-            rowRect.sizeDelta = new Vector2(0f, 124f);
+            rowRect.sizeDelta = new Vector2(0f, ShopUiLayoutMetrics.ProductRowHeight);
 
             Image rowImage = row.GetComponent<Image>();
             rowImage.sprite = PlaceholderSpriteFactory.ShopProductRowSprite;
             rowImage.color = Color.white;
 
-            GameObject iconBadge = CreateImage("TypeBadge", row.transform, PlaceholderSpriteFactory.ShopIconBadgeSprite, GetCategoryAccentColor(item.Category), new Vector2(0.025f, 0.18f), new Vector2(0.17f, 0.82f));
+            GameObject iconBadge = CreateImage("TypeBadge", row.transform, PlaceholderSpriteFactory.ShopIconBadgeSprite, GetCategoryAccentColor(item.Category), ShopUiLayoutMetrics.TypeBadgeAnchorMin, ShopUiLayoutMetrics.TypeBadgeAnchorMax);
             CreateText("Type", iconBadge.transform, GetCategoryShortName(item.Category), TextAnchor.MiddleCenter, Vector2.zero, Vector2.one, 22);
 
-            CreateText("Name", row.transform, item.DisplayName, TextAnchor.MiddleLeft, new Vector2(0.20f, 0.56f), new Vector2(0.63f, 0.91f), 25);
-            CreateText("Description", row.transform, BuildDescription(item), TextAnchor.UpperLeft, new Vector2(0.20f, 0.18f), new Vector2(0.63f, 0.56f), 18);
+            CreateText("Name", row.transform, item.DisplayName, TextAnchor.MiddleLeft, ShopUiLayoutMetrics.NameAnchorMin, ShopUiLayoutMetrics.NameAnchorMax, 25);
+            CreateText("Description", row.transform, BuildDescription(item), TextAnchor.UpperLeft, ShopUiLayoutMetrics.DescriptionAnchorMin, ShopUiLayoutMetrics.DescriptionAnchorMax, 18);
 
-            GameObject priceBadge = CreateImage("PriceBadge", row.transform, PlaceholderSpriteFactory.ShopPriceBadgeSprite, GetPriceColor(item), new Vector2(0.66f, 0.56f), new Vector2(0.96f, 0.90f));
+            GameObject priceBadge = CreateImage("PriceBadge", row.transform, PlaceholderSpriteFactory.ShopPriceBadgeSprite, GetPriceColor(item), ShopUiLayoutMetrics.PriceAnchorMin, ShopUiLayoutMetrics.PriceAnchorMax);
             CreateText("Price", priceBadge.transform, BuildPriceText(item), TextAnchor.MiddleCenter, Vector2.zero, Vector2.one, 20);
 
-            GameObject buyObject = CreateButton("BuyButton", row.transform, BuildBuyLabel(item), new Vector2(0.66f, 0.13f), new Vector2(0.96f, 0.49f));
+            GameObject buyObject = CreateButton("BuyButton", row.transform, BuildBuyLabel(item), ShopUiLayoutMetrics.BuyAnchorMin, ShopUiLayoutMetrics.BuyAnchorMax);
             Button buyButton = buyObject.GetComponent<Button>();
             buyButton.interactable = item.Repeatable || !shopController.Inventory.IsProductPurchased(item.ProductId);
             Image buyImage = buyObject.GetComponent<Image>();
@@ -361,7 +361,7 @@ namespace EcoGarden.UI
         private void CreateRuntimeShopPanel()
         {
             Transform parent = transform;
-            GameObject panel = CreatePanel("ShopPanel", parent, new Vector2(0.06f, 0.19f), new Vector2(0.94f, 0.82f));
+            GameObject panel = CreatePanel("ShopPanel", parent, AndroidHudLayoutMetrics.PanelAnchorMin, AndroidHudLayoutMetrics.PanelAnchorMax);
             shopPanel = panel;
 
             CreateText("ShopTitleText", panel.transform, "Shop", TextAnchor.MiddleLeft, new Vector2(0.05f, 0.90f), new Vector2(0.55f, 0.98f), 34);

@@ -25,11 +25,13 @@ namespace EcoGarden.Editor
             CreateSellBasket(hudRoot.transform);
             CreateFeedbackText(hudRoot.transform);
             CreateCoinFeedback(hudRoot.transform);
+            CreateLevelPanel(hudRoot.transform);
             CreateShopPanel(hudRoot.transform);
             CreateMissionPanel(hudRoot.transform);
             CreateMissionTracker(hudRoot.transform);
             CreateResultPanel(hudRoot.transform);
             hudRoot.AddComponent<AbilityHudController>();
+            hudRoot.AddComponent<LevelSelectUiController>();
             hudRoot.AddComponent<ShopUiController>();
             hudRoot.AddComponent<MissionUiController>();
             hudRoot.AddComponent<DraggedItemCanvasGhost>();
@@ -64,9 +66,10 @@ namespace EcoGarden.Editor
             CreateText("TimerText", topBar.transform, "03:00", TextAnchor.MiddleLeft, new Vector2(0f, 0f), new Vector2(0.21f, 1f));
             CreateText("GoldText", topBar.transform, "Gold 0", TextAnchor.MiddleCenter, new Vector2(0.21f, 0f), new Vector2(0.42f, 1f));
             CreateText("GemText", topBar.transform, "Gem 0", TextAnchor.MiddleCenter, new Vector2(0.42f, 0f), new Vector2(0.62f, 1f));
-            CreateButton("MissionButton", topBar.transform, "Mission", new Vector2(0.64f, 0.15f), new Vector2(0.76f, 0.85f));
-            CreateButton("ShopButton", topBar.transform, "Shop", new Vector2(0.78f, 0.15f), new Vector2(0.88f, 0.85f));
-            CreateButton("PauseButton", topBar.transform, "Pause", new Vector2(0.90f, 0.15f), new Vector2(0.99f, 0.85f));
+            CreateButton("LevelButton", topBar.transform, "Level", new Vector2(0.63f, 0.15f), new Vector2(0.715f, 0.85f));
+            CreateButton("MissionButton", topBar.transform, "Mission", new Vector2(0.725f, 0.15f), new Vector2(0.81f, 0.85f));
+            CreateButton("ShopButton", topBar.transform, "Shop", new Vector2(0.82f, 0.15f), new Vector2(0.895f, 0.85f));
+            CreateButton("PauseButton", topBar.transform, "Pause", new Vector2(0.905f, 0.15f), new Vector2(0.99f, 0.85f));
         }
 
         private static void CreateObjectivePanel(Transform parent)
@@ -90,7 +93,7 @@ namespace EcoGarden.Editor
 
         private static void CreateSellBasket(Transform parent)
         {
-            GameObject basket = CreatePanel("SellBasket", parent, new Vector2(0.72f, 0.16f), new Vector2(0.96f, 0.29f), new Vector2(0.5f, 0.5f), Vector2.zero);
+            GameObject basket = CreatePanel("SellBasket", parent, AndroidHudLayoutMetrics.SellAnchorMin, AndroidHudLayoutMetrics.SellAnchorMax, new Vector2(0.5f, 0.5f), Vector2.zero);
             Image image = basket.GetComponent<Image>();
             image.sprite = PlaceholderSpriteFactory.SellBasketSprite;
             image.color = Color.white;
@@ -101,7 +104,7 @@ namespace EcoGarden.Editor
 
         private static void CreateDeliveryDropZone(Transform parent)
         {
-            GameObject delivery = CreatePanel("DeliveryDropZone", parent, new Vector2(0.04f, 0.16f), new Vector2(0.28f, 0.29f), new Vector2(0.5f, 0.5f), Vector2.zero);
+            GameObject delivery = CreatePanel("DeliveryDropZone", parent, AndroidHudLayoutMetrics.DeliveryAnchorMin, AndroidHudLayoutMetrics.DeliveryAnchorMax, new Vector2(0.5f, 0.5f), Vector2.zero);
             Image image = delivery.GetComponent<Image>();
             image.sprite = PlaceholderSpriteFactory.DeliverZoneSprite;
             image.color = Color.white;
@@ -139,13 +142,50 @@ namespace EcoGarden.Editor
             Text message = CreateText("ResultMessageText", panel.transform, "Blooming Lotus delivered.", TextAnchor.MiddleCenter, new Vector2(0.08f, 0.34f), new Vector2(0.92f, 0.62f)).GetComponent<Text>();
             message.fontSize = 26;
 
-            CreateButton("RestartButton", panel.transform, "Restart", new Vector2(0.28f, 0.08f), new Vector2(0.72f, 0.30f));
+            CreateButton("RestartButton", panel.transform, "Restart", new Vector2(0.08f, 0.08f), new Vector2(0.46f, 0.30f));
+            CreateButton("NextLevelButton", panel.transform, "Next", new Vector2(0.54f, 0.08f), new Vector2(0.92f, 0.30f));
+            panel.SetActive(false);
+        }
+
+        private static void CreateLevelPanel(Transform parent)
+        {
+            GameObject panel = CreatePanel("LevelPanel", parent, AndroidHudLayoutMetrics.PanelAnchorMin, AndroidHudLayoutMetrics.PanelAnchorMax, new Vector2(0.5f, 0.5f), Vector2.zero);
+            Image image = panel.GetComponent<Image>();
+            image.color = new Color(0.12f, 0.16f, 0.18f, 0.97f);
+
+            Text title = CreateText("LevelTitleText", panel.transform, "Levels", TextAnchor.MiddleLeft, new Vector2(0.05f, 0.90f), new Vector2(0.62f, 0.98f)).GetComponent<Text>();
+            title.fontSize = 36;
+            CreateButton("LevelCloseButton", panel.transform, "X", new Vector2(0.86f, 0.90f), new Vector2(0.96f, 0.98f));
+
+            GameObject viewport = CreatePanel("LevelViewport", panel.transform, new Vector2(0.04f, 0.06f), new Vector2(0.96f, 0.88f), new Vector2(0.5f, 0.5f), Vector2.zero);
+            viewport.GetComponent<Image>().color = new Color(0.06f, 0.08f, 0.10f, 0.55f);
+            Mask mask = viewport.AddComponent<Mask>();
+            mask.showMaskGraphic = true;
+
+            GameObject list = CreateRect("LevelList", viewport.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), Vector2.zero);
+            VerticalLayoutGroup layout = list.AddComponent<VerticalLayoutGroup>();
+            layout.childControlWidth = true;
+            layout.childControlHeight = false;
+            layout.childForceExpandWidth = true;
+            layout.childForceExpandHeight = false;
+            layout.spacing = 10f;
+            layout.padding = new RectOffset(14, 14, 14, 14);
+            ContentSizeFitter fitter = list.AddComponent<ContentSizeFitter>();
+            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            ScrollRect scrollRect = viewport.AddComponent<ScrollRect>();
+            scrollRect.content = list.GetComponent<RectTransform>();
+            scrollRect.viewport = viewport.GetComponent<RectTransform>();
+            scrollRect.horizontal = false;
+            scrollRect.vertical = true;
+            scrollRect.movementType = ScrollRect.MovementType.Clamped;
+
             panel.SetActive(false);
         }
 
         private static void CreateShopPanel(Transform parent)
         {
-            GameObject panel = CreatePanel("ShopPanel", parent, new Vector2(0.07f, 0.20f), new Vector2(0.93f, 0.82f), new Vector2(0.5f, 0.5f), Vector2.zero);
+            GameObject panel = CreatePanel("ShopPanel", parent, AndroidHudLayoutMetrics.PanelAnchorMin, AndroidHudLayoutMetrics.PanelAnchorMax, new Vector2(0.5f, 0.5f), Vector2.zero);
             Image image = panel.GetComponent<Image>();
             image.sprite = PlaceholderSpriteFactory.ShopPanelSprite;
             image.color = Color.white;
@@ -189,7 +229,7 @@ namespace EcoGarden.Editor
 
         private static void CreateMissionPanel(Transform parent)
         {
-            GameObject panel = CreatePanel("MissionPanel", parent, new Vector2(0.07f, 0.20f), new Vector2(0.93f, 0.82f), new Vector2(0.5f, 0.5f), Vector2.zero);
+            GameObject panel = CreatePanel("MissionPanel", parent, AndroidHudLayoutMetrics.PanelAnchorMin, AndroidHudLayoutMetrics.PanelAnchorMax, new Vector2(0.5f, 0.5f), Vector2.zero);
             Image image = panel.GetComponent<Image>();
             image.color = new Color(0.12f, 0.16f, 0.18f, 0.97f);
 
@@ -225,7 +265,7 @@ namespace EcoGarden.Editor
 
         private static void CreateMissionTracker(Transform parent)
         {
-            GameObject panel = CreatePanel("MissionTrackerPanel", parent, new Vector2(0.70f, 0.31f), new Vector2(0.96f, 0.72f), new Vector2(0.5f, 0.5f), Vector2.zero);
+            GameObject panel = CreatePanel("MissionTrackerPanel", parent, AndroidHudLayoutMetrics.MissionTrackerAnchorMin, AndroidHudLayoutMetrics.MissionTrackerAnchorMax, new Vector2(0.5f, 0.5f), Vector2.zero);
             Image image = panel.GetComponent<Image>();
             image.color = new Color(0.12f, 0.16f, 0.18f, 0.90f);
 
