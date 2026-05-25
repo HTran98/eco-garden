@@ -122,7 +122,13 @@ namespace EcoGarden.IAP
         {
             string productId = GetFirstProductId(order);
             string transactionId = order != null && order.Info != null ? order.Info.TransactionID : string.Empty;
-            PurchaseCompleted?.Invoke(new IapPurchaseResult(IapPurchaseStatus.Success, productId, transactionId));
+            string receiptPayload = order != null && order.Info != null ? order.Info.Receipt : string.Empty;
+            PurchaseCompleted?.Invoke(new IapPurchaseResult(
+                IapPurchaseStatus.Success,
+                productId,
+                transactionId,
+                string.Empty,
+                receiptPayload));
             storeController.ConfirmPurchase(order);
         }
 
@@ -132,7 +138,8 @@ namespace EcoGarden.IAP
                 MapFailure(order != null ? order.FailureReason : PurchaseFailureReason.Unknown),
                 GetFirstProductId(order),
                 order != null && order.Info != null ? order.Info.TransactionID : string.Empty,
-                order != null ? order.Details : string.Empty));
+                order != null ? order.Details : string.Empty,
+                order != null && order.Info != null ? order.Info.Receipt : string.Empty));
         }
 
         private static string GetFirstProductId(Order order)

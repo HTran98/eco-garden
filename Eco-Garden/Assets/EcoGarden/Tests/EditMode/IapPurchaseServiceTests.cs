@@ -149,6 +149,46 @@ namespace EcoGarden.Tests.EditMode
         }
 
         [Test]
+        public void CompletePurchase_UnityReceiptPayloadIsExposedForBackendHandoff()
+        {
+            ShopItemDefinition item = CreateIapItem(
+                "shop_iap_gems_small",
+                true,
+                new RewardDefinition(new[] { new CurrencyReward(CurrencyKind.Gem, 80) }, null));
+            IapPurchaseService service = CreateService();
+
+            IapProductPurchaseResult result = service.CompletePurchase(
+                item,
+                new IapPurchaseResult(
+                    IapPurchaseStatus.Success,
+                    item.Price.IapProductId,
+                    "unity_tx_with_receipt",
+                    string.Empty,
+                    "unity_receipt_payload"));
+
+            Assert.AreEqual(IapPurchaseStatus.Success, result.Status);
+            Assert.AreEqual("unity_receipt_payload", result.ReceiptPayload);
+            Assert.AreEqual(80, economyController.Gem);
+            Object.DestroyImmediate(item);
+        }
+
+        [Test]
+        public void Purchase_MockProviderKeepsReceiptPayloadEmpty()
+        {
+            ShopItemDefinition item = CreateIapItem(
+                "shop_iap_gems_small",
+                true,
+                new RewardDefinition(new[] { new CurrencyReward(CurrencyKind.Gem, 80) }, null));
+            IapPurchaseService service = CreateService();
+
+            IapProductPurchaseResult result = service.Purchase(item);
+
+            Assert.AreEqual(IapPurchaseStatus.Success, result.Status);
+            Assert.AreEqual(string.Empty, result.ReceiptPayload);
+            Object.DestroyImmediate(item);
+        }
+
+        [Test]
         public void Purchase_NonRepeatableProductMarksInventory()
         {
             ShopItemDefinition item = CreateIapItem(

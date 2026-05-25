@@ -9,18 +9,21 @@ namespace EcoGarden.IAP
             IapPurchaseStatus status,
             ShopItemDefinition item,
             string transactionId,
-            RewardGrantResult rewardResult)
+            RewardGrantResult rewardResult,
+            string receiptPayload = "")
         {
             Status = status;
             Item = item;
             TransactionId = transactionId;
             RewardResult = rewardResult;
+            ReceiptPayload = receiptPayload;
         }
 
         public IapPurchaseStatus Status { get; }
         public ShopItemDefinition Item { get; }
         public string TransactionId { get; }
         public RewardGrantResult RewardResult { get; }
+        public string ReceiptPayload { get; }
         public bool Succeeded { get { return Status == IapPurchaseStatus.Success; } }
     }
 }

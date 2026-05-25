@@ -27,7 +27,7 @@ References:
 | Persistent processed transaction ids | Implemented in save data |
 | Unity IAP package | Installed as `com.unity.purchasing` 5.3.0 |
 | Android store provider | First-pass `UnityIapProvider` implemented |
-| Receipt validation | Backend validation required before production release |
+| Receipt validation | Backend validation required before production release; client receipt payload capture is implemented |
 
 `Eco-Garden/Packages/manifest.json` includes `com.unity.purchasing`; `packages-lock.json` resolves Unity IAP 5.3.0 and Unity Services Core 1.16.0.
 
@@ -75,7 +75,7 @@ Production blocker status:
 | Blocker | Status | Release Requirement |
 | --- | --- | --- |
 | Backend receipt validation endpoint | Open | Required before production IAP release. |
-| Receipt payload capture in `UnityIapProvider` result model | Open | Required before backend validation can be wired. |
+| Receipt payload capture in `UnityIapProvider` result model | Closed | `IapPurchaseResult` and `IapProductPurchaseResult` expose receipt payloads; `UnityIapProvider` captures Unity IAP `order.Info.Receipt`. |
 | Server-side transaction id idempotency | Open | Required to prevent duplicate grants across reinstall/device changes. |
 | Google Play internal-track purchase validation | Open | Required before release candidate. |
 | Client-only/mock purchase path | Allowed for Editor/internal testing only | Must not be the production authority for real-money grants. |
@@ -115,7 +115,7 @@ Android store build check:
 
 1. Google Play Billing compliance depends on the installed Unity IAP package version at release time.
 2. Backend receipt validation is not implemented yet and blocks production IAP.
-3. `UnityIapProvider` result data does not yet expose a validated receipt payload for backend handoff.
+3. Backend receipt validation is not yet wired to the client receipt payload handoff model.
 4. `UnityIapProvider` is not yet wired into the release scene; the vertical-slice scene still uses `MockIapProvider` for editor testing.
 5. Non-consumable restore purchase flow is not implemented.
 6. Store product ids must exactly match Google Play Console configuration before device testing.

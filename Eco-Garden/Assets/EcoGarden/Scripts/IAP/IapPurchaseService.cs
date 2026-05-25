@@ -76,7 +76,12 @@ namespace EcoGarden.IAP
             IapPurchaseResult purchaseResult = provider.Purchase(item.Price.IapProductId);
             if (purchaseResult.Status == IapPurchaseStatus.Pending)
             {
-                return new IapProductPurchaseResult(IapPurchaseStatus.Pending, item, purchaseResult.TransactionId, default);
+                return new IapProductPurchaseResult(
+                    IapPurchaseStatus.Pending,
+                    item,
+                    purchaseResult.TransactionId,
+                    default,
+                    purchaseResult.ReceiptPayload);
             }
 
             return CompletePurchase(item, purchaseResult);
@@ -89,23 +94,43 @@ namespace EcoGarden.IAP
                 item.Price.PurchaseKind != ShopPurchaseKind.Iap ||
                 item.Grant == null)
             {
-                return new IapProductPurchaseResult(IapPurchaseStatus.InvalidProduct, item, purchaseResult.TransactionId, default);
+                return new IapProductPurchaseResult(
+                    IapPurchaseStatus.InvalidProduct,
+                    item,
+                    purchaseResult.TransactionId,
+                    default,
+                    purchaseResult.ReceiptPayload);
             }
 
             if (!item.Repeatable && inventory != null && inventory.IsProductPurchased(item.ProductId))
             {
-                return new IapProductPurchaseResult(IapPurchaseStatus.AlreadyOwned, item, purchaseResult.TransactionId, default);
+                return new IapProductPurchaseResult(
+                    IapPurchaseStatus.AlreadyOwned,
+                    item,
+                    purchaseResult.TransactionId,
+                    default,
+                    purchaseResult.ReceiptPayload);
             }
 
             if (!purchaseResult.Succeeded)
             {
-                return new IapProductPurchaseResult(purchaseResult.Status, item, purchaseResult.TransactionId, default);
+                return new IapProductPurchaseResult(
+                    purchaseResult.Status,
+                    item,
+                    purchaseResult.TransactionId,
+                    default,
+                    purchaseResult.ReceiptPayload);
             }
 
             if (!string.IsNullOrWhiteSpace(purchaseResult.TransactionId) &&
                 !grantedTransactionIds.Add(purchaseResult.TransactionId))
             {
-                return new IapProductPurchaseResult(IapPurchaseStatus.DuplicateTransaction, item, purchaseResult.TransactionId, default);
+                return new IapProductPurchaseResult(
+                    IapPurchaseStatus.DuplicateTransaction,
+                    item,
+                    purchaseResult.TransactionId,
+                    default,
+                    purchaseResult.ReceiptPayload);
             }
 
             if (!string.IsNullOrWhiteSpace(purchaseResult.TransactionId))
@@ -132,7 +157,8 @@ namespace EcoGarden.IAP
                 IapPurchaseStatus.Success,
                 item,
                 purchaseResult.TransactionId,
-                rewardResult);
+                rewardResult,
+                purchaseResult.ReceiptPayload);
         }
     }
 }
