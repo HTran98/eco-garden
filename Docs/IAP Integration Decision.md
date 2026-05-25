@@ -27,7 +27,7 @@ References:
 | Persistent processed transaction ids | Implemented in save data |
 | Unity IAP package | Installed as `com.unity.purchasing` 5.3.0 |
 | Android store provider | First-pass `UnityIapProvider` implemented |
-| Receipt validation | Deferred |
+| Receipt validation | Backend validation required before production release |
 
 `Eco-Garden/Packages/manifest.json` includes `com.unity.purchasing`; `packages-lock.json` resolves Unity IAP 5.3.0 and Unity Services Core 1.16.0.
 
@@ -51,8 +51,34 @@ The shop catalog maps these store ids through `ShopPriceDefinition.iapProductId`
 6. Register consumable products from the shop catalog at provider initialization. Current provider registers the two release product ids; next pass should derive them from catalog data or serialized release-scene config.
 7. Map Unity purchase success, cancel, failure, and unavailable outcomes into `IapPurchaseStatus`. First-pass mapping exists for pending, success, cancel, unavailable, duplicate, and generic failure.
 8. Persist processed transaction ids in save data before enabling real store purchases. Completed.
-9. Add receipt validation path before production release. Backend validation is preferred for production.
+9. Add receipt validation path before production release. Backend validation is required for production.
 10. Build Android and run a Google Play internal test purchase.
+
+## Receipt Validation Decision
+
+Production Android releases must use backend-backed receipt validation before any real-money IAP is enabled outside internal testing.
+
+Local/client-side validation is acceptable only for prototype and Google Play internal-track testing because it can verify callback flow, transaction persistence, and duplicate-grant protection, but it cannot be treated as a secure production authority. The current first-pass `UnityIapProvider` may continue to pass successful purchase callbacks into `IapPurchaseService`, but a production build must not grant final currency solely from the client receipt path.
+
+Selected release path:
+
+1. Client starts purchase through `UnityIapProvider`.
+2. Unity IAP returns store product id, transaction id, and receipt payload.
+3. Client sends purchase payload to a backend validation endpoint.
+4. Backend validates the receipt with the store authority and checks whether the transaction id was already granted.
+5. Backend returns an allow/deny result and granted product payload.
+6. Client applies rewards only after the backend approval path succeeds.
+7. Client still persists processed transaction ids locally as a duplicate-protection fallback and offline safety measure.
+
+Production blocker status:
+
+| Blocker | Status | Release Requirement |
+| --- | --- | --- |
+| Backend receipt validation endpoint | Open | Required before production IAP release. |
+| Receipt payload capture in `UnityIapProvider` result model | Open | Required before backend validation can be wired. |
+| Server-side transaction id idempotency | Open | Required to prevent duplicate grants across reinstall/device changes. |
+| Google Play internal-track purchase validation | Open | Required before release candidate. |
+| Client-only/mock purchase path | Allowed for Editor/internal testing only | Must not be the production authority for real-money grants. |
 
 ## Product ID Verification
 
@@ -88,8 +114,9 @@ Android store build check:
 ## Open Production Risks
 
 1. Google Play Billing compliance depends on the installed Unity IAP package version at release time.
-2. Receipt validation is currently not production-safe.
-3. `UnityIapProvider` is not yet wired into the release scene; the vertical-slice scene still uses `MockIapProvider` for editor testing.
-4. Non-consumable restore purchase flow is not implemented.
-5. Store product ids must exactly match Google Play Console configuration before device testing.
-6. Android internal-track purchase, cancel/fail, restart persistence, and duplicate transaction checks are not yet run on device.
+2. Backend receipt validation is not implemented yet and blocks production IAP.
+3. `UnityIapProvider` result data does not yet expose a validated receipt payload for backend handoff.
+4. `UnityIapProvider` is not yet wired into the release scene; the vertical-slice scene still uses `MockIapProvider` for editor testing.
+5. Non-consumable restore purchase flow is not implemented.
+6. Store product ids must exactly match Google Play Console configuration before device testing.
+7. Android internal-track purchase, cancel/fail, restart persistence, and duplicate transaction checks are not yet run on device.
