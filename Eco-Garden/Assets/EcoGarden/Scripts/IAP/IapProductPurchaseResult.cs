@@ -11,12 +11,24 @@ namespace EcoGarden.IAP
             string transactionId,
             RewardGrantResult rewardResult,
             string receiptPayload = "")
+            : this(status, item, transactionId, rewardResult, receiptPayload, IapReceiptValidationResult.NotRequired())
+        {
+        }
+
+        public IapProductPurchaseResult(
+            IapPurchaseStatus status,
+            ShopItemDefinition item,
+            string transactionId,
+            RewardGrantResult rewardResult,
+            string receiptPayload,
+            IapReceiptValidationResult receiptValidationResult)
         {
             Status = status;
             Item = item;
             TransactionId = transactionId;
             RewardResult = rewardResult;
             ReceiptPayload = receiptPayload;
+            ReceiptValidationResult = receiptValidationResult;
         }
 
         public IapPurchaseStatus Status { get; }
@@ -24,6 +36,7 @@ namespace EcoGarden.IAP
         public string TransactionId { get; }
         public RewardGrantResult RewardResult { get; }
         public string ReceiptPayload { get; }
+        public IapReceiptValidationResult ReceiptValidationResult { get; }
         public bool Succeeded { get { return Status == IapPurchaseStatus.Success; } }
     }
 }

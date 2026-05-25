@@ -15,6 +15,7 @@ namespace EcoGarden.IAP
         private readonly AbilityInventory abilityInventory;
         private readonly PlantUnlockService plantUnlockService;
         private readonly ShopInventory inventory;
+        private readonly IIapReceiptValidator receiptValidator;
         private readonly HashSet<string> grantedTransactionIds = new HashSet<string>();
         private readonly Action<string> processedTransactionAdded;
 
@@ -25,7 +26,8 @@ namespace EcoGarden.IAP
             PlantUnlockService plantUnlockService,
             ShopInventory inventory,
             IEnumerable<string> processedTransactionIds = null,
-            Action<string> processedTransactionAdded = null)
+            Action<string> processedTransactionAdded = null,
+            IIapReceiptValidator receiptValidator = null)
         {
             this.provider = provider;
             this.economyController = economyController;
@@ -33,6 +35,7 @@ namespace EcoGarden.IAP
             this.plantUnlockService = plantUnlockService;
             this.inventory = inventory;
             this.processedTransactionAdded = processedTransactionAdded;
+            this.receiptValidator = receiptValidator;
 
             if (processedTransactionIds != null)
             {
@@ -133,6 +136,24 @@ namespace EcoGarden.IAP
                     purchaseResult.ReceiptPayload);
             }
 
+            IapReceiptValidationResult validationResult = ValidateReceiptIfRequired(purchaseResult);
+            if (!validationResult.Approved &&
+                validationResult.Status != IapReceiptValidationStatus.NotRequired)
+            {
+                if (!string.IsNullOrWhiteSpace(purchaseResult.TransactionId))
+                {
+                    grantedTransactionIds.Remove(purchaseResult.TransactionId);
+                }
+
+                return new IapProductPurchaseResult(
+                    IapPurchaseStatus.ReceiptValidationFailed,
+                    item,
+                    purchaseResult.TransactionId,
+                    default,
+                    purchaseResult.ReceiptPayload,
+                    validationResult);
+            }
+
             if (!string.IsNullOrWhiteSpace(purchaseResult.TransactionId))
             {
                 processedTransactionAdded?.Invoke(purchaseResult.TransactionId);
@@ -158,7 +179,29 @@ namespace EcoGarden.IAP
                 item,
                 purchaseResult.TransactionId,
                 rewardResult,
+                purchaseResult.ReceiptPayload,
+                validationResult);
+        }
+
+        private IapReceiptValidationResult ValidateReceiptIfRequired(IapPurchaseResult purchaseResult)
+        {
+            if (receiptValidator == null || !receiptValidator.RequiresValidation)
+            {
+                return IapReceiptValidationResult.NotRequired();
+            }
+
+            IapReceiptValidationRequest request = new IapReceiptValidationRequest(
+                purchaseResult.StoreProductId,
+                purchaseResult.TransactionId,
                 purchaseResult.ReceiptPayload);
+            try
+            {
+                return receiptValidator.Validate(request);
+            }
+            catch (Exception exception)
+            {
+                return IapReceiptValidationResult.BackendUnavailable(exception.Message);
+            }
         }
     }
 }

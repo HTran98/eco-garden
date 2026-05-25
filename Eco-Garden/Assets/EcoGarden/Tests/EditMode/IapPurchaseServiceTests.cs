@@ -173,6 +173,112 @@ namespace EcoGarden.Tests.EditMode
         }
 
         [Test]
+        public void CompletePurchase_ApprovedReceiptValidationGrantsReward()
+        {
+            ShopItemDefinition item = CreateIapItem(
+                "shop_iap_gems_small",
+                true,
+                new RewardDefinition(new[] { new CurrencyReward(CurrencyKind.Gem, 80) }, null));
+            FakeReceiptValidator validator = new FakeReceiptValidator(
+                IapReceiptValidationResult.Approve("server_tx_001"));
+            IapPurchaseService service = CreateService(null, null, validator);
+
+            IapProductPurchaseResult result = service.CompletePurchase(
+                item,
+                new IapPurchaseResult(
+                    IapPurchaseStatus.Success,
+                    item.Price.IapProductId,
+                    "unity_tx_validated",
+                    string.Empty,
+                    "unity_receipt_payload"));
+
+            Assert.AreEqual(IapPurchaseStatus.Success, result.Status);
+            Assert.AreEqual(IapReceiptValidationStatus.Approved, result.ReceiptValidationResult.Status);
+            Assert.AreEqual("server_tx_001", result.ReceiptValidationResult.ServerTransactionId);
+            Assert.AreEqual(80, economyController.Gem);
+            CollectionAssert.Contains(service.GetProcessedTransactionIds(), "unity_tx_validated");
+            Object.DestroyImmediate(item);
+        }
+
+        [Test]
+        public void CompletePurchase_RejectedReceiptValidationDoesNotGrantOrPersistTransaction()
+        {
+            ShopItemDefinition item = CreateIapItem(
+                "shop_iap_gems_small",
+                true,
+                new RewardDefinition(new[] { new CurrencyReward(CurrencyKind.Gem, 80) }, null));
+            FakeReceiptValidator validator = new FakeReceiptValidator(
+                IapReceiptValidationResult.Reject("Receipt rejected."));
+            IapPurchaseService service = CreateService(null, null, validator);
+
+            IapProductPurchaseResult result = service.CompletePurchase(
+                item,
+                new IapPurchaseResult(
+                    IapPurchaseStatus.Success,
+                    item.Price.IapProductId,
+                    "unity_tx_rejected",
+                    string.Empty,
+                    "unity_receipt_payload"));
+
+            Assert.AreEqual(IapPurchaseStatus.ReceiptValidationFailed, result.Status);
+            Assert.AreEqual(IapReceiptValidationStatus.Rejected, result.ReceiptValidationResult.Status);
+            Assert.AreEqual(0, economyController.Gem);
+            CollectionAssert.DoesNotContain(service.GetProcessedTransactionIds(), "unity_tx_rejected");
+            Object.DestroyImmediate(item);
+        }
+
+        [Test]
+        public void CompletePurchase_ConfiguredBackendValidatorBlocksGrantUntilEndpointTransportExists()
+        {
+            ShopItemDefinition item = CreateIapItem(
+                "shop_iap_gems_small",
+                true,
+                new RewardDefinition(new[] { new CurrencyReward(CurrencyKind.Gem, 80) }, null));
+            BackendIapReceiptValidator validator = gameObject.AddComponent<BackendIapReceiptValidator>();
+            validator.SetEndpointUrl("https://iap.example.test/validate");
+            IapPurchaseService service = CreateService(null, null, validator);
+
+            IapProductPurchaseResult result = service.CompletePurchase(
+                item,
+                new IapPurchaseResult(
+                    IapPurchaseStatus.Success,
+                    item.Price.IapProductId,
+                    "unity_tx_backend_pending",
+                    string.Empty,
+                    "unity_receipt_payload"));
+
+            Assert.AreEqual(IapPurchaseStatus.ReceiptValidationFailed, result.Status);
+            Assert.AreEqual(IapReceiptValidationStatus.BackendUnavailable, result.ReceiptValidationResult.Status);
+            Assert.AreEqual(0, economyController.Gem);
+            CollectionAssert.DoesNotContain(service.GetProcessedTransactionIds(), "unity_tx_backend_pending");
+            Object.DestroyImmediate(item);
+        }
+
+        [Test]
+        public void CompletePurchase_RequiredReceiptValidationRejectsMissingReceiptPayload()
+        {
+            ShopItemDefinition item = CreateIapItem(
+                "shop_iap_gems_small",
+                true,
+                new RewardDefinition(new[] { new CurrencyReward(CurrencyKind.Gem, 80) }, null));
+            BackendIapReceiptValidator validator = gameObject.AddComponent<BackendIapReceiptValidator>();
+            IapPurchaseService service = CreateService(null, null, validator);
+
+            IapProductPurchaseResult result = service.CompletePurchase(
+                item,
+                new IapPurchaseResult(
+                    IapPurchaseStatus.Success,
+                    item.Price.IapProductId,
+                    "unity_tx_missing_receipt"));
+
+            Assert.AreEqual(IapPurchaseStatus.ReceiptValidationFailed, result.Status);
+            Assert.AreEqual(IapReceiptValidationStatus.InvalidRequest, result.ReceiptValidationResult.Status);
+            Assert.AreEqual(0, economyController.Gem);
+            CollectionAssert.DoesNotContain(service.GetProcessedTransactionIds(), "unity_tx_missing_receipt");
+            Object.DestroyImmediate(item);
+        }
+
+        [Test]
         public void Purchase_MockProviderKeepsReceiptPayloadEmpty()
         {
             ShopItemDefinition item = CreateIapItem(
@@ -209,7 +315,8 @@ namespace EcoGarden.Tests.EditMode
 
         private IapPurchaseService CreateService(
             string[] processedTransactionIds = null,
-            System.Action<string> processedTransactionAdded = null)
+            System.Action<string> processedTransactionAdded = null,
+            IIapReceiptValidator receiptValidator = null)
         {
             return new IapPurchaseService(
                 provider,
@@ -218,7 +325,8 @@ namespace EcoGarden.Tests.EditMode
                 boardController.PlantUnlockService,
                 inventory,
                 processedTransactionIds,
-                processedTransactionAdded);
+                processedTransactionAdded,
+                receiptValidator);
         }
 
         private static ShopItemDefinition CreateIapItem(
@@ -236,6 +344,24 @@ namespace EcoGarden.Tests.EditMode
                 grant,
                 repeatable);
             return item;
+        }
+
+        private sealed class FakeReceiptValidator : IIapReceiptValidator
+        {
+            private readonly IapReceiptValidationResult result;
+
+            public FakeReceiptValidator(IapReceiptValidationResult result)
+            {
+                this.result = result;
+            }
+
+            public bool RequiresValidation { get { return true; } }
+
+            public IapReceiptValidationResult Validate(IapReceiptValidationRequest request)
+            {
+                Assert.IsTrue(request.HasRequiredPayload);
+                return result;
+            }
         }
     }
 }

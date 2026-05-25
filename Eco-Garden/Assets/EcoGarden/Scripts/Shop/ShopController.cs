@@ -17,6 +17,7 @@ namespace EcoGarden.Shop
         [SerializeField] private BoardController boardController;
         [SerializeField] private MockIapProvider mockIapProvider;
         [SerializeField] private MonoBehaviour iapProviderBehaviour;
+        [SerializeField] private MonoBehaviour receiptValidatorBehaviour;
         [SerializeField] private bool includeDecorationCatalogItems;
 
         private ShopCatalogService catalog;
@@ -154,7 +155,8 @@ namespace EcoGarden.Shop
                     plantUnlockService,
                     Inventory,
                     processedIapTransactionIds,
-                    OnProcessedIapTransactionAdded);
+                    OnProcessedIapTransactionAdded,
+                    ResolveReceiptValidator());
             }
 
             IapPurchaseService service = iapPurchaseService;
@@ -254,6 +256,24 @@ namespace EcoGarden.Shop
                 default:
                     return ShopPurchaseStatus.IapFailed;
             }
+        }
+
+        private IIapReceiptValidator ResolveReceiptValidator()
+        {
+            IIapReceiptValidator validator = receiptValidatorBehaviour as IIapReceiptValidator;
+            if (validator != null)
+            {
+                return validator;
+            }
+
+            BackendIapReceiptValidator backendValidator = FindAnyObjectByType<BackendIapReceiptValidator>();
+            if (backendValidator != null)
+            {
+                receiptValidatorBehaviour = backendValidator;
+                return backendValidator;
+            }
+
+            return null;
         }
 
         private void ResolveReferences()

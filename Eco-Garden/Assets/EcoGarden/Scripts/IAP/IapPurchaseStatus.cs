@@ -9,6 +9,7 @@ namespace EcoGarden.IAP
         ProductUnavailable,
         InvalidProduct,
         AlreadyOwned,
-        DuplicateTransaction
+        DuplicateTransaction,
+        ReceiptValidationFailed
     }
 }
