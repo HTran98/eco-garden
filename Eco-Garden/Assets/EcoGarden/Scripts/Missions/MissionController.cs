@@ -14,6 +14,7 @@ namespace EcoGarden.Missions
         [SerializeField] private MissionDefinition[] missionDefinitions;
         [SerializeField] private BoardController boardController;
         [SerializeField] private EconomyController economyController;
+        [SerializeField] private bool includeDailyMissions;
 
         private readonly List<MissionRuntimeState> missions = new List<MissionRuntimeState>();
         private readonly Dictionary<string, MissionRuntimeState> missionsById = new Dictionary<string, MissionRuntimeState>();
@@ -196,7 +197,10 @@ namespace EcoGarden.Missions
             for (int i = 0; i < sortedDefinitions.Count; i++)
             {
                 MissionDefinition definition = sortedDefinitions[i];
-                if (definition == null || !definition.IsValid || missionsById.ContainsKey(definition.MissionId))
+                if (definition == null ||
+                    !definition.IsValid ||
+                    (!includeDailyMissions && definition.IsDaily) ||
+                    missionsById.ContainsKey(definition.MissionId))
                 {
                     continue;
                 }

@@ -1,6 +1,6 @@
 # Eco Garden - Implementation Progress
 
-Last updated: 2026-05-19
+Last updated: 2026-05-25
 
 ## Current Completion Roadmap
 
@@ -299,3 +299,9 @@ Batchmode EditMode tests did not produce a result file because the project alrea
 2026-05-22: Started `D4 - Economy Balance Sheet`. Added `Docs/Economy Balance Sheet.md` covering first-release Gold/Gem assumptions, Level 1-10 order rewards, mission rewards, shop sinks, IAP Gem grants, current balance risks, and D5 playtest metrics to capture before numeric tuning. Current recommendation is to playtest before changing prices because Levels 1-10 remain non-IAP-safe through temporary tier unlocks, while stacked mission claims may make Gold too generous.
 
 2026-05-22: Started `D5 - Difficulty Validation Playtest` instrumentation. `LevelStateController` now exposes remaining time and completion/failure events, and `LevelPlaytestMetricsController` logs level id/name, result, remaining timer seconds, Gold/Gem, and booster counts on complete/fail. The first-release scene generator and audit now include this metrics controller. Added EditMode coverage that `CompleteLevel` raises its completion event once. Runtime, editor, and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false`.
+
+2026-05-25: Completed `D6 - Mission Rotation Decision`. First release missions are static, one-time missions; daily rotation is deferred until after release-candidate work. Added `Docs/Mission Rotation Decision.md`, made `MissionController` skip `isDaily` assets by default so unsupported rotating content does not appear in the first-release UI, and added EditMode coverage for that guard.
+
+2026-05-25: Completed `D7 - Decoration Scope Decision`. Decoration purchases are deferred from the first release because owned decoration ids currently have no visible cosmetic application path. Added `Docs/Decoration Scope Decision.md`, made `ShopCatalogService` exclude decoration items by default while keeping an opt-in path for future cosmetic builds, and added EditMode coverage for default exclusion and future inclusion.
+
+2026-05-25: Completed `E1 - Visual Asset Acceptance List`. Updated `Docs/Asset Resource List.md` so current runtime procedural gameplay sprites are explicitly accepted as first-release placeholders, decoration art is deferred with decoration purchases, and background, UI icons, VFX sprites, and SFX are flagged as needing authored assets before release.

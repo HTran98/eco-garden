@@ -83,6 +83,29 @@ namespace EcoGarden.Tests.EditMode
             shopController.SetCatalogItems(new[]
             {
                 CreateItem(
+                    "shop_unlock_lotus_tier_4",
+                    ShopItemCategory.Unlock,
+                    new ShopPriceDefinition(ShopPurchaseKind.Gold, 100),
+                    new RewardDefinition(null, new[] { new AbilityReward(AbilityKind.Shovel, 1) }),
+                    false)
+            });
+
+            ShopPurchaseResult first = shopController.TryPurchase("shop_unlock_lotus_tier_4");
+            ShopPurchaseResult second = shopController.TryPurchase("shop_unlock_lotus_tier_4");
+
+            Assert.IsTrue(first.Succeeded);
+            Assert.AreEqual(ShopPurchaseStatus.AlreadyOwned, second.Status);
+            Assert.AreEqual(400, economyController.Gold);
+            Assert.IsTrue(shopController.Inventory.IsProductPurchased("shop_unlock_lotus_tier_4"));
+        }
+
+        [Test]
+        public void TryPurchase_DoesNotSellDeferredDecorationProductsByDefault()
+        {
+            economyController.SetGold(500);
+            shopController.SetCatalogItems(new[]
+            {
+                CreateItem(
                     "shop_deco_butterfly",
                     ShopItemCategory.Decoration,
                     new ShopPriceDefinition(ShopPurchaseKind.Gold, 100),
@@ -90,14 +113,12 @@ namespace EcoGarden.Tests.EditMode
                     false)
             });
 
-            ShopPurchaseResult first = shopController.TryPurchase("shop_deco_butterfly");
-            ShopPurchaseResult second = shopController.TryPurchase("shop_deco_butterfly");
+            ShopPurchaseResult result = shopController.TryPurchase("shop_deco_butterfly");
 
-            Assert.IsTrue(first.Succeeded);
-            Assert.AreEqual(ShopPurchaseStatus.AlreadyOwned, second.Status);
-            Assert.AreEqual(400, economyController.Gold);
-            Assert.IsTrue(shopController.Inventory.IsProductPurchased("shop_deco_butterfly"));
-            Assert.IsTrue(shopController.Inventory.IsDecorationOwned("deco_butterfly_variant"));
+            Assert.AreEqual(ShopPurchaseStatus.ProductNotFound, result.Status);
+            Assert.AreEqual(500, economyController.Gold);
+            Assert.IsFalse(shopController.Inventory.IsProductPurchased("shop_deco_butterfly"));
+            Assert.IsFalse(shopController.Inventory.IsDecorationOwned("deco_butterfly_variant"));
         }
 
         [Test]

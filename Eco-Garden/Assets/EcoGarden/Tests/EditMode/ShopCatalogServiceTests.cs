@@ -47,6 +47,34 @@ namespace EcoGarden.Tests.EditMode
         }
 
         [Test]
+        public void Catalog_ExcludesDecorationItemsByDefault()
+        {
+            ShopItemDefinition booster = CreateItem("shop_booster_shovel_small", ShopItemCategory.Booster);
+            ShopItemDefinition decoration = CreateItem("shop_deco_butterfly", ShopItemCategory.Decoration);
+            ShopCatalogService catalog = new ShopCatalogService(new[] { booster, decoration });
+
+            Assert.AreEqual(1, catalog.Items.Count);
+            Assert.IsFalse(catalog.TryGetItem("shop_deco_butterfly", out _));
+            Assert.AreEqual(0, catalog.GetItemsByCategory(ShopItemCategory.Decoration).Count);
+
+            Object.DestroyImmediate(booster);
+            Object.DestroyImmediate(decoration);
+        }
+
+        [Test]
+        public void Catalog_CanIncludeDecorationItemsForFutureCosmeticBuilds()
+        {
+            ShopItemDefinition decoration = CreateItem("shop_deco_butterfly", ShopItemCategory.Decoration);
+            ShopCatalogService catalog = new ShopCatalogService(new[] { decoration }, true);
+
+            Assert.AreEqual(1, catalog.Items.Count);
+            Assert.IsTrue(catalog.TryGetItem("shop_deco_butterfly", out ShopItemDefinition found));
+            Assert.AreSame(decoration, found);
+
+            Object.DestroyImmediate(decoration);
+        }
+
+        [Test]
         public void PriceDefinition_MapsPurchaseKindToCurrency()
         {
             ShopPriceDefinition goldPrice = new ShopPriceDefinition(ShopPurchaseKind.Gold, 50);

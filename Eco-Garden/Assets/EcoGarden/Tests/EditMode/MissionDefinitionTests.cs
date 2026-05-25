@@ -54,6 +54,25 @@ namespace EcoGarden.Tests.EditMode
         }
 
         [Test]
+        public void Controller_SkipsDailyMissionsByDefault()
+        {
+            GameObject gameObject = new GameObject("MissionControllerTests");
+            MissionController controller = gameObject.AddComponent<MissionController>();
+            MissionDefinition staticMission = CreateMission("mission_static", 2, 10);
+            MissionDefinition dailyMission = CreateMission("mission_daily", 2, 5, true);
+
+            controller.SetMissionDefinitions(new[] { dailyMission, staticMission });
+
+            Assert.AreEqual(1, controller.Missions.Count);
+            Assert.AreEqual("mission_static", controller.Missions[0].MissionId);
+            Assert.IsFalse(controller.TryGetMission("mission_daily", out _));
+
+            Object.DestroyImmediate(gameObject);
+            Object.DestroyImmediate(staticMission);
+            Object.DestroyImmediate(dailyMission);
+        }
+
+        [Test]
         public void Controller_RestoresAndCapturesMissionState()
         {
             GameObject gameObject = new GameObject("MissionControllerTests");
@@ -181,6 +200,11 @@ namespace EcoGarden.Tests.EditMode
 
         private static MissionDefinition CreateMission(string missionId, int requiredCount, int sortOrder)
         {
+            return CreateMission(missionId, requiredCount, sortOrder, false);
+        }
+
+        private static MissionDefinition CreateMission(string missionId, int requiredCount, int sortOrder, bool isDaily)
+        {
             return CreateMission(
                 missionId,
                 MissionType.Merge,
@@ -188,7 +212,8 @@ namespace EcoGarden.Tests.EditMode
                 1,
                 AbilityKind.Shovel,
                 requiredCount,
-                sortOrder);
+                sortOrder,
+                isDaily);
         }
 
         private static MissionDefinition CreateMission(
@@ -198,7 +223,8 @@ namespace EcoGarden.Tests.EditMode
             int targetItemLevel,
             AbilityKind targetAbility,
             int requiredCount,
-            int sortOrder)
+            int sortOrder,
+            bool isDaily = false)
         {
             MissionDefinition mission = ScriptableObject.CreateInstance<MissionDefinition>();
             mission.EditorSetValues(
@@ -212,7 +238,7 @@ namespace EcoGarden.Tests.EditMode
                 targetAbility,
                 requiredCount,
                 new RewardDefinition(new[] { new CurrencyReward(CurrencyKind.Gold, 10) }, null),
-                false,
+                isDaily,
                 sortOrder);
             return mission;
         }

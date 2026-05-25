@@ -17,6 +17,7 @@ namespace EcoGarden.Shop
         [SerializeField] private BoardController boardController;
         [SerializeField] private MockIapProvider mockIapProvider;
         [SerializeField] private MonoBehaviour iapProviderBehaviour;
+        [SerializeField] private bool includeDecorationCatalogItems;
 
         private ShopCatalogService catalog;
         private IapPurchaseService iapPurchaseService;
@@ -33,7 +34,7 @@ namespace EcoGarden.Shop
             {
                 if (catalog == null)
                 {
-                    catalog = new ShopCatalogService(catalogItems);
+                    catalog = new ShopCatalogService(catalogItems, includeDecorationCatalogItems);
                 }
 
                 return catalog;
@@ -43,13 +44,13 @@ namespace EcoGarden.Shop
         private void Awake()
         {
             ResolveReferences();
-            catalog = new ShopCatalogService(catalogItems);
+            catalog = new ShopCatalogService(catalogItems, includeDecorationCatalogItems);
         }
 
         public void SetCatalogItems(ShopItemDefinition[] items)
         {
             catalogItems = items;
-            catalog = new ShopCatalogService(catalogItems);
+            catalog = new ShopCatalogService(catalogItems, includeDecorationCatalogItems);
         }
 
         public void RestoreInventory(string[] purchasedProductIds, string[] ownedDecorationIds)

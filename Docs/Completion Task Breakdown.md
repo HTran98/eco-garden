@@ -218,4 +218,7 @@ Reason: save compatibility is the dependency that protects shop, missions, unloc
 - Started `D5 - Difficulty Validation Playtest` support by adding `LevelPlaytestMetricsController` and making first-release scene audit require it; completion/failure logs now capture level id/name, result, remaining time, Gold/Gem, and booster counts.
 - Verified runtime, editor, and EditMode test assemblies build after Unity IAP import.
 - Re-ran `A6` scene audit after Unity IAP import; third batchmode run passed after Unity finished package/domain refresh.
+- Completed `D6 - Mission Rotation Decision`: first release uses static, one-time missions only; daily missions are deferred, documented in `Docs/Mission Rotation Decision.md`, and `MissionController` now skips `isDaily` assets by default.
+- Completed `D7 - Decoration Scope Decision`: decoration purchases are deferred from the first release, documented in `Docs/Decoration Scope Decision.md`, and the runtime shop catalog excludes decoration items by default while preserving owned-decoration save compatibility.
+- Completed `E1 - Visual Asset Acceptance List`: `Docs/Asset Resource List.md` now marks gameplay procedural sprites as first-release accepted placeholders, defers decoration art, and flags background, UI icons, VFX sprites, and SFX as needing authored assets before release.
 - Remaining Milestone A work: run the manual `A1` regression checklist in Play Mode.

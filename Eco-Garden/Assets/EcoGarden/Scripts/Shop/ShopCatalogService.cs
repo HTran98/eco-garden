@@ -10,6 +10,11 @@ namespace EcoGarden.Shop
         public IReadOnlyList<ShopItemDefinition> Items { get { return items; } }
 
         public ShopCatalogService(IEnumerable<ShopItemDefinition> definitions)
+            : this(definitions, false)
+        {
+        }
+
+        public ShopCatalogService(IEnumerable<ShopItemDefinition> definitions, bool includeDecorationItems)
         {
             if (definitions == null)
             {
@@ -18,7 +23,10 @@ namespace EcoGarden.Shop
 
             foreach (ShopItemDefinition definition in definitions)
             {
-                if (definition == null || !definition.IsValid || itemsById.ContainsKey(definition.ProductId))
+                if (definition == null ||
+                    !definition.IsValid ||
+                    (!includeDecorationItems && definition.Category == ShopItemCategory.Decoration) ||
+                    itemsById.ContainsKey(definition.ProductId))
                 {
                     continue;
                 }
