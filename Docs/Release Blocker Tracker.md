@@ -19,7 +19,7 @@ Purpose: track the blockers that must be closed, explicitly deferred, or accepte
 | ID | Area | Blocker | Status | Owner | Next Action | Release Impact |
 | --- | --- | --- | --- | --- | --- | --- |
 | RB-001 | Core Gameplay | Full A1 clean-save and existing-save regression has not been run in Play Mode. | Needs Unity Editor | User/Codex with Unity Editor | Run `Docs/Milestone A Regression Checklist.md` in Play Mode and log result. | Blocks release candidate confidence. |
-| RB-002 | Scene | First-release progression scene may be stale after Level Select and playtest metrics additions. | Needs Unity Editor | User/Codex with Unity Editor | Run `Eco Garden/Create Scene/First Release Progression`, then `Eco Garden/Validation/Audit First Release Scene`. | Blocks first-release level flow validation. |
+| RB-002 | Scene | First-release progression scene may be stale after Level Select and playtest metrics additions. | Closed | User/Codex with Unity Editor | Batchmode `EcoGarden.Editor.EcoGardenSceneAudit.AuditFirstReleaseScene` passed on 2026-05-25. Regenerate scene only after future scene-generator or HUD changes. | First-release scene references validated for current release scope. |
 | RB-003 | Android UI | Portrait layout has code/metric coverage, but no device screenshot pass for notch/gesture-nav profiles. | Needs Device | User/device QA | Run `Docs/Android Portrait Layout Matrix.md` on target Android devices and record pass/fail. | Blocks mobile UX signoff. |
 | RB-004 | Android Build | Android build with Unity IAP imported has not been rerun after package integration. | Needs Unity Editor | User/Codex with Android modules | Build Android from Unity after confirming Android modules and Unity licensing are stable. | Blocks Android release candidate. |
 | RB-005 | IAP | Google Play internal-track purchase has not been tested for success, cancel/fail, restart persistence, and duplicate transaction behavior. | Needs Device | User/Google Play account | Configure managed products and run internal-track purchase tests. | Blocks production IAP and store readiness. |
@@ -35,7 +35,7 @@ Purpose: track the blockers that must be closed, explicitly deferred, or accepte
 | Gate | Current State | Minimum Next Action |
 | --- | --- | --- |
 | Core loop | Automated rule tests pass; manual A1 pass is still open. | Run Play Mode regression. |
-| First-release scene | Tooling exists; scene regeneration/audit still needs Editor confirmation. | Regenerate and audit scene. |
+| First-release scene | Batchmode audit passed for the current `EcoGarden_FirstRelease_Progression.unity` scene. | Re-audit after future scene-generator or HUD changes. |
 | Android UX | Metric tests pass for key layout risks; device validation is open. | Run portrait device matrix. |
 | Android build | Previous manual Android build succeeded before final IAP/package state. | Rebuild Android with current project. |
 | Production IAP | Provider/package/product-id checks exist; receipt validation/internal-track tests are open. | Keep IAP non-production until RB-005/RB-006/RB-007 close. |
