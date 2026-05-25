@@ -107,15 +107,9 @@ The user confirmed Android build completed successfully from Unity after Android
 
 Date: 2026-05-20
 
-Status: Platform IAP provider decision documented; Android store build with Unity IAP not run yet.
+Status: Superseded by the 2026-05-25 current Android build check below.
 
-Current result:
-
-```text
-Packages/manifest.json does not include com.unity.purchasing.
-```
-
-The current vertical slice uses `MockIapProvider`, so Runtime, Editor, and EditMode test assemblies build without a store SDK. A production Android IAP build requires installing Unity IAP, adding Google Play managed products, and adding a `UnityIapProvider` implementation behind `IIapProvider`.
+Historical result: Unity IAP was not installed yet at the time of Task 8.16. This has since changed: `com.unity.purchasing` 5.3.0 is installed, `UnityIapProvider` has a first-pass implementation, and persistent processed transaction ids are saved.
 
 Required product ids:
 
@@ -124,11 +118,47 @@ eco_garden_gems_small
 eco_garden_gems_medium
 ```
 
-Required follow-up before production IAP build:
+Remaining follow-up before production IAP release:
 
-1. Install `com.unity.purchasing` through Unity Package Manager.
-2. Confirm Android build still succeeds after package import.
-3. Configure Google Play Console managed products with the product ids above.
-4. Implement `UnityIapProvider`.
-5. Persist processed transaction ids in save data.
-6. Run an internal Google Play test purchase on device.
+1. Configure Google Play Console managed products with the product ids above.
+2. Wire production `UnityIapProvider` only after backend receipt validation is available.
+3. Run an internal Google Play test purchase on device.
+
+## Current Android Build With Unity IAP
+
+Date: 2026-05-25
+
+Status: Succeeded in Unity batchmode.
+
+Command:
+
+```powershell
+& 'C:\Program Files\Unity\Hub\Editor\6000.4.7f1\Editor\Unity.exe' `
+  -batchmode `
+  -quit `
+  -projectPath 'D:\Project\Game\Eco-Garden' `
+  -executeMethod EcoGarden.Editor.EcoGardenAndroidBuildVerification.BuildLevel15Android `
+  -logFile 'D:\Project\Game\Eco-Garden\Logs\AndroidBuildCurrent.log'
+```
+
+Result:
+
+```text
+Eco Garden Android build result: Succeeded
+Eco Garden Android build output: D:/Project/Game/Eco-Garden/Builds/Android/EcoGarden_Level15_VerticalSlice.apk
+Eco Garden Android build size bytes: 1240269284
+Eco Garden Android build total time: 00:04:48.7430787
+```
+
+Verified output file:
+
+```text
+D:\Project\Game\Eco-Garden\Builds\Android\EcoGarden_Level15_VerticalSlice.apk
+Size: 62,825,736 bytes
+```
+
+Notes:
+
+- Build output and logs are generated artifacts and remain ignored by git.
+- The build uses the current project with Unity IAP package imported, but it is still a development APK and not a signed release candidate.
+- This does not replace Google Play internal-track purchase testing.
