@@ -1,0 +1,19 @@
+{
+    "name": "EcoGarden.PlayModeTests",
+    "rootNamespace": "EcoGarden.Tests",
+    "references": [
+        "EcoGarden.Runtime"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "noEngineReferences": false
+}
