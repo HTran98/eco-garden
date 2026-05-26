@@ -213,7 +213,7 @@ Acceptance criteria:
 | Delivery zone | Code pass | Code pass | Code pass | Needs device | Needs device | P0 | Existing metric coverage; needs drag test. |
 | Sell basket | Code pass | Code pass | Code pass | Needs device | Needs device | P0 | Existing metric coverage; needs drag test. |
 | Compact mission tracker | Code pass | Code pass | Code pass | Needs device | Needs device | P1 | Existing metric coverage; needs readability pass. |
-| Shop panel | Code pass | Code pass | Code pass | Needs device | Needs device | P0 | Product state/copy polish still needed. |
+| Shop panel | Code pass | Code pass | Code pass | Needs device | Needs device | P0 | UI-R4 code pass added release copy/state polish; visual/device pass still required. |
 | Mission panel | Code pass | Code pass | Code pass | Needs device | Needs device | P1 | UI-R3 shared panel header/content metrics applied; row readability still needs release pass. |
 | Level Select panel | Code pass | Code pass | Code pass | Needs device | Needs device | P1 | UI-R3 shared panel header/content metrics applied; locked/current/completed states need clarity. |
 | Pause panel | Not run | Not run | Not run | Needs device | Needs device | P1 | Needs consistent panel framework. |
@@ -263,3 +263,11 @@ This slice has the highest release impact because every play session depends on 
 - HUD generator and runtime Shop/Mission fallback panels now use shared panel metrics instead of hard-coded header/content anchors.
 - Added EditMode metric coverage for small-portrait panel title/close sizing, Shop header/tab/content separation, and Result action button touch size.
 - Runtime, editor, and EditMode test assemblies build successfully after local generated `.csproj` verification updates; generated project files are not tracked and were not committed.
+
+2026-05-26:
+
+- Started UI-R4 Shop release pass.
+- Shop product rows now present invalid products as unavailable, show pending IAP purchases as non-interactable `Pending`, and refresh from `ShopController.IapPurchaseCompleted` callbacks.
+- IAP button/price copy now uses `Store` and `Store unavailable` language, matching the client-only Unity IAP release path without implying custom backend account sync or restore behavior.
+- Empty shop categories are disabled and the selected tab falls back to the first populated release category, avoiding an empty Decoration tab after decoration purchases were deferred.
+- Runtime and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false`.

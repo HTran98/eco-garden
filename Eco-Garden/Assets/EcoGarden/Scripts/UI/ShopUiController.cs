@@ -16,8 +16,10 @@ namespace EcoGarden.UI
         [SerializeField] private GameplayFeedbackController gameplayFeedbackController;
 
         private ShopController shopController;
+        private ShopController subscribedShopController;
         private ShopItemCategory selectedCategory = ShopItemCategory.Booster;
         private readonly List<GameObject> productRows = new List<GameObject>();
+        private readonly HashSet<string> pendingProductIds = new HashSet<string>();
         private bool buttonsWired;
 
         private void Awake()
@@ -38,7 +40,13 @@ namespace EcoGarden.UI
         {
             ResolveReferences();
             WireButtons();
+            SubscribeShopEvents();
             RefreshProducts();
+        }
+
+        private void OnDisable()
+        {
+            UnsubscribeShopEvents();
         }
 
         public void ToggleShop()
@@ -83,6 +91,9 @@ namespace EcoGarden.UI
                 return;
             }
 
+            EnsureSelectedCategoryHasItems();
+            RefreshCategoryTabs();
+
             List<ShopItemDefinition> items = shopController.Catalog.GetItemsByCategory(selectedCategory);
             for (int i = 0; i < items.Count; i++)
             {
@@ -117,7 +128,7 @@ namespace EcoGarden.UI
 
             GameObject buyObject = CreateButton("BuyButton", row.transform, BuildBuyLabel(item), ShopUiLayoutMetrics.BuyAnchorMin, ShopUiLayoutMetrics.BuyAnchorMax);
             Button buyButton = buyObject.GetComponent<Button>();
-            buyButton.interactable = item.Repeatable || !shopController.Inventory.IsProductPurchased(item.ProductId);
+            buyButton.interactable = CanBuy(item);
             Image buyImage = buyObject.GetComponent<Image>();
             if (buyImage != null && !buyButton.interactable)
             {
@@ -138,15 +149,21 @@ namespace EcoGarden.UI
             }
 
             ShopPurchaseResult result = shopController.TryPurchase(productId);
+            TrackPurchaseState(productId, result);
             PlayMessage(BuildPurchaseMessage(result));
             RefreshProducts();
         }
 
         private static string BuildPriceText(ShopItemDefinition item)
         {
+            if (item == null || item.Price == null)
+            {
+                return "N/A";
+            }
+
             if (item.Price.PurchaseKind == ShopPurchaseKind.Iap)
             {
-                return "IAP";
+                return "Store";
             }
 
             return item.Price.CurrencyKind + " " + item.Price.Amount;
@@ -164,9 +181,24 @@ namespace EcoGarden.UI
 
         private string BuildBuyLabel(ShopItemDefinition item)
         {
+            if (item == null || !item.IsValid)
+            {
+                return "Unavailable";
+            }
+
+            if (pendingProductIds.Contains(item.ProductId))
+            {
+                return "Pending";
+            }
+
             if (!item.Repeatable && shopController != null && shopController.Inventory.IsProductPurchased(item.ProductId))
             {
                 return "Owned";
+            }
+
+            if (item.Price.PurchaseKind == ShopPurchaseKind.Iap)
+            {
+                return "Store";
             }
 
             return "Buy";
@@ -185,7 +217,9 @@ namespace EcoGarden.UI
                 case ShopPurchaseStatus.InsufficientCurrency:
                     return "Not enough currency";
                 case ShopPurchaseStatus.UnsupportedPurchaseKind:
-                    return "IAP not available";
+                    return "Store unavailable";
+                case ShopPurchaseStatus.InvalidProduct:
+                    return "Item unavailable";
                 case ShopPurchaseStatus.IapCancelled:
                     return "Purchase cancelled";
                 case ShopPurchaseStatus.IapFailed:
@@ -196,6 +230,68 @@ namespace EcoGarden.UI
                     return "Product not found";
                 default:
                     return "Cannot buy";
+            }
+        }
+
+        private bool CanBuy(ShopItemDefinition item)
+        {
+            if (item == null || !item.IsValid || pendingProductIds.Contains(item.ProductId))
+            {
+                return false;
+            }
+
+            return item.Repeatable || shopController == null || !shopController.Inventory.IsProductPurchased(item.ProductId);
+        }
+
+        private void TrackPurchaseState(string productId, ShopPurchaseResult result)
+        {
+            if (string.IsNullOrWhiteSpace(productId))
+            {
+                return;
+            }
+
+            if (result.Status == ShopPurchaseStatus.Pending)
+            {
+                pendingProductIds.Add(productId);
+                return;
+            }
+
+            pendingProductIds.Remove(productId);
+        }
+
+        private void OnIapPurchaseCompleted(ShopPurchaseResult result)
+        {
+            if (result.Item != null && !string.IsNullOrWhiteSpace(result.Item.ProductId))
+            {
+                pendingProductIds.Remove(result.Item.ProductId);
+            }
+
+            PlayMessage(BuildPurchaseMessage(result));
+            RefreshProducts();
+        }
+
+        private void SubscribeShopEvents()
+        {
+            if (ReferenceEquals(subscribedShopController, shopController))
+            {
+                return;
+            }
+
+            UnsubscribeShopEvents();
+
+            if (shopController != null)
+            {
+                shopController.IapPurchaseCompleted += OnIapPurchaseCompleted;
+                subscribedShopController = shopController;
+            }
+        }
+
+        private void UnsubscribeShopEvents()
+        {
+            if (subscribedShopController != null)
+            {
+                subscribedShopController.IapPurchaseCompleted -= OnIapPurchaseCompleted;
+                subscribedShopController = null;
             }
         }
 
@@ -217,6 +313,7 @@ namespace EcoGarden.UI
             if (shopController == null)
             {
                 shopController = FindAnyObjectByType<ShopController>();
+                SubscribeShopEvents();
             }
 
             if (gameplayFeedbackController == null)
@@ -333,15 +430,60 @@ namespace EcoGarden.UI
             }
 
             Image image = button.GetComponent<Image>();
+            bool hasItems = CategoryHasItems(category);
+            button.interactable = hasItems;
+
             if (image == null)
             {
                 return;
             }
 
             image.sprite = PlaceholderSpriteFactory.HudButtonSprite;
+            if (!hasItems)
+            {
+                image.color = new Color(0.28f, 0.34f, 0.34f, 0.76f);
+                return;
+            }
+
             image.color = selectedCategory == category
                 ? GetCategoryAccentColor(category)
                 : new Color(0.76f, 0.88f, 0.84f, 0.82f);
+        }
+
+        private void EnsureSelectedCategoryHasItems()
+        {
+            if (CategoryHasItems(selectedCategory))
+            {
+                return;
+            }
+
+            if (CategoryHasItems(ShopItemCategory.Booster))
+            {
+                selectedCategory = ShopItemCategory.Booster;
+                return;
+            }
+
+            if (CategoryHasItems(ShopItemCategory.Unlock))
+            {
+                selectedCategory = ShopItemCategory.Unlock;
+                return;
+            }
+
+            if (CategoryHasItems(ShopItemCategory.Currency))
+            {
+                selectedCategory = ShopItemCategory.Currency;
+                return;
+            }
+
+            if (CategoryHasItems(ShopItemCategory.Bundle))
+            {
+                selectedCategory = ShopItemCategory.Bundle;
+            }
+        }
+
+        private bool CategoryHasItems(ShopItemCategory category)
+        {
+            return shopController != null && shopController.Catalog.GetItemsByCategory(category).Count > 0;
         }
 
         private void PlayMessage(string message)
@@ -550,6 +692,11 @@ namespace EcoGarden.UI
 
         private static Color GetPriceColor(ShopItemDefinition item)
         {
+            if (item == null || item.Price == null)
+            {
+                return new Color(0.34f, 0.38f, 0.38f, 1f);
+            }
+
             if (item.Price.PurchaseKind == ShopPurchaseKind.Iap)
             {
                 return new Color(0.48f, 0.42f, 0.76f, 1f);
