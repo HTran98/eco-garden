@@ -19,7 +19,7 @@ Purpose: track the blockers that must be closed, explicitly deferred, or accepte
 
 | ID | Area | Blocker | Status | Owner | Next Action | Release Impact |
 | --- | --- | --- | --- | --- | --- | --- |
-| RB-001 | Core Gameplay | Full A1 clean-save and existing-save regression has not been run in Play Mode. | Needs Unity Editor | User/Codex with Unity Editor | Run `Docs/Milestone A Regression Checklist.md` in Play Mode and log result. | Blocks release candidate confidence. |
+| RB-001 | Core Gameplay | Full A1 clean-save and existing-save regression has not been run in Play Mode. | Needs Unity Editor | User/Codex with Unity Editor | Run `Docs/Milestone A Regression Checklist.md` in Play Mode and execute `EcoGarden.PlayModeTests`; log results. | Blocks release candidate confidence. |
 | RB-002 | Scene | First-release progression scene may be stale after Level Select and playtest metrics additions. | Closed | User/Codex with Unity Editor | Batchmode `EcoGarden.Editor.EcoGardenSceneAudit.AuditFirstReleaseScene` passed on 2026-05-25. Regenerate scene only after future scene-generator or HUD changes. | First-release scene references validated for current release scope. |
 | RB-003 | Android UI | Portrait layout has code/metric coverage, but no device screenshot pass for notch/gesture-nav profiles. | Needs Device | User/device QA | Run `Docs/Android Portrait Layout Matrix.md` on target Android devices and record pass/fail. | Blocks mobile UX signoff. |
 | RB-004 | Android Build | Android build with Unity IAP imported has not been rerun after package integration. | Closed | User/Codex with Android modules | Batchmode `EcoGarden.Editor.EcoGardenAndroidBuildVerification.BuildLevel15Android` succeeded on 2026-05-25 and produced `EcoGarden_Level15_VerticalSlice.apk`. Rebuild after future package/build-setting changes. | Android development build path validated for current project state. |
@@ -36,7 +36,7 @@ Purpose: track the blockers that must be closed, explicitly deferred, or accepte
 
 | Gate | Current State | Minimum Next Action |
 | --- | --- | --- |
-| Core loop | Automated rule tests pass; manual A1 pass is still open. | Run Play Mode regression. |
+| Core loop | Automated rule tests pass and PlayMode smoke tests compile; manual A1 pass and Unity Test Runner execution are still open. | Run Play Mode regression and `EcoGarden.PlayModeTests`. |
 | First-release scene | Batchmode audit passed for the current `EcoGarden_FirstRelease_Progression.unity` scene. | Re-audit after future scene-generator or HUD changes. |
 | Android UX | Metric tests pass for key layout risks; UI-R2 through UI-R8 code passes are complete, device validation is open. | Run `Docs/Android UI Validation Log.md` and portrait device matrix. |
 | Android build | Current Unity IAP project builds a development Android APK in batchmode. | Rebuild after future package/build-setting changes; signed RC build remains future work. |

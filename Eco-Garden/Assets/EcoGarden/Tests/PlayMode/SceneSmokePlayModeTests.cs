@@ -32,6 +32,7 @@ namespace EcoGarden.Tests.PlayMode
             LevelStateController levelStateController = Object.FindAnyObjectByType<LevelStateController>();
             ShopController shopController = Object.FindAnyObjectByType<ShopController>();
             MissionController missionController = Object.FindAnyObjectByType<MissionController>();
+            LevelSelectUiController levelSelectUiController = Object.FindAnyObjectByType<LevelSelectUiController>();
             ShopUiController shopUiController = Object.FindAnyObjectByType<ShopUiController>();
             MissionUiController missionUiController = Object.FindAnyObjectByType<MissionUiController>();
 
@@ -42,6 +43,7 @@ namespace EcoGarden.Tests.PlayMode
             Assert.NotNull(levelStateController);
             Assert.NotNull(shopController);
             Assert.NotNull(missionController);
+            Assert.NotNull(levelSelectUiController);
             Assert.NotNull(shopUiController);
             Assert.NotNull(missionUiController);
             Assert.NotNull(boardController.LevelDefinition);
@@ -65,7 +67,49 @@ namespace EcoGarden.Tests.PlayMode
             yield return null;
             Assert.IsFalse(FindSceneObject("MissionPanel").activeSelf);
 
+            levelSelectUiController.ToggleLevels();
+            yield return null;
+            Assert.IsTrue(FindSceneObject("LevelPanel").activeSelf);
+            levelSelectUiController.CloseLevels();
+            yield return null;
+            Assert.IsFalse(FindSceneObject("LevelPanel").activeSelf);
+
             Assert.AreEqual(LevelPlayState.Playing, levelStateController.State);
+        }
+
+        [UnityTest]
+        public IEnumerator Level15Scene_ResultPanelShowsCompletionAndFailureStates()
+        {
+            yield return SceneManager.LoadSceneAsync(Level15SceneName, LoadSceneMode.Single);
+            yield return null;
+            yield return null;
+
+            LevelStateController levelStateController = Object.FindAnyObjectByType<LevelStateController>();
+            Assert.NotNull(levelStateController);
+
+            levelStateController.CompleteLevel();
+            yield return null;
+
+            GameObject resultPanel = FindSceneObject("ResultPanel");
+            Assert.IsTrue(resultPanel.activeSelf);
+            Assert.AreEqual(LevelPlayState.Completed, levelStateController.State);
+            Assert.AreEqual("Level Complete", FindSceneText("ResultTitleText").text);
+            Assert.IsTrue(FindSceneText("ResultMessageText").text.Contains("complete"));
+
+            yield return SceneManager.LoadSceneAsync(Level15SceneName, LoadSceneMode.Single);
+            yield return null;
+            yield return null;
+
+            levelStateController = Object.FindAnyObjectByType<LevelStateController>();
+            Assert.NotNull(levelStateController);
+            levelStateController.FailLevel();
+            yield return null;
+
+            resultPanel = FindSceneObject("ResultPanel");
+            Assert.IsTrue(resultPanel.activeSelf);
+            Assert.AreEqual(LevelPlayState.Failed, levelStateController.State);
+            Assert.AreEqual("Time Up", FindSceneText("ResultTitleText").text);
+            Assert.IsTrue(FindSceneText("ResultMessageText").text.Contains("Retry"));
         }
 
         private static GridPosition FindProducerPosition(BoardController boardController)
@@ -118,6 +162,14 @@ namespace EcoGarden.Tests.PlayMode
 
             Assert.Fail("Scene object not found: " + objectName);
             return null;
+        }
+
+        private static Text FindSceneText(string objectName)
+        {
+            GameObject gameObject = FindSceneObject(objectName);
+            Text text = gameObject.GetComponent<Text>();
+            Assert.NotNull(text, "Scene object has no Text component: " + objectName);
+            return text;
         }
     }
 }
