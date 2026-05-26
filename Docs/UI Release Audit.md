@@ -26,7 +26,7 @@ The first release UI should feel like a complete Android portrait game UI, not a
 | Level Select | Panel exists for locked/unlocked levels. | Needs completed/locked/selected state clarity and better level summary layout. |
 | Result/Pause | Basic result and restart/next controls exist. | Needs release-safe layout, clearer rewards/result messaging, and visual consistency. |
 | Feedback | HUD messages and some reward/action feedback exist. | Needs standardized success/failure severity and non-blocking placement. |
-| Visual skin | `HudSkinController` applies shared placeholder sprites and colors. | UI still relies on placeholder-style panels/buttons; icons and authored UI assets are open under RB-009. |
+| Visual skin | `HudSkinController` applies shared placeholder sprites/colors and `UiIconLabelCatalog` provides compact runtime symbolic labels. | Authored UI icon art can still replace the accepted runtime symbolic placeholders after first release. |
 
 ## Device Profiles
 
@@ -295,3 +295,11 @@ This slice has the highest release impact because every play session depends on 
 - `GameplayFeedbackController` now applies severity colors and longer durations for warning/error messages, while suppressing immediate duplicate HUD messages to avoid unreadable stacking during repeated taps or invalid actions.
 - Added EditMode coverage for common release message classification and readable warning/error durations.
 - Runtime and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false` after local generated `.csproj` verification updates; generated project files are not tracked.
+
+2026-05-26:
+
+- Started UI-R8 Icon and Asset pass.
+- Added `UiIconLabelCatalog` as the shared source for compact runtime symbolic labels for top-bar actions, ability buttons, result actions, and Gold/Gem displays.
+- HUD generator, Android runtime label normalization, Ability HUD refresh, and Economy currency text now use the shared catalog instead of scattered long labels.
+- Updated `Docs/Asset Resource List.md` to mark accepted runtime symbolic placeholders for ability, currency, pause, restart, and next icons.
+- Runtime, editor, and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false` after local generated `.csproj` verification updates; generated project files are not tracked.

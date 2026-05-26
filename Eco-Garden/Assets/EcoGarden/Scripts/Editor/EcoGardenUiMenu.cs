@@ -64,12 +64,12 @@ namespace EcoGarden.Editor
             rect.sizeDelta = new Vector2(0f, 92f);
 
             CreateText("TimerText", topBar.transform, "03:00", TextAnchor.MiddleLeft, AndroidHudLayoutMetrics.TimerAnchorMin, AndroidHudLayoutMetrics.TimerAnchorMax);
-            CreateText("GoldText", topBar.transform, "Gold 0", TextAnchor.MiddleCenter, AndroidHudLayoutMetrics.GoldAnchorMin, AndroidHudLayoutMetrics.GoldAnchorMax);
-            CreateText("GemText", topBar.transform, "Gem 0", TextAnchor.MiddleCenter, AndroidHudLayoutMetrics.GemAnchorMin, AndroidHudLayoutMetrics.GemAnchorMax);
-            CreateButton("LevelButton", topBar.transform, "Lvl", AndroidHudLayoutMetrics.LevelButtonAnchorMin, AndroidHudLayoutMetrics.LevelButtonAnchorMax);
-            CreateButton("MissionButton", topBar.transform, "Tasks", AndroidHudLayoutMetrics.MissionButtonAnchorMin, AndroidHudLayoutMetrics.MissionButtonAnchorMax);
-            CreateButton("ShopButton", topBar.transform, "Shop", AndroidHudLayoutMetrics.ShopButtonAnchorMin, AndroidHudLayoutMetrics.ShopButtonAnchorMax);
-            CreateButton("PauseButton", topBar.transform, "II", AndroidHudLayoutMetrics.PauseButtonAnchorMin, AndroidHudLayoutMetrics.PauseButtonAnchorMax);
+            CreateText("GoldText", topBar.transform, UiIconLabelCatalog.Gold + " 0", TextAnchor.MiddleCenter, AndroidHudLayoutMetrics.GoldAnchorMin, AndroidHudLayoutMetrics.GoldAnchorMax);
+            CreateText("GemText", topBar.transform, UiIconLabelCatalog.Gem + " 0", TextAnchor.MiddleCenter, AndroidHudLayoutMetrics.GemAnchorMin, AndroidHudLayoutMetrics.GemAnchorMax);
+            CreateButton("LevelButton", topBar.transform, UiIconLabelCatalog.Level, AndroidHudLayoutMetrics.LevelButtonAnchorMin, AndroidHudLayoutMetrics.LevelButtonAnchorMax);
+            CreateButton("MissionButton", topBar.transform, UiIconLabelCatalog.Mission, AndroidHudLayoutMetrics.MissionButtonAnchorMin, AndroidHudLayoutMetrics.MissionButtonAnchorMax);
+            CreateButton("ShopButton", topBar.transform, UiIconLabelCatalog.Shop, AndroidHudLayoutMetrics.ShopButtonAnchorMin, AndroidHudLayoutMetrics.ShopButtonAnchorMax);
+            CreateButton("PauseButton", topBar.transform, UiIconLabelCatalog.Pause, AndroidHudLayoutMetrics.PauseButtonAnchorMin, AndroidHudLayoutMetrics.PauseButtonAnchorMax);
         }
 
         private static void CreateObjectivePanel(Transform parent)
@@ -86,9 +86,9 @@ namespace EcoGarden.Editor
             RectTransform rect = bar.GetComponent<RectTransform>();
             rect.sizeDelta = new Vector2(-80f, 150f);
 
-            CreateButton("ShovelButton", bar.transform, "Shovel\nx2", AndroidHudLayoutMetrics.ShovelButtonAnchorMin, AndroidHudLayoutMetrics.ShovelButtonAnchorMax);
-            CreateButton("MagicWandButton", bar.transform, "Wand\nx1", AndroidHudLayoutMetrics.MagicWandButtonAnchorMin, AndroidHudLayoutMetrics.MagicWandButtonAnchorMax);
-            CreateButton("SortingMagnetButton", bar.transform, "Magnet\nx1", AndroidHudLayoutMetrics.SortingMagnetButtonAnchorMin, AndroidHudLayoutMetrics.SortingMagnetButtonAnchorMax);
+            CreateButton("ShovelButton", bar.transform, UiIconLabelCatalog.AbilityWithCount(EcoGarden.Abilities.AbilityKind.Shovel, 2), AndroidHudLayoutMetrics.ShovelButtonAnchorMin, AndroidHudLayoutMetrics.ShovelButtonAnchorMax);
+            CreateButton("MagicWandButton", bar.transform, UiIconLabelCatalog.AbilityWithCount(EcoGarden.Abilities.AbilityKind.MagicWand, 1), AndroidHudLayoutMetrics.MagicWandButtonAnchorMin, AndroidHudLayoutMetrics.MagicWandButtonAnchorMax);
+            CreateButton("SortingMagnetButton", bar.transform, UiIconLabelCatalog.AbilityWithCount(EcoGarden.Abilities.AbilityKind.SortingMagnet, 1), AndroidHudLayoutMetrics.SortingMagnetButtonAnchorMin, AndroidHudLayoutMetrics.SortingMagnetButtonAnchorMax);
         }
 
         private static void CreateSellBasket(Transform parent)
@@ -142,8 +142,8 @@ namespace EcoGarden.Editor
             Text message = CreateText("ResultMessageText", panel.transform, "Blooming Lotus delivered.", TextAnchor.MiddleCenter, PanelUiLayoutMetrics.ResultMessageAnchorMin, PanelUiLayoutMetrics.ResultMessageAnchorMax).GetComponent<Text>();
             message.fontSize = 26;
 
-            CreateButton("RestartButton", panel.transform, "Restart", PanelUiLayoutMetrics.ResultRestartAnchorMin, PanelUiLayoutMetrics.ResultRestartAnchorMax);
-            CreateButton("NextLevelButton", panel.transform, "Next", PanelUiLayoutMetrics.ResultNextAnchorMin, PanelUiLayoutMetrics.ResultNextAnchorMax);
+            CreateButton("RestartButton", panel.transform, UiIconLabelCatalog.Restart, PanelUiLayoutMetrics.ResultRestartAnchorMin, PanelUiLayoutMetrics.ResultRestartAnchorMax);
+            CreateButton("NextLevelButton", panel.transform, UiIconLabelCatalog.Next, PanelUiLayoutMetrics.ResultNextAnchorMin, PanelUiLayoutMetrics.ResultNextAnchorMax);
             panel.SetActive(false);
         }
 
@@ -155,7 +155,7 @@ namespace EcoGarden.Editor
 
             Text title = CreateText("LevelTitleText", panel.transform, "Levels", TextAnchor.MiddleLeft, PanelUiLayoutMetrics.TitleAnchorMin, PanelUiLayoutMetrics.TitleAnchorMax).GetComponent<Text>();
             title.fontSize = 36;
-            CreateButton("LevelCloseButton", panel.transform, "X", PanelUiLayoutMetrics.CloseAnchorMin, PanelUiLayoutMetrics.CloseAnchorMax);
+            CreateButton("LevelCloseButton", panel.transform, UiIconLabelCatalog.Close, PanelUiLayoutMetrics.CloseAnchorMin, PanelUiLayoutMetrics.CloseAnchorMax);
 
             GameObject viewport = CreatePanel("LevelViewport", panel.transform, PanelUiLayoutMetrics.FullContentAnchorMin, PanelUiLayoutMetrics.FullContentAnchorMax, new Vector2(0.5f, 0.5f), Vector2.zero);
             viewport.GetComponent<Image>().color = new Color(0.06f, 0.08f, 0.10f, 0.55f);
@@ -192,7 +192,7 @@ namespace EcoGarden.Editor
 
             Text title = CreateText("ShopTitleText", panel.transform, "Shop", TextAnchor.MiddleLeft, PanelUiLayoutMetrics.TitleAnchorMin, PanelUiLayoutMetrics.TitleAnchorMax).GetComponent<Text>();
             title.fontSize = 36;
-            CreateButton("ShopCloseButton", panel.transform, "X", PanelUiLayoutMetrics.CloseAnchorMin, PanelUiLayoutMetrics.CloseAnchorMax);
+            CreateButton("ShopCloseButton", panel.transform, UiIconLabelCatalog.Close, PanelUiLayoutMetrics.CloseAnchorMin, PanelUiLayoutMetrics.CloseAnchorMax);
 
             GameObject categoryBar = CreateRect("ShopCategoryBar", panel.transform, PanelUiLayoutMetrics.ShopCategoryAnchorMin, PanelUiLayoutMetrics.ShopCategoryAnchorMax, new Vector2(0.5f, 0.5f), Vector2.zero);
             CreateButton("ShopCategoryBoosterButton", categoryBar.transform, "Boost", new Vector2(0.00f, 0.05f), new Vector2(0.19f, 0.95f));
@@ -235,7 +235,7 @@ namespace EcoGarden.Editor
 
             Text title = CreateText("MissionTitleText", panel.transform, "Missions", TextAnchor.MiddleLeft, PanelUiLayoutMetrics.TitleAnchorMin, PanelUiLayoutMetrics.TitleAnchorMax).GetComponent<Text>();
             title.fontSize = 36;
-            CreateButton("MissionCloseButton", panel.transform, "X", PanelUiLayoutMetrics.CloseAnchorMin, PanelUiLayoutMetrics.CloseAnchorMax);
+            CreateButton("MissionCloseButton", panel.transform, UiIconLabelCatalog.Close, PanelUiLayoutMetrics.CloseAnchorMin, PanelUiLayoutMetrics.CloseAnchorMax);
 
             GameObject viewport = CreatePanel("MissionViewport", panel.transform, PanelUiLayoutMetrics.FullContentAnchorMin, PanelUiLayoutMetrics.FullContentAnchorMax, new Vector2(0.5f, 0.5f), Vector2.zero);
             viewport.GetComponent<Image>().color = new Color(0.06f, 0.08f, 0.10f, 0.55f);

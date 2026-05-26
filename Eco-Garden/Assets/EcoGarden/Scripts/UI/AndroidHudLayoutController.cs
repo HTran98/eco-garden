@@ -142,10 +142,10 @@ namespace EcoGarden.UI
 
         private static void ApplyCompactHudLabels()
         {
-            SetButtonLabel("LevelButton", "Lvl");
-            SetButtonLabel("MissionButton", "Tasks");
-            SetButtonLabel("ShopButton", "Shop");
-            SetButtonLabel("PauseButton", "II");
+            SetButtonLabel("LevelButton", UiIconLabelCatalog.Level);
+            SetButtonLabel("MissionButton", UiIconLabelCatalog.Mission);
+            SetButtonLabel("ShopButton", UiIconLabelCatalog.Shop);
+            SetButtonLabel("PauseButton", UiIconLabelCatalog.Pause);
         }
 
         private static void SetStretchTop(string objectName, float horizontalPadding, float height)

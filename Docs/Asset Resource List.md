@@ -25,6 +25,7 @@ sfx_merge_01
 Acceptance status meanings:
 
 - `Runtime placeholder accepted for first release`: procedural runtime art is readable enough to ship as a temporary first-release asset.
+- `Runtime symbolic placeholder accepted for first release`: compact text/icon labels are readable enough to ship temporarily until authored UI icons replace them.
 - `Needs authored art before release`: current implementation is missing, too generic, or not visually specific enough for release.
 - `Deferred from first release`: related feature or cosmetic is not part of the first release scope.
 
@@ -49,13 +50,15 @@ Acceptance status meanings:
 | `decor_tree_01` | Decor | `Assets/EcoGarden/Art/Decor` | Deferred from first release | Decoration purchases are hidden until visible cosmetic application exists. |
 | `decor_pond_grass_01` | Decor | `Assets/EcoGarden/Art/Decor` | Deferred from first release | Decoration purchases are hidden until visible cosmetic application exists. |
 | `decor_stone_small_01` | Decor | `Assets/EcoGarden/Art/Decor` | Deferred from first release | Decoration purchases are hidden until visible cosmetic application exists. |
-| `icon_ability_shovel` | UI icon | `Assets/EcoGarden/Art/UI` | Needs authored art before release | Ability buttons currently rely on text/button styling. |
-| `icon_ability_magic_wand` | UI icon | `Assets/EcoGarden/Art/UI` | Needs authored art before release | Ability buttons currently rely on text/button styling. |
-| `icon_ability_sorting_magnet` | UI icon | `Assets/EcoGarden/Art/UI` | Needs authored art before release | Ability buttons currently rely on text/button styling. |
-| `icon_currency_gold` | UI icon | `Assets/EcoGarden/Art/UI` | Needs authored art before release | Currency display works through text but lacks an icon. |
+| `icon_ability_shovel` | UI icon | `Assets/EcoGarden/Art/UI` | Runtime symbolic placeholder accepted for first release | Uses compact `SH` runtime label through `UiIconLabelCatalog`; authored icon can replace later. |
+| `icon_ability_magic_wand` | UI icon | `Assets/EcoGarden/Art/UI` | Runtime symbolic placeholder accepted for first release | Uses compact `WD` runtime label through `UiIconLabelCatalog`; authored icon can replace later. |
+| `icon_ability_sorting_magnet` | UI icon | `Assets/EcoGarden/Art/UI` | Runtime symbolic placeholder accepted for first release | Uses compact `MG` runtime label through `UiIconLabelCatalog`; authored icon can replace later. |
+| `icon_currency_gold` | UI icon | `Assets/EcoGarden/Art/UI` | Runtime symbolic placeholder accepted for first release | Uses compact `G` runtime label through `UiIconLabelCatalog`; authored icon can replace later. |
+| `icon_currency_gem` | UI icon | `Assets/EcoGarden/Art/UI` | Runtime symbolic placeholder accepted for first release | Uses compact `*` runtime label through `UiIconLabelCatalog`; authored icon can replace later. |
 | `icon_timer` | UI icon | `Assets/EcoGarden/Art/UI` | Needs authored art before release | Timer display works through text but lacks an icon. |
-| `icon_pause` | UI icon | `Assets/EcoGarden/Art/UI` | Needs authored art before release | Pause uses styled button text; final mobile UI should use a clear icon. |
-| `icon_restart` | UI icon | `Assets/EcoGarden/Art/UI` | Needs authored art before release | Result panel restart uses styled button text; final mobile UI should use a clear icon. |
+| `icon_pause` | UI icon | `Assets/EcoGarden/Art/UI` | Runtime symbolic placeholder accepted for first release | Uses compact `II` runtime label through `UiIconLabelCatalog`; authored icon can replace later. |
+| `icon_restart` | UI icon | `Assets/EcoGarden/Art/UI` | Runtime symbolic placeholder accepted for first release | Uses compact `R` runtime label through `UiIconLabelCatalog`; authored icon can replace later. |
+| `icon_next` | UI icon | `Assets/EcoGarden/Art/UI` | Runtime symbolic placeholder accepted for first release | Uses compact `>` runtime label through `UiIconLabelCatalog`; authored icon can replace later. |
 | `vfx_merge_sparkle_01` | VFX sprite | `Assets/EcoGarden/Art/VFX` | Needs authored art before release | Merge feedback exists through runtime feedback hooks, but no dedicated sparkle sprite is authored. |
 | `vfx_producer_pulse_01` | VFX sprite | `Assets/EcoGarden/Art/VFX` | Needs authored art before release | Producer feedback is functional but lacks a dedicated pulse sprite. |
 | `vfx_ability_burst_01` | VFX sprite | `Assets/EcoGarden/Art/VFX` | Needs authored art before release | Ability feedback is functional but lacks a dedicated burst sprite. |
