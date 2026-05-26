@@ -126,7 +126,19 @@ namespace EcoGarden.UI
             for (int i = 0; i < missions.Count && createdCount < AndroidHudLayoutMetrics.MaxCompactMissionRows; i++)
             {
                 MissionRuntimeState state = missions[i];
-                if (state == null || state.RewardClaimed)
+                if (state == null || state.RewardClaimed || !state.CanClaim)
+                {
+                    continue;
+                }
+
+                CreateTrackerRow(state);
+                createdCount++;
+            }
+
+            for (int i = 0; i < missions.Count && createdCount < AndroidHudLayoutMetrics.MaxCompactMissionRows; i++)
+            {
+                MissionRuntimeState state = missions[i];
+                if (state == null || state.RewardClaimed || state.CanClaim)
                 {
                     continue;
                 }
@@ -147,20 +159,19 @@ namespace EcoGarden.UI
             GameObject row = new GameObject("MissionRow_" + definition.MissionId, typeof(RectTransform), typeof(Image));
             row.transform.SetParent(missionListRoot, false);
             RectTransform rowRect = row.GetComponent<RectTransform>();
-            rowRect.sizeDelta = new Vector2(0f, 112f);
+            rowRect.sizeDelta = new Vector2(0f, MissionUiLayoutMetrics.MissionRowHeight);
 
             Image rowImage = row.GetComponent<Image>();
-            rowImage.color = state.RewardClaimed
-                ? new Color(0.08f, 0.13f, 0.11f, 0.78f)
-                : new Color(0.10f, 0.14f, 0.16f, 0.88f);
+            rowImage.color = GetMissionRowColor(state);
 
-            CreateText("Name", row.transform, BuildMissionTitle(definition), TextAnchor.MiddleLeft, new Vector2(0.03f, 0.58f), new Vector2(0.60f, 0.96f), 24);
-            CreateText("Progress", row.transform, BuildProgressText(state), TextAnchor.MiddleLeft, new Vector2(0.03f, 0.30f), new Vector2(0.60f, 0.58f), 20);
-            CreateText("Reward", row.transform, BuildRewardText(definition.Reward), TextAnchor.MiddleLeft, new Vector2(0.03f, 0.04f), new Vector2(0.60f, 0.30f), 18);
+            CreateText("Name", row.transform, BuildMissionTitle(definition), TextAnchor.MiddleLeft, MissionUiLayoutMetrics.RowTitleAnchorMin, MissionUiLayoutMetrics.RowTitleAnchorMax, 24);
+            CreateText("Progress", row.transform, BuildProgressText(state), TextAnchor.MiddleLeft, MissionUiLayoutMetrics.RowProgressAnchorMin, MissionUiLayoutMetrics.RowProgressAnchorMax, 20);
+            CreateText("Reward", row.transform, BuildRewardText(definition.Reward), TextAnchor.MiddleLeft, MissionUiLayoutMetrics.RowRewardAnchorMin, MissionUiLayoutMetrics.RowRewardAnchorMax, 18);
 
-            GameObject claimObject = CreateButton("ClaimButton", row.transform, BuildClaimLabel(state), new Vector2(0.66f, 0.22f), new Vector2(0.96f, 0.78f));
+            GameObject claimObject = CreateButton("ClaimButton", row.transform, BuildClaimLabel(state), MissionUiLayoutMetrics.RowClaimAnchorMin, MissionUiLayoutMetrics.RowClaimAnchorMax);
             Button claimButton = claimObject.GetComponent<Button>();
             claimButton.interactable = state.CanClaim;
+            ApplyClaimButtonState(claimObject, state);
             claimButton.onClick.AddListener(() => ClaimMission(definition.MissionId));
 
             missionRows.Add(row);
@@ -177,19 +188,18 @@ namespace EcoGarden.UI
             GameObject row = new GameObject("MissionTrackerRow_" + definition.MissionId, typeof(RectTransform), typeof(Image));
             row.transform.SetParent(missionTrackerRoot, false);
             RectTransform rowRect = row.GetComponent<RectTransform>();
-            rowRect.sizeDelta = new Vector2(0f, 92f);
+            rowRect.sizeDelta = new Vector2(0f, MissionUiLayoutMetrics.TrackerRowHeight);
 
             Image rowImage = row.GetComponent<Image>();
-            rowImage.color = state.CanClaim
-                ? new Color(0.18f, 0.30f, 0.18f, 0.88f)
-                : new Color(0.10f, 0.14f, 0.16f, 0.82f);
+            rowImage.color = GetMissionRowColor(state);
 
-            CreateText("Name", row.transform, BuildMissionTitle(definition), TextAnchor.MiddleLeft, new Vector2(0.04f, 0.50f), new Vector2(0.66f, 0.96f), 22);
-            CreateText("Progress", row.transform, BuildProgressText(state), TextAnchor.MiddleLeft, new Vector2(0.04f, 0.08f), new Vector2(0.66f, 0.50f), 19);
+            CreateText("Name", row.transform, BuildMissionTitle(definition), TextAnchor.MiddleLeft, MissionUiLayoutMetrics.TrackerTitleAnchorMin, MissionUiLayoutMetrics.TrackerTitleAnchorMax, 22);
+            CreateText("Progress", row.transform, BuildTrackerProgressText(state), TextAnchor.MiddleLeft, MissionUiLayoutMetrics.TrackerProgressAnchorMin, MissionUiLayoutMetrics.TrackerProgressAnchorMax, 19);
 
-            GameObject claimObject = CreateButton("ClaimButton", row.transform, BuildClaimLabel(state), new Vector2(0.69f, 0.20f), new Vector2(0.96f, 0.80f));
+            GameObject claimObject = CreateButton("ClaimButton", row.transform, BuildClaimLabel(state), MissionUiLayoutMetrics.TrackerClaimAnchorMin, MissionUiLayoutMetrics.TrackerClaimAnchorMax);
             Button claimButton = claimObject.GetComponent<Button>();
             claimButton.interactable = state.CanClaim;
+            ApplyClaimButtonState(claimObject, state);
             claimButton.onClick.AddListener(() => ClaimMission(definition.MissionId));
 
             trackerRows.Add(row);
@@ -455,17 +465,32 @@ namespace EcoGarden.UI
                 return "Claimed";
             }
 
-            return "Progress " + state.Progress + "/" + state.RequiredCount;
+            if (state.CanClaim)
+            {
+                return "Ready to claim";
+            }
+
+            return "Progress: " + state.Progress + "/" + state.RequiredCount;
+        }
+
+        private static string BuildTrackerProgressText(MissionRuntimeState state)
+        {
+            if (state.CanClaim)
+            {
+                return "Ready";
+            }
+
+            return state.Progress + "/" + state.RequiredCount;
         }
 
         private static string BuildClaimLabel(MissionRuntimeState state)
         {
             if (state.RewardClaimed)
             {
-                return "Claimed";
+                return "Done";
             }
 
-            return state.CanClaim ? "Claim" : "Pending";
+            return state.CanClaim ? "Claim" : "Active";
         }
 
         private static string BuildRewardText(RewardDefinition reward)
@@ -508,7 +533,7 @@ namespace EcoGarden.UI
                 parts.Add("Unlock");
             }
 
-            return parts.Count > 0 ? string.Join(", ", parts) : "Reward unavailable";
+            return parts.Count > 0 ? "Reward: " + string.Join(", ", parts) : "Reward unavailable";
         }
 
         private static string BuildClaimMessage(MissionClaimStatus status)
@@ -536,6 +561,40 @@ namespace EcoGarden.UI
             {
                 gameplayFeedbackController.PlayHudMessage(message);
             }
+        }
+
+        private static Color GetMissionRowColor(MissionRuntimeState state)
+        {
+            if (state.RewardClaimed)
+            {
+                return new Color(0.08f, 0.13f, 0.11f, 0.78f);
+            }
+
+            if (state.CanClaim)
+            {
+                return new Color(0.18f, 0.30f, 0.18f, 0.90f);
+            }
+
+            return new Color(0.10f, 0.14f, 0.16f, 0.86f);
+        }
+
+        private static void ApplyClaimButtonState(GameObject claimObject, MissionRuntimeState state)
+        {
+            Image image = claimObject.GetComponent<Image>();
+            if (image == null)
+            {
+                return;
+            }
+
+            if (state.CanClaim)
+            {
+                image.color = new Color(0.72f, 0.92f, 0.58f, 1f);
+                return;
+            }
+
+            image.color = state.RewardClaimed
+                ? new Color(0.36f, 0.46f, 0.42f, 0.92f)
+                : new Color(0.50f, 0.58f, 0.60f, 0.86f);
         }
 
         private static Button FindButton(string objectName)

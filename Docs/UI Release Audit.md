@@ -214,7 +214,7 @@ Acceptance criteria:
 | Sell basket | Code pass | Code pass | Code pass | Needs device | Needs device | P0 | Existing metric coverage; needs drag test. |
 | Compact mission tracker | Code pass | Code pass | Code pass | Needs device | Needs device | P1 | Existing metric coverage; needs readability pass. |
 | Shop panel | Code pass | Code pass | Code pass | Needs device | Needs device | P0 | UI-R4 code pass added release copy/state polish; visual/device pass still required. |
-| Mission panel | Code pass | Code pass | Code pass | Needs device | Needs device | P1 | UI-R3 shared panel header/content metrics applied; row readability still needs release pass. |
+| Mission panel | Code pass | Code pass | Code pass | Needs device | Needs device | P1 | UI-R5 code pass added mission row/claim/tracker polish; visual/device pass still required. |
 | Level Select panel | Code pass | Code pass | Code pass | Needs device | Needs device | P1 | UI-R3 shared panel header/content metrics applied; locked/current/completed states need clarity. |
 | Pause panel | Not run | Not run | Not run | Needs device | Needs device | P1 | Needs consistent panel framework. |
 | Win/fail result panel | Code pass | Code pass | Code pass | Needs device | Needs device | P0 | UI-R3 result action metrics added; copy/state visual pass still needed. |
@@ -271,3 +271,11 @@ This slice has the highest release impact because every play session depends on 
 - IAP button/price copy now uses `Store` and `Store unavailable` language, matching the client-only Unity IAP release path without implying custom backend account sync or restore behavior.
 - Empty shop categories are disabled and the selected tab falls back to the first populated release category, avoiding an empty Decoration tab after decoration purchases were deferred.
 - Runtime and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false`.
+
+2026-05-26:
+
+- Started UI-R5 Mission release pass.
+- Added `MissionUiLayoutMetrics` for full mission rows and compact tracker rows, with EditMode metric coverage for small-portrait text and claim-button widths.
+- Mission rows now use distinct visual states for active, ready-to-claim, and claimed missions; incomplete and claimed missions remain non-interactable.
+- Compact tracker now prioritizes claimable missions before active progress rows, keeping high-value actions visible without opening the full panel.
+- Runtime and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false` after local generated `.csproj` verification updates; generated project files are not tracked.
