@@ -112,9 +112,9 @@ namespace EcoGarden.UI
                 return;
             }
 
-            SetButtonLabel(shovelButton, "Shovel x" + boardController.AbilityInventory.GetCount(AbilityKind.Shovel));
-            SetButtonLabel(magicWandButton, "Wand x" + boardController.AbilityInventory.GetCount(AbilityKind.MagicWand));
-            SetButtonLabel(sortingMagnetButton, "Magnet x" + boardController.AbilityInventory.GetCount(AbilityKind.SortingMagnet));
+            SetButtonLabel(shovelButton, "Shovel\nx" + boardController.AbilityInventory.GetCount(AbilityKind.Shovel));
+            SetButtonLabel(magicWandButton, "Wand\nx" + boardController.AbilityInventory.GetCount(AbilityKind.MagicWand));
+            SetButtonLabel(sortingMagnetButton, "Magnet\nx" + boardController.AbilityInventory.GetCount(AbilityKind.SortingMagnet));
             RefreshButtonColors();
         }
 

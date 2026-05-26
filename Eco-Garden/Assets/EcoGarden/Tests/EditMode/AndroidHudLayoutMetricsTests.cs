@@ -39,6 +39,45 @@ namespace EcoGarden.Tests.EditMode
         }
 
         [Test]
+        public void TopBar_KeepsStatsAndActionsReadableOnSmallPortraitProfile()
+        {
+            Vector2 screenSize = new Vector2(720f, 1280f);
+
+            Rect timer = AndroidHudLayoutMetrics.ToPixelRect(AndroidHudLayoutMetrics.TimerAnchorMin, AndroidHudLayoutMetrics.TimerAnchorMax, screenSize);
+            Rect gold = AndroidHudLayoutMetrics.ToPixelRect(AndroidHudLayoutMetrics.GoldAnchorMin, AndroidHudLayoutMetrics.GoldAnchorMax, screenSize);
+            Rect gem = AndroidHudLayoutMetrics.ToPixelRect(AndroidHudLayoutMetrics.GemAnchorMin, AndroidHudLayoutMetrics.GemAnchorMax, screenSize);
+            Rect level = AndroidHudLayoutMetrics.ToPixelRect(AndroidHudLayoutMetrics.LevelButtonAnchorMin, AndroidHudLayoutMetrics.LevelButtonAnchorMax, screenSize);
+            Rect mission = AndroidHudLayoutMetrics.ToPixelRect(AndroidHudLayoutMetrics.MissionButtonAnchorMin, AndroidHudLayoutMetrics.MissionButtonAnchorMax, screenSize);
+            Rect shop = AndroidHudLayoutMetrics.ToPixelRect(AndroidHudLayoutMetrics.ShopButtonAnchorMin, AndroidHudLayoutMetrics.ShopButtonAnchorMax, screenSize);
+            Rect pause = AndroidHudLayoutMetrics.ToPixelRect(AndroidHudLayoutMetrics.PauseButtonAnchorMin, AndroidHudLayoutMetrics.PauseButtonAnchorMax, screenSize);
+
+            Assert.GreaterOrEqual(timer.width, AndroidHudLayoutMetrics.MinimumTopBarStatWidth);
+            Assert.GreaterOrEqual(gold.width, AndroidHudLayoutMetrics.MinimumTopBarStatWidth);
+            Assert.GreaterOrEqual(gem.width, AndroidHudLayoutMetrics.MinimumTopBarStatWidth);
+            Assert.GreaterOrEqual(level.width, AndroidHudLayoutMetrics.MinimumTopBarActionWidth);
+            Assert.GreaterOrEqual(mission.width, AndroidHudLayoutMetrics.MinimumTopBarActionWidth);
+            Assert.GreaterOrEqual(shop.width, AndroidHudLayoutMetrics.MinimumTopBarActionWidth);
+            Assert.GreaterOrEqual(pause.width, AndroidHudLayoutMetrics.MinimumTopBarActionWidth);
+        }
+
+        [Test]
+        public void AbilityButtons_KeepTouchSizeOnSmallPortraitProfile()
+        {
+            float sidePadding = Mathf.Max(32f, 1080f * 0.035f);
+            Vector2 abilityBarSize = new Vector2(720f - 80f - sidePadding * 2f, AndroidHudLayoutMetrics.AbilityHeight);
+            Rect shovel = AndroidHudLayoutMetrics.ToPixelRect(AndroidHudLayoutMetrics.ShovelButtonAnchorMin, AndroidHudLayoutMetrics.ShovelButtonAnchorMax, abilityBarSize);
+            Rect wand = AndroidHudLayoutMetrics.ToPixelRect(AndroidHudLayoutMetrics.MagicWandButtonAnchorMin, AndroidHudLayoutMetrics.MagicWandButtonAnchorMax, abilityBarSize);
+            Rect magnet = AndroidHudLayoutMetrics.ToPixelRect(AndroidHudLayoutMetrics.SortingMagnetButtonAnchorMin, AndroidHudLayoutMetrics.SortingMagnetButtonAnchorMax, abilityBarSize);
+
+            Assert.GreaterOrEqual(shovel.width, AndroidHudLayoutMetrics.MinimumAbilityButtonWidth);
+            Assert.GreaterOrEqual(wand.width, AndroidHudLayoutMetrics.MinimumAbilityButtonWidth);
+            Assert.GreaterOrEqual(magnet.width, AndroidHudLayoutMetrics.MinimumAbilityButtonWidth);
+            Assert.GreaterOrEqual(shovel.height, AndroidHudLayoutMetrics.MinimumAbilityButtonHeight);
+            Assert.GreaterOrEqual(wand.height, AndroidHudLayoutMetrics.MinimumAbilityButtonHeight);
+            Assert.GreaterOrEqual(magnet.height, AndroidHudLayoutMetrics.MinimumAbilityButtonHeight);
+        }
+
+        [Test]
         public void DropZones_AreLargeAndSeparatedEnoughForTouchOnPortraitProfiles()
         {
             for (int i = 0; i < TargetProfiles.Length; i++)

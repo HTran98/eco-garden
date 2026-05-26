@@ -63,13 +63,13 @@ namespace EcoGarden.Editor
             RectTransform rect = topBar.GetComponent<RectTransform>();
             rect.sizeDelta = new Vector2(0f, 92f);
 
-            CreateText("TimerText", topBar.transform, "03:00", TextAnchor.MiddleLeft, new Vector2(0f, 0f), new Vector2(0.21f, 1f));
-            CreateText("GoldText", topBar.transform, "Gold 0", TextAnchor.MiddleCenter, new Vector2(0.21f, 0f), new Vector2(0.42f, 1f));
-            CreateText("GemText", topBar.transform, "Gem 0", TextAnchor.MiddleCenter, new Vector2(0.42f, 0f), new Vector2(0.62f, 1f));
-            CreateButton("LevelButton", topBar.transform, "Level", new Vector2(0.63f, 0.15f), new Vector2(0.715f, 0.85f));
-            CreateButton("MissionButton", topBar.transform, "Mission", new Vector2(0.725f, 0.15f), new Vector2(0.81f, 0.85f));
-            CreateButton("ShopButton", topBar.transform, "Shop", new Vector2(0.82f, 0.15f), new Vector2(0.895f, 0.85f));
-            CreateButton("PauseButton", topBar.transform, "Pause", new Vector2(0.905f, 0.15f), new Vector2(0.99f, 0.85f));
+            CreateText("TimerText", topBar.transform, "03:00", TextAnchor.MiddleLeft, AndroidHudLayoutMetrics.TimerAnchorMin, AndroidHudLayoutMetrics.TimerAnchorMax);
+            CreateText("GoldText", topBar.transform, "Gold 0", TextAnchor.MiddleCenter, AndroidHudLayoutMetrics.GoldAnchorMin, AndroidHudLayoutMetrics.GoldAnchorMax);
+            CreateText("GemText", topBar.transform, "Gem 0", TextAnchor.MiddleCenter, AndroidHudLayoutMetrics.GemAnchorMin, AndroidHudLayoutMetrics.GemAnchorMax);
+            CreateButton("LevelButton", topBar.transform, "Lvl", AndroidHudLayoutMetrics.LevelButtonAnchorMin, AndroidHudLayoutMetrics.LevelButtonAnchorMax);
+            CreateButton("MissionButton", topBar.transform, "Tasks", AndroidHudLayoutMetrics.MissionButtonAnchorMin, AndroidHudLayoutMetrics.MissionButtonAnchorMax);
+            CreateButton("ShopButton", topBar.transform, "Shop", AndroidHudLayoutMetrics.ShopButtonAnchorMin, AndroidHudLayoutMetrics.ShopButtonAnchorMax);
+            CreateButton("PauseButton", topBar.transform, "II", AndroidHudLayoutMetrics.PauseButtonAnchorMin, AndroidHudLayoutMetrics.PauseButtonAnchorMax);
         }
 
         private static void CreateObjectivePanel(Transform parent)
@@ -86,9 +86,9 @@ namespace EcoGarden.Editor
             RectTransform rect = bar.GetComponent<RectTransform>();
             rect.sizeDelta = new Vector2(-80f, 150f);
 
-            CreateButton("ShovelButton", bar.transform, "Shovel x2", new Vector2(0.02f, 0.15f), new Vector2(0.31f, 0.85f));
-            CreateButton("MagicWandButton", bar.transform, "Wand x1", new Vector2(0.355f, 0.15f), new Vector2(0.645f, 0.85f));
-            CreateButton("SortingMagnetButton", bar.transform, "Magnet x1", new Vector2(0.69f, 0.15f), new Vector2(0.98f, 0.85f));
+            CreateButton("ShovelButton", bar.transform, "Shovel\nx2", AndroidHudLayoutMetrics.ShovelButtonAnchorMin, AndroidHudLayoutMetrics.ShovelButtonAnchorMax);
+            CreateButton("MagicWandButton", bar.transform, "Wand\nx1", AndroidHudLayoutMetrics.MagicWandButtonAnchorMin, AndroidHudLayoutMetrics.MagicWandButtonAnchorMax);
+            CreateButton("SortingMagnetButton", bar.transform, "Magnet\nx1", AndroidHudLayoutMetrics.SortingMagnetButtonAnchorMin, AndroidHudLayoutMetrics.SortingMagnetButtonAnchorMax);
         }
 
         private static void CreateSellBasket(Transform parent)

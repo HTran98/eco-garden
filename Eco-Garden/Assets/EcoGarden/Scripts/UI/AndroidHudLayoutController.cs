@@ -84,6 +84,9 @@ namespace EcoGarden.UI
             SetAnchoredBox("ShopPanel", AndroidHudLayoutMetrics.PanelAnchorMin, AndroidHudLayoutMetrics.PanelAnchorMax);
             SetAnchoredBox("MissionPanel", AndroidHudLayoutMetrics.PanelAnchorMin, AndroidHudLayoutMetrics.PanelAnchorMax);
             SetAnchoredBox("MissionTrackerPanel", AndroidHudLayoutMetrics.MissionTrackerAnchorMin, AndroidHudLayoutMetrics.MissionTrackerAnchorMax);
+            ApplyTopBarChildRects();
+            ApplyAbilityBarChildRects();
+            ApplyCompactHudLabels();
         }
 
         private void ApplyTextRules()
@@ -98,6 +101,32 @@ namespace EcoGarden.UI
                 text.horizontalOverflow = HorizontalWrapMode.Wrap;
                 text.verticalOverflow = VerticalWrapMode.Truncate;
             }
+        }
+
+        private static void ApplyTopBarChildRects()
+        {
+            SetAnchoredBox("TimerText", AndroidHudLayoutMetrics.TimerAnchorMin, AndroidHudLayoutMetrics.TimerAnchorMax);
+            SetAnchoredBox("GoldText", AndroidHudLayoutMetrics.GoldAnchorMin, AndroidHudLayoutMetrics.GoldAnchorMax);
+            SetAnchoredBox("GemText", AndroidHudLayoutMetrics.GemAnchorMin, AndroidHudLayoutMetrics.GemAnchorMax);
+            SetAnchoredBox("LevelButton", AndroidHudLayoutMetrics.LevelButtonAnchorMin, AndroidHudLayoutMetrics.LevelButtonAnchorMax);
+            SetAnchoredBox("MissionButton", AndroidHudLayoutMetrics.MissionButtonAnchorMin, AndroidHudLayoutMetrics.MissionButtonAnchorMax);
+            SetAnchoredBox("ShopButton", AndroidHudLayoutMetrics.ShopButtonAnchorMin, AndroidHudLayoutMetrics.ShopButtonAnchorMax);
+            SetAnchoredBox("PauseButton", AndroidHudLayoutMetrics.PauseButtonAnchorMin, AndroidHudLayoutMetrics.PauseButtonAnchorMax);
+        }
+
+        private static void ApplyAbilityBarChildRects()
+        {
+            SetAnchoredBox("ShovelButton", AndroidHudLayoutMetrics.ShovelButtonAnchorMin, AndroidHudLayoutMetrics.ShovelButtonAnchorMax);
+            SetAnchoredBox("MagicWandButton", AndroidHudLayoutMetrics.MagicWandButtonAnchorMin, AndroidHudLayoutMetrics.MagicWandButtonAnchorMax);
+            SetAnchoredBox("SortingMagnetButton", AndroidHudLayoutMetrics.SortingMagnetButtonAnchorMin, AndroidHudLayoutMetrics.SortingMagnetButtonAnchorMax);
+        }
+
+        private static void ApplyCompactHudLabels()
+        {
+            SetButtonLabel("LevelButton", "Lvl");
+            SetButtonLabel("MissionButton", "Tasks");
+            SetButtonLabel("ShopButton", "Shop");
+            SetButtonLabel("PauseButton", "II");
         }
 
         private static void SetStretchTop(string objectName, float horizontalPadding, float height)
@@ -182,6 +211,21 @@ namespace EcoGarden.UI
             rect.pivot = new Vector2(0.5f, 0.5f);
             rect.anchoredPosition = Vector2.zero;
             rect.sizeDelta = Vector2.zero;
+        }
+
+        private static void SetButtonLabel(string objectName, string label)
+        {
+            GameObject gameObject = GameObject.Find(objectName);
+            if (gameObject == null)
+            {
+                return;
+            }
+
+            Text text = gameObject.GetComponentInChildren<Text>(true);
+            if (text != null)
+            {
+                text.text = label;
+            }
         }
     }
 }

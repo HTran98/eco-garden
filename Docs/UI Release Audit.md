@@ -207,9 +207,9 @@ Acceptance criteria:
 
 | Surface | 720x1280 | 1080x1920 | Tall | Notch | Gesture Nav | Severity | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| HUD top bar | Not run | Not run | Not run | Needs device | Needs device | P0 | Timer/currency/buttons must fit safe area. |
+| HUD top bar | Code pass | Code pass | Code pass | Needs device | Needs device | P0 | UI-R2 code pass compacted top-bar actions and added width tests; visual/device pass still required. |
 | Objective panel | Not run | Not run | Not run | Needs device | Needs device | P0 | Must not cover board or tracker. |
-| Ability bar | Code pass | Code pass | Code pass | Needs device | Needs device | P0 | Existing metric coverage; still needs visual pass. |
+| Ability bar | Code pass | Code pass | Code pass | Needs device | Needs device | P0 | Ability actions use compact two-line labels and touch-size tests; still needs visual/device pass. |
 | Delivery zone | Code pass | Code pass | Code pass | Needs device | Needs device | P0 | Existing metric coverage; needs drag test. |
 | Sell basket | Code pass | Code pass | Code pass | Needs device | Needs device | P0 | Existing metric coverage; needs drag test. |
 | Compact mission tracker | Code pass | Code pass | Code pass | Needs device | Needs device | P1 | Existing metric coverage; needs readability pass. |
@@ -242,3 +242,15 @@ Start with UI-R2 plus the shared parts of UI-R3:
 - Add or update metric tests for any changed anchors/sizes.
 
 This slice has the highest release impact because every play session depends on HUD readability and reliable drag/drop targets.
+
+## Execution Notes
+
+2026-05-26:
+
+- Started UI-R2 HUD gameplay release pass.
+- `AndroidHudLayoutMetrics` now defines top-bar text/action anchors and ability-button anchors, plus minimum width/touch-size constants.
+- `AndroidHudLayoutController` applies top-bar and ability child rects at runtime so existing scenes receive the compact HUD pass without scene regeneration.
+- Top-bar labels are compacted to `Lvl`, `Tasks`, `Shop`, and `II`; ability buttons now use two-line labels such as `Shovel` plus count to improve fit on small portrait.
+- `EcoGardenUiMenu` scene generation was aligned with the same compact anchors and labels.
+- Added EditMode metric coverage for small-portrait top-bar stat/action widths and ability button touch size.
+- Runtime, editor, and EditMode test assemblies build after local generated `.csproj` stale references were removed for verification; Unity-generated project files are not tracked and were not committed.

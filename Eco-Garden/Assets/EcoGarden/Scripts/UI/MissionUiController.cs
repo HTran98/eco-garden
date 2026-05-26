@@ -358,7 +358,7 @@ namespace EcoGarden.UI
                 return;
             }
 
-            GameObject buttonObject = CreateButton("MissionButton", topBar.transform, "Mission", new Vector2(0.64f, 0.15f), new Vector2(0.76f, 0.85f));
+            GameObject buttonObject = CreateButton("MissionButton", topBar.transform, "Tasks", AndroidHudLayoutMetrics.MissionButtonAnchorMin, AndroidHudLayoutMetrics.MissionButtonAnchorMax);
             missionButton = buttonObject.GetComponent<Button>();
         }
 
