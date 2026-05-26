@@ -112,6 +112,7 @@ namespace EcoGarden.Level
             State = LevelPlayState.Completed;
             RefreshPauseButton();
             RefreshNextLevelButton();
+            RefreshResultActionLabels();
             ShowResult("Level Complete", BuildCompletionMessage());
             LevelCompleted?.Invoke();
         }
@@ -126,7 +127,8 @@ namespace EcoGarden.Level
             State = LevelPlayState.Failed;
             RefreshPauseButton();
             RefreshNextLevelButton();
-            ShowResult("Time Up", "The customer left before the order was delivered.");
+            RefreshResultActionLabels();
+            ShowResult("Time Up", BuildFailureMessage());
             LevelFailed?.Invoke();
         }
 
@@ -297,7 +299,20 @@ namespace EcoGarden.Level
             string levelName = string.IsNullOrEmpty(boardController.LevelDefinition.LevelName)
                 ? "Level " + boardController.LevelDefinition.LevelId
                 : boardController.LevelDefinition.LevelName;
-            return levelName + " complete.";
+            return levelName + " complete. Reward granted.";
+        }
+
+        private string BuildFailureMessage()
+        {
+            if (boardController == null || boardController.LevelDefinition == null)
+            {
+                return "The customer left before the order was delivered.";
+            }
+
+            string levelName = string.IsNullOrEmpty(boardController.LevelDefinition.LevelName)
+                ? "Level " + boardController.LevelDefinition.LevelId
+                : boardController.LevelDefinition.LevelName;
+            return levelName + " failed. Retry the order.";
         }
 
         private void AutoWireReferences()
@@ -319,7 +334,7 @@ namespace EcoGarden.Level
 
             if (resultPanel == null)
             {
-                GameObject resultObject = GameObject.Find("ResultPanel");
+                GameObject resultObject = FindObjectIncludingInactive("ResultPanel");
                 if (resultObject != null)
                 {
                     resultPanel = resultObject;
@@ -338,7 +353,7 @@ namespace EcoGarden.Level
 
             if (restartButton == null)
             {
-                GameObject restartObject = GameObject.Find("RestartButton");
+                GameObject restartObject = FindObjectIncludingInactive("RestartButton");
                 if (restartObject != null)
                 {
                     restartButton = restartObject.GetComponent<Button>();
@@ -347,7 +362,7 @@ namespace EcoGarden.Level
 
             if (nextLevelButton == null)
             {
-                GameObject nextObject = GameObject.Find("NextLevelButton");
+                GameObject nextObject = FindObjectIncludingInactive("NextLevelButton");
                 if (nextObject != null)
                 {
                     nextLevelButton = nextObject.GetComponent<Button>();
@@ -356,7 +371,7 @@ namespace EcoGarden.Level
 
             if (pauseButton == null)
             {
-                GameObject pauseObject = GameObject.Find("PauseButton");
+                GameObject pauseObject = FindObjectIncludingInactive("PauseButton");
                 if (pauseObject != null)
                 {
                     pauseButton = pauseObject.GetComponent<Button>();
@@ -446,6 +461,12 @@ namespace EcoGarden.Level
             nextLevelButton.interactable = canStartNext;
         }
 
+        private void RefreshResultActionLabels()
+        {
+            SetButtonLabel(restartButton, State == LevelPlayState.Failed ? "Retry" : "Replay");
+            SetButtonLabel(nextLevelButton, "Next");
+        }
+
         private void SetResultPanelVisible(bool visible)
         {
             if (resultPanel != null)
@@ -464,8 +485,50 @@ namespace EcoGarden.Level
 
         private static Text FindText(string objectName)
         {
-            GameObject gameObject = GameObject.Find(objectName);
+            GameObject gameObject = FindObjectIncludingInactive(objectName);
             return gameObject != null ? gameObject.GetComponent<Text>() : null;
+        }
+
+        private static void SetButtonLabel(Button button, string label)
+        {
+            if (button == null)
+            {
+                return;
+            }
+
+            Text text = button.GetComponentInChildren<Text>(true);
+            if (text != null)
+            {
+                text.text = label;
+            }
+        }
+
+        private static GameObject FindObjectIncludingInactive(string objectName)
+        {
+            if (string.IsNullOrEmpty(objectName))
+            {
+                return null;
+            }
+
+            GameObject activeObject = GameObject.Find(objectName);
+            if (activeObject != null)
+            {
+                return activeObject;
+            }
+
+            Transform[] transforms = Resources.FindObjectsOfTypeAll<Transform>();
+            for (int i = 0; i < transforms.Length; i++)
+            {
+                Transform candidate = transforms[i];
+                if (candidate != null &&
+                    candidate.gameObject.scene.IsValid() &&
+                    candidate.name == objectName)
+                {
+                    return candidate.gameObject;
+                }
+            }
+
+            return null;
         }
     }
 }

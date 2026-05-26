@@ -215,9 +215,9 @@ Acceptance criteria:
 | Compact mission tracker | Code pass | Code pass | Code pass | Needs device | Needs device | P1 | Existing metric coverage; needs readability pass. |
 | Shop panel | Code pass | Code pass | Code pass | Needs device | Needs device | P0 | UI-R4 code pass added release copy/state polish; visual/device pass still required. |
 | Mission panel | Code pass | Code pass | Code pass | Needs device | Needs device | P1 | UI-R5 code pass added mission row/claim/tracker polish; visual/device pass still required. |
-| Level Select panel | Code pass | Code pass | Code pass | Needs device | Needs device | P1 | UI-R3 shared panel header/content metrics applied; locked/current/completed states need clarity. |
+| Level Select panel | Code pass | Code pass | Code pass | Needs device | Needs device | P1 | UI-R6 code pass added locked/current/done row states and metric coverage; visual/device pass still required. |
 | Pause panel | Not run | Not run | Not run | Needs device | Needs device | P1 | Needs consistent panel framework. |
-| Win/fail result panel | Code pass | Code pass | Code pass | Needs device | Needs device | P0 | UI-R3 result action metrics added; copy/state visual pass still needed. |
+| Win/fail result panel | Code pass | Code pass | Code pass | Needs device | Needs device | P0 | UI-R6 code pass clarified complete/fail copy and replay/retry/next actions; visual/device pass still required. |
 | HUD feedback messages | Not run | Not run | Not run | Needs device | Needs device | P1 | Must not cover drag/drop targets. |
 
 ## Recommended Execution Order
@@ -278,4 +278,12 @@ This slice has the highest release impact because every play session depends on 
 - Added `MissionUiLayoutMetrics` for full mission rows and compact tracker rows, with EditMode metric coverage for small-portrait text and claim-button widths.
 - Mission rows now use distinct visual states for active, ready-to-claim, and claimed missions; incomplete and claimed missions remain non-interactable.
 - Compact tracker now prioritizes claimable missions before active progress rows, keeping high-value actions visible without opening the full panel.
+- Runtime and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false` after local generated `.csproj` verification updates; generated project files are not tracked.
+
+2026-05-26:
+
+- Started UI-R6 Level Select and Result flow pass.
+- Added `LevelSelectUiLayoutMetrics` and EditMode metric coverage for small-portrait level row title/action widths.
+- Level Select rows now show `Done`, `Current`, or `Locked`, include difficulty, timer, and order summary copy, and use disabled button styling for locked levels.
+- Result flow now uses clearer complete/fail messages, labels the restart action as `Replay` or `Retry`, and resolves inactive result UI objects during wiring.
 - Runtime and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false` after local generated `.csproj` verification updates; generated project files are not tracked.

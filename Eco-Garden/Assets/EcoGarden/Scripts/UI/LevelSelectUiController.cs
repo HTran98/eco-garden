@@ -91,23 +91,25 @@ namespace EcoGarden.UI
             }
 
             bool unlocked = LevelProgressionService.IsLevelUnlocked(saveData, level);
+            string status = BuildLevelStatus(level, saveData, unlocked);
             GameObject row = new GameObject("LevelRow_" + level.LevelId, typeof(RectTransform), typeof(Image));
             row.transform.SetParent(levelListRoot, false);
 
             RectTransform rowRect = row.GetComponent<RectTransform>();
-            rowRect.sizeDelta = new Vector2(0f, 104f);
+            rowRect.sizeDelta = new Vector2(0f, LevelSelectUiLayoutMetrics.LevelRowHeight);
 
             Image rowImage = row.GetComponent<Image>();
-            rowImage.color = unlocked
-                ? new Color(0.10f, 0.15f, 0.16f, 0.90f)
-                : new Color(0.08f, 0.09f, 0.10f, 0.72f);
+            rowImage.color = GetRowColor(status);
 
-            CreateText("Name", row.transform, BuildLevelTitle(level), TextAnchor.MiddleLeft, new Vector2(0.04f, 0.48f), new Vector2(0.64f, 0.94f), 24);
-            CreateText("Meta", row.transform, BuildLevelMeta(level, unlocked), TextAnchor.MiddleLeft, new Vector2(0.04f, 0.08f), new Vector2(0.64f, 0.48f), 18);
+            CreateText("Status", row.transform, status, TextAnchor.MiddleCenter, LevelSelectUiLayoutMetrics.StatusAnchorMin, LevelSelectUiLayoutMetrics.StatusAnchorMax, 18);
+            CreateText("Name", row.transform, BuildLevelTitle(level), TextAnchor.MiddleLeft, LevelSelectUiLayoutMetrics.TitleAnchorMin, LevelSelectUiLayoutMetrics.TitleAnchorMax, 24);
+            CreateText("Meta", row.transform, BuildLevelMeta(level), TextAnchor.MiddleLeft, LevelSelectUiLayoutMetrics.MetaAnchorMin, LevelSelectUiLayoutMetrics.MetaAnchorMax, 18);
+            CreateText("Summary", row.transform, BuildLevelSummary(level), TextAnchor.MiddleLeft, LevelSelectUiLayoutMetrics.SummaryAnchorMin, LevelSelectUiLayoutMetrics.SummaryAnchorMax, 18);
 
-            GameObject buttonObject = CreateButton("PlayButton", row.transform, unlocked ? "Play" : "Locked", new Vector2(0.68f, 0.20f), new Vector2(0.96f, 0.80f));
+            GameObject buttonObject = CreateButton("PlayButton", row.transform, unlocked ? "Play" : "Locked", LevelSelectUiLayoutMetrics.ActionAnchorMin, LevelSelectUiLayoutMetrics.ActionAnchorMax);
             Button playButton = buttonObject.GetComponent<Button>();
             playButton.interactable = unlocked;
+            ApplyPlayButtonState(buttonObject, unlocked);
             int levelId = level.LevelId;
             playButton.onClick.AddListener(() => SelectLevel(levelId));
 
@@ -141,12 +143,61 @@ namespace EcoGarden.UI
             return level.LevelId + ". " + name;
         }
 
-        private static string BuildLevelMeta(LevelDefinition level, bool unlocked)
+        private static string BuildLevelMeta(LevelDefinition level)
         {
             string difficulty = level.Difficulty != null
                 ? level.Difficulty.DifficultyKind.ToString()
                 : "Normal";
-            return difficulty + " / " + Mathf.CeilToInt(level.TimerSeconds) + "s" + (unlocked ? string.Empty : " / Locked");
+            return difficulty + " / " + Mathf.CeilToInt(level.TimerSeconds) + "s";
+        }
+
+        private static string BuildLevelSummary(LevelDefinition level)
+        {
+            if (level.NpcOrder == null)
+            {
+                return "Order: delivery";
+            }
+
+            return "Order: " + level.NpcOrder.TotalRequiredItems + " item(s), tier " + level.NpcOrder.HighestRequiredLevel;
+        }
+
+        private static string BuildLevelStatus(LevelDefinition level, SaveData saveData, bool unlocked)
+        {
+            if (!unlocked)
+            {
+                return "Locked";
+            }
+
+            int highestUnlocked = saveData != null ? Mathf.Max(1, saveData.highestUnlockedLevel) : 1;
+            return level.LevelId < highestUnlocked ? "Done" : "Current";
+        }
+
+        private static Color GetRowColor(string status)
+        {
+            if (status == "Locked")
+            {
+                return new Color(0.08f, 0.09f, 0.10f, 0.72f);
+            }
+
+            if (status == "Done")
+            {
+                return new Color(0.09f, 0.16f, 0.13f, 0.88f);
+            }
+
+            return new Color(0.12f, 0.18f, 0.20f, 0.92f);
+        }
+
+        private static void ApplyPlayButtonState(GameObject buttonObject, bool unlocked)
+        {
+            Image image = buttonObject.GetComponent<Image>();
+            if (image == null)
+            {
+                return;
+            }
+
+            image.color = unlocked
+                ? new Color(0.26f, 0.48f, 0.44f, 0.98f)
+                : new Color(0.34f, 0.38f, 0.38f, 0.82f);
         }
 
         private void ResolveReferences()
