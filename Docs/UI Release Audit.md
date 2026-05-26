@@ -218,7 +218,7 @@ Acceptance criteria:
 | Level Select panel | Code pass | Code pass | Code pass | Needs device | Needs device | P1 | UI-R6 code pass added locked/current/done row states and metric coverage; visual/device pass still required. |
 | Pause panel | Not run | Not run | Not run | Needs device | Needs device | P1 | Needs consistent panel framework. |
 | Win/fail result panel | Code pass | Code pass | Code pass | Needs device | Needs device | P0 | UI-R6 code pass clarified complete/fail copy and replay/retry/next actions; visual/device pass still required. |
-| HUD feedback messages | Not run | Not run | Not run | Needs device | Needs device | P1 | Must not cover drag/drop targets. |
+| HUD feedback messages | Code pass | Code pass | Code pass | Needs device | Needs device | P1 | UI-R7 code pass added severity color/duration and duplicate suppression; placement still needs device validation. |
 
 ## Recommended Execution Order
 
@@ -286,4 +286,12 @@ This slice has the highest release impact because every play session depends on 
 - Added `LevelSelectUiLayoutMetrics` and EditMode metric coverage for small-portrait level row title/action widths.
 - Level Select rows now show `Done`, `Current`, or `Locked`, include difficulty, timer, and order summary copy, and use disabled button styling for locked levels.
 - Result flow now uses clearer complete/fail messages, labels the restart action as `Replay` or `Retry`, and resolves inactive result UI objects during wiring.
+- Runtime and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false` after local generated `.csproj` verification updates; generated project files are not tracked.
+
+2026-05-26:
+
+- Started UI-R7 Feedback and Motion polish.
+- Added `FeedbackMessageSeverity` and `FeedbackMessagePresentation` to classify common HUD messages into info, success, warning, and error states.
+- `GameplayFeedbackController` now applies severity colors and longer durations for warning/error messages, while suppressing immediate duplicate HUD messages to avoid unreadable stacking during repeated taps or invalid actions.
+- Added EditMode coverage for common release message classification and readable warning/error durations.
 - Runtime and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false` after local generated `.csproj` verification updates; generated project files are not tracked.

@@ -14,6 +14,8 @@ namespace EcoGarden.UI
 
         private readonly Queue<WorldTextEntry> worldTextPool = new Queue<WorldTextEntry>();
         private Coroutine hudRoutine;
+        private string lastHudMessage;
+        private float lastHudMessageTime = -100f;
 
         private void Awake()
         {
@@ -29,7 +31,17 @@ namespace EcoGarden.UI
 
         public void PlayHudMessage(string message)
         {
+            PlayHudMessage(message, FeedbackMessagePresentation.Classify(message));
+        }
+
+        public void PlayHudMessage(string message, FeedbackMessageSeverity severity)
+        {
             if (hudFeedbackText == null)
+            {
+                return;
+            }
+
+            if (ShouldSuppressDuplicate(message))
             {
                 return;
             }
@@ -39,7 +51,9 @@ namespace EcoGarden.UI
                 StopCoroutine(hudRoutine);
             }
 
-            hudRoutine = StartCoroutine(HudMessageRoutine(message));
+            lastHudMessage = message;
+            lastHudMessageTime = Time.unscaledTime;
+            hudRoutine = StartCoroutine(HudMessageRoutine(message, severity));
         }
 
         public void PlayWorldText(Vector3 worldPosition, string message, Color color)
@@ -61,10 +75,11 @@ namespace EcoGarden.UI
             }
         }
 
-        private IEnumerator HudMessageRoutine(string message)
+        private IEnumerator HudMessageRoutine(string message, FeedbackMessageSeverity severity)
         {
             hudFeedbackText.text = message;
-            yield return new WaitForSeconds(hudMessageDuration);
+            hudFeedbackText.color = FeedbackMessagePresentation.ColorFor(severity);
+            yield return new WaitForSeconds(Mathf.Max(hudMessageDuration, FeedbackMessagePresentation.DurationFor(severity)));
 
             if (hudFeedbackText != null && hudFeedbackText.text == message)
             {
@@ -72,6 +87,13 @@ namespace EcoGarden.UI
             }
 
             hudRoutine = null;
+        }
+
+        private bool ShouldSuppressDuplicate(string message)
+        {
+            return !string.IsNullOrWhiteSpace(message) &&
+                   message == lastHudMessage &&
+                   Time.unscaledTime - lastHudMessageTime < FeedbackMessagePresentation.DuplicateSuppressSeconds;
         }
 
         private IEnumerator WorldTextRoutine(WorldTextEntry entry, Color color)
