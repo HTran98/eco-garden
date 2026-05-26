@@ -30,8 +30,8 @@ Purpose: define the target portrait profiles and pass criteria for Milestone C m
 | Area | 720x1280 | 1080x1920 | Tall | Notch | Gesture Nav | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
 | Timer/currency row |  |  |  |  |  | Top row stays inside safe area. |
-| Pause/restart controls |  |  |  |  |  | Buttons remain reachable and do not overlap currency. |
-| Shop entry |  |  |  |  |  | Button remains visible without covering board. |
+| Pause/restart controls | Code pass | Code pass | Code pass | Pending device | Pending device | Buttons remain reachable and do not overlap currency. |
+| Shop entry | Code pass | Code pass | Code pass | Pending device | Pending device | Button remains visible without covering board. |
 | Mission entry/tracker | Code pass | Code pass | Code pass | Pending device | Pending device | Tracker avoids Delivery/Sell, keeps a readable minimum width, and shows two compact rows. |
 | Sell basket | Code pass | Code pass | Code pass | Pending device | Pending device | Drop target moved above AbilityBar and bottom safe-area root. |
 | Delivery zone | Code pass | Code pass | Code pass | Pending device | Pending device | Drop target moved above AbilityBar and kept separate from Sell basket. |
@@ -41,9 +41,10 @@ Purpose: define the target portrait profiles and pass criteria for Milestone C m
 | Panel | 720x1280 | 1080x1920 | Tall | Notch | Gesture Nav | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
 | Shop | Code pass | Code pass | Code pass | Pending device | Pending device | Metric tests cover category tab, product text, price badge, and Buy/Owned button width. |
-| Mission |  |  |  |  |  | Claim buttons stay reachable and reward text fits. |
-| Pause |  |  |  |  |  | Resume/restart controls fit without clipping. |
-| Win/fail result |  |  |  |  |  | Rewards and action buttons stay visible. |
+| Mission | Code pass | Code pass | Code pass | Pending device | Pending device | Claim buttons stay reachable and reward text fits. |
+| Level Select | Code pass | Code pass | Code pass | Pending device | Pending device | Done/Current/Locked rows and Play/Locked buttons fit. |
+| Pause | Not run | Not run | Not run | Pending device | Pending device | Resume/restart controls fit without clipping. |
+| Win/fail result | Code pass | Code pass | Code pass | Pending device | Pending device | Result copy and action buttons stay visible. |
 
 ## Touch Parity Checklist
 
@@ -72,3 +73,9 @@ Purpose: define the target portrait profiles and pass criteria for Milestone C m
 - C4 code pass widened the compact mission tracker on small portrait screens and limited it to two rows to avoid cramped claim buttons.
 - C3 code pass added shop row layout metrics and tests for category tab, price badge, Buy/Owned button, and product text width on 720x1280.
 - C5 code pass added touch-size and separation tests for Delivery/Sell drop zones across portrait profiles.
+
+2026-05-26:
+
+- UI-R2 through UI-R8 code passes completed for HUD, shared panels, Shop, Mission, Level Select, Result flow, feedback severity, and runtime symbolic icon labels.
+- Added `Docs/Android UI Validation Log.md` as the UI-R9 recording sheet for device/emulator results and screenshot evidence.
+- RB-003 and RB-012 remain device-validation gates until notch, gesture navigation, and touch parity are verified on Android hardware or equivalent emulator profiles.

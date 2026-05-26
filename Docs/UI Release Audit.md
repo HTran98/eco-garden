@@ -202,6 +202,7 @@ Acceptance criteria:
 
 - RB-003 can move from `Needs Device` to `Closed` or a documented accepted risk.
 - Any remaining failures have severity and next action.
+- Results are recorded in `Docs/Android UI Validation Log.md`.
 
 ## Audit Table
 
@@ -303,3 +304,10 @@ This slice has the highest release impact because every play session depends on 
 - HUD generator, Android runtime label normalization, Ability HUD refresh, and Economy currency text now use the shared catalog instead of scattered long labels.
 - Updated `Docs/Asset Resource List.md` to mark accepted runtime symbolic placeholders for ability, currency, pause, restart, and next icons.
 - Runtime, editor, and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false` after local generated `.csproj` verification updates; generated project files are not tracked.
+
+2026-05-26:
+
+- Started UI-R9 Android device validation prep.
+- Added `Docs/Android UI Validation Log.md` with required profiles, release UI surfaces, interaction checks, evidence fields, and failure-recording rules.
+- Updated `Docs/Android Portrait Layout Matrix.md` with the latest UI-R2 through UI-R8 code-pass baseline.
+- RB-003 and RB-012 remain open as device-validation gates; no device screenshots have been captured in this environment.
