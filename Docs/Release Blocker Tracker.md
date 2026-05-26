@@ -28,6 +28,7 @@ Purpose: track the blockers that must be closed, explicitly deferred, or accepte
 | RB-007 | IAP | `UnityIapProvider` does not yet expose receipt payload data for backend validation. | Closed | Client engineering | `IapPurchaseResult` and `IapProductPurchaseResult` now expose receipt payloads; `UnityIapProvider` captures `order.Info.Receipt`; mock provider remains receipt-empty for Editor tests. | Client receipt handoff model is ready for future backend validation wiring. |
 | RB-008 | Content/Balance | Level 1-10 difficulty and economy have instrumentation but no recorded playtest tuning pass. | Needs Unity Editor | Design/QA | Playtest Levels 1-10, record `LevelPlaytestMetricsController` output, update balance notes. | Blocks balance confidence. |
 | RB-009 | Art/UI | Background, UI icons, VFX sprites, and SFX are still marked as needing authored assets. | Open | Art/audio owner | Prioritize minimum release asset set from `Docs/Asset Resource List.md`. | Blocks presentation/audio signoff if final assets are required. |
+| RB-012 | UI | Release-ready UI polish pass is not complete across HUD, Shop, Mission, Level Select, Result, feedback, and icon states. | Open | Client/UI engineering | Execute `Docs/UI Release Audit.md`, starting with UI-R1 baseline capture and UI-R2 HUD gameplay release pass. | Blocks release-quality UX signoff. |
 | RB-010 | Decorations | Decoration purchases have no visible cosmetic application path. | Deferred | Product/design | Keep decoration products hidden from first-release runtime catalog. Revisit after release. | Does not block first release while deferred. |
 | RB-011 | Missions | Daily/rotating missions are not implemented. | Deferred | Product/design | Keep first release on static one-time missions. Revisit after release. | Does not block first release while deferred. |
 
@@ -40,7 +41,7 @@ Purpose: track the blockers that must be closed, explicitly deferred, or accepte
 | Android UX | Metric tests pass for key layout risks; device validation is open. | Run portrait device matrix. |
 | Android build | Current Unity IAP project builds a development Android APK in batchmode. | Rebuild after future package/build-setting changes; signed RC build remains future work. |
 | Production IAP | Provider/package/product-id checks exist; backend validation is accepted as out of scope, internal-track tests are open. | Keep public IAP gated until RB-005 Google Play internal-track testing passes. |
-| Presentation | Runtime gameplay sprites accepted; several authored assets still open. | Decide minimum shippable asset bar. |
+| Presentation | Runtime gameplay sprites accepted; UI release polish and several authored assets are still open. | Execute `Docs/UI Release Audit.md` and decide minimum shippable asset bar. |
 
 ## Update Rules
 
