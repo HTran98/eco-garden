@@ -136,14 +136,14 @@ namespace EcoGarden.Editor
             Image image = panel.GetComponent<Image>();
             image.color = new Color(0.08f, 0.11f, 0.15f, 0.92f);
 
-            Text title = CreateText("ResultTitleText", panel.transform, "Level Complete", TextAnchor.MiddleCenter, new Vector2(0.05f, 0.62f), new Vector2(0.95f, 0.92f)).GetComponent<Text>();
+            Text title = CreateText("ResultTitleText", panel.transform, "Level Complete", TextAnchor.MiddleCenter, PanelUiLayoutMetrics.ResultTitleAnchorMin, PanelUiLayoutMetrics.ResultTitleAnchorMax).GetComponent<Text>();
             title.fontSize = 42;
 
-            Text message = CreateText("ResultMessageText", panel.transform, "Blooming Lotus delivered.", TextAnchor.MiddleCenter, new Vector2(0.08f, 0.34f), new Vector2(0.92f, 0.62f)).GetComponent<Text>();
+            Text message = CreateText("ResultMessageText", panel.transform, "Blooming Lotus delivered.", TextAnchor.MiddleCenter, PanelUiLayoutMetrics.ResultMessageAnchorMin, PanelUiLayoutMetrics.ResultMessageAnchorMax).GetComponent<Text>();
             message.fontSize = 26;
 
-            CreateButton("RestartButton", panel.transform, "Restart", new Vector2(0.08f, 0.08f), new Vector2(0.46f, 0.30f));
-            CreateButton("NextLevelButton", panel.transform, "Next", new Vector2(0.54f, 0.08f), new Vector2(0.92f, 0.30f));
+            CreateButton("RestartButton", panel.transform, "Restart", PanelUiLayoutMetrics.ResultRestartAnchorMin, PanelUiLayoutMetrics.ResultRestartAnchorMax);
+            CreateButton("NextLevelButton", panel.transform, "Next", PanelUiLayoutMetrics.ResultNextAnchorMin, PanelUiLayoutMetrics.ResultNextAnchorMax);
             panel.SetActive(false);
         }
 
@@ -153,11 +153,11 @@ namespace EcoGarden.Editor
             Image image = panel.GetComponent<Image>();
             image.color = new Color(0.12f, 0.16f, 0.18f, 0.97f);
 
-            Text title = CreateText("LevelTitleText", panel.transform, "Levels", TextAnchor.MiddleLeft, new Vector2(0.05f, 0.90f), new Vector2(0.62f, 0.98f)).GetComponent<Text>();
+            Text title = CreateText("LevelTitleText", panel.transform, "Levels", TextAnchor.MiddleLeft, PanelUiLayoutMetrics.TitleAnchorMin, PanelUiLayoutMetrics.TitleAnchorMax).GetComponent<Text>();
             title.fontSize = 36;
-            CreateButton("LevelCloseButton", panel.transform, "X", new Vector2(0.86f, 0.90f), new Vector2(0.96f, 0.98f));
+            CreateButton("LevelCloseButton", panel.transform, "X", PanelUiLayoutMetrics.CloseAnchorMin, PanelUiLayoutMetrics.CloseAnchorMax);
 
-            GameObject viewport = CreatePanel("LevelViewport", panel.transform, new Vector2(0.04f, 0.06f), new Vector2(0.96f, 0.88f), new Vector2(0.5f, 0.5f), Vector2.zero);
+            GameObject viewport = CreatePanel("LevelViewport", panel.transform, PanelUiLayoutMetrics.FullContentAnchorMin, PanelUiLayoutMetrics.FullContentAnchorMax, new Vector2(0.5f, 0.5f), Vector2.zero);
             viewport.GetComponent<Image>().color = new Color(0.06f, 0.08f, 0.10f, 0.55f);
             Mask mask = viewport.AddComponent<Mask>();
             mask.showMaskGraphic = true;
@@ -190,18 +190,18 @@ namespace EcoGarden.Editor
             image.sprite = PlaceholderSpriteFactory.ShopPanelSprite;
             image.color = Color.white;
 
-            Text title = CreateText("ShopTitleText", panel.transform, "Shop", TextAnchor.MiddleLeft, new Vector2(0.05f, 0.90f), new Vector2(0.55f, 0.98f)).GetComponent<Text>();
+            Text title = CreateText("ShopTitleText", panel.transform, "Shop", TextAnchor.MiddleLeft, PanelUiLayoutMetrics.TitleAnchorMin, PanelUiLayoutMetrics.TitleAnchorMax).GetComponent<Text>();
             title.fontSize = 36;
-            CreateButton("ShopCloseButton", panel.transform, "X", new Vector2(0.86f, 0.90f), new Vector2(0.96f, 0.98f));
+            CreateButton("ShopCloseButton", panel.transform, "X", PanelUiLayoutMetrics.CloseAnchorMin, PanelUiLayoutMetrics.CloseAnchorMax);
 
-            GameObject categoryBar = CreateRect("ShopCategoryBar", panel.transform, new Vector2(0.04f, 0.80f), new Vector2(0.96f, 0.89f), new Vector2(0.5f, 0.5f), Vector2.zero);
+            GameObject categoryBar = CreateRect("ShopCategoryBar", panel.transform, PanelUiLayoutMetrics.ShopCategoryAnchorMin, PanelUiLayoutMetrics.ShopCategoryAnchorMax, new Vector2(0.5f, 0.5f), Vector2.zero);
             CreateButton("ShopCategoryBoosterButton", categoryBar.transform, "Boost", new Vector2(0.00f, 0.05f), new Vector2(0.19f, 0.95f));
             CreateButton("ShopCategoryDecorationButton", categoryBar.transform, "Decor", new Vector2(0.205f, 0.05f), new Vector2(0.395f, 0.95f));
             CreateButton("ShopCategoryUnlockButton", categoryBar.transform, "Unlock", new Vector2(0.41f, 0.05f), new Vector2(0.60f, 0.95f));
             CreateButton("ShopCategoryCurrencyButton", categoryBar.transform, "Gem", new Vector2(0.615f, 0.05f), new Vector2(0.805f, 0.95f));
             CreateButton("ShopCategoryBundleButton", categoryBar.transform, "Bundle", new Vector2(0.82f, 0.05f), new Vector2(1f, 0.95f));
 
-            GameObject viewport = CreatePanel("ShopProductViewport", panel.transform, new Vector2(0.04f, 0.06f), new Vector2(0.96f, 0.78f), new Vector2(0.5f, 0.5f), Vector2.zero);
+            GameObject viewport = CreatePanel("ShopProductViewport", panel.transform, PanelUiLayoutMetrics.ShopContentAnchorMin, PanelUiLayoutMetrics.ShopContentAnchorMax, new Vector2(0.5f, 0.5f), Vector2.zero);
             viewport.GetComponent<Image>().color = new Color(0.06f, 0.09f, 0.10f, 0.70f);
             Mask mask = viewport.AddComponent<Mask>();
             mask.showMaskGraphic = true;
@@ -233,11 +233,11 @@ namespace EcoGarden.Editor
             Image image = panel.GetComponent<Image>();
             image.color = new Color(0.12f, 0.16f, 0.18f, 0.97f);
 
-            Text title = CreateText("MissionTitleText", panel.transform, "Missions", TextAnchor.MiddleLeft, new Vector2(0.05f, 0.90f), new Vector2(0.62f, 0.98f)).GetComponent<Text>();
+            Text title = CreateText("MissionTitleText", panel.transform, "Missions", TextAnchor.MiddleLeft, PanelUiLayoutMetrics.TitleAnchorMin, PanelUiLayoutMetrics.TitleAnchorMax).GetComponent<Text>();
             title.fontSize = 36;
-            CreateButton("MissionCloseButton", panel.transform, "X", new Vector2(0.86f, 0.90f), new Vector2(0.96f, 0.98f));
+            CreateButton("MissionCloseButton", panel.transform, "X", PanelUiLayoutMetrics.CloseAnchorMin, PanelUiLayoutMetrics.CloseAnchorMax);
 
-            GameObject viewport = CreatePanel("MissionViewport", panel.transform, new Vector2(0.04f, 0.06f), new Vector2(0.96f, 0.88f), new Vector2(0.5f, 0.5f), Vector2.zero);
+            GameObject viewport = CreatePanel("MissionViewport", panel.transform, PanelUiLayoutMetrics.FullContentAnchorMin, PanelUiLayoutMetrics.FullContentAnchorMax, new Vector2(0.5f, 0.5f), Vector2.zero);
             viewport.GetComponent<Image>().color = new Color(0.06f, 0.08f, 0.10f, 0.55f);
             Mask mask = viewport.AddComponent<Mask>();
             mask.showMaskGraphic = true;

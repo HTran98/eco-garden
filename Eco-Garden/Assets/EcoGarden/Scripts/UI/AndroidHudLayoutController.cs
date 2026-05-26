@@ -86,6 +86,7 @@ namespace EcoGarden.UI
             SetAnchoredBox("MissionTrackerPanel", AndroidHudLayoutMetrics.MissionTrackerAnchorMin, AndroidHudLayoutMetrics.MissionTrackerAnchorMax);
             ApplyTopBarChildRects();
             ApplyAbilityBarChildRects();
+            ApplyPanelChildRects();
             ApplyCompactHudLabels();
         }
 
@@ -119,6 +120,24 @@ namespace EcoGarden.UI
             SetAnchoredBox("ShovelButton", AndroidHudLayoutMetrics.ShovelButtonAnchorMin, AndroidHudLayoutMetrics.ShovelButtonAnchorMax);
             SetAnchoredBox("MagicWandButton", AndroidHudLayoutMetrics.MagicWandButtonAnchorMin, AndroidHudLayoutMetrics.MagicWandButtonAnchorMax);
             SetAnchoredBox("SortingMagnetButton", AndroidHudLayoutMetrics.SortingMagnetButtonAnchorMin, AndroidHudLayoutMetrics.SortingMagnetButtonAnchorMax);
+        }
+
+        private static void ApplyPanelChildRects()
+        {
+            SetAnchoredBox("LevelTitleText", PanelUiLayoutMetrics.TitleAnchorMin, PanelUiLayoutMetrics.TitleAnchorMax);
+            SetAnchoredBox("ShopTitleText", PanelUiLayoutMetrics.TitleAnchorMin, PanelUiLayoutMetrics.TitleAnchorMax);
+            SetAnchoredBox("MissionTitleText", PanelUiLayoutMetrics.TitleAnchorMin, PanelUiLayoutMetrics.TitleAnchorMax);
+            SetAnchoredBox("LevelCloseButton", PanelUiLayoutMetrics.CloseAnchorMin, PanelUiLayoutMetrics.CloseAnchorMax);
+            SetAnchoredBox("ShopCloseButton", PanelUiLayoutMetrics.CloseAnchorMin, PanelUiLayoutMetrics.CloseAnchorMax);
+            SetAnchoredBox("MissionCloseButton", PanelUiLayoutMetrics.CloseAnchorMin, PanelUiLayoutMetrics.CloseAnchorMax);
+            SetAnchoredBox("LevelViewport", PanelUiLayoutMetrics.FullContentAnchorMin, PanelUiLayoutMetrics.FullContentAnchorMax);
+            SetAnchoredBox("MissionViewport", PanelUiLayoutMetrics.FullContentAnchorMin, PanelUiLayoutMetrics.FullContentAnchorMax);
+            SetAnchoredBox("ShopCategoryBar", PanelUiLayoutMetrics.ShopCategoryAnchorMin, PanelUiLayoutMetrics.ShopCategoryAnchorMax);
+            SetAnchoredBox("ShopProductViewport", PanelUiLayoutMetrics.ShopContentAnchorMin, PanelUiLayoutMetrics.ShopContentAnchorMax);
+            SetAnchoredBox("ResultTitleText", PanelUiLayoutMetrics.ResultTitleAnchorMin, PanelUiLayoutMetrics.ResultTitleAnchorMax);
+            SetAnchoredBox("ResultMessageText", PanelUiLayoutMetrics.ResultMessageAnchorMin, PanelUiLayoutMetrics.ResultMessageAnchorMax);
+            SetAnchoredBox("RestartButton", PanelUiLayoutMetrics.ResultRestartAnchorMin, PanelUiLayoutMetrics.ResultRestartAnchorMax);
+            SetAnchoredBox("NextLevelButton", PanelUiLayoutMetrics.ResultNextAnchorMin, PanelUiLayoutMetrics.ResultNextAnchorMax);
         }
 
         private static void ApplyCompactHudLabels()
@@ -194,7 +213,7 @@ namespace EcoGarden.UI
 
         private static void SetAnchoredBox(string objectName, Vector2 anchorMin, Vector2 anchorMax)
         {
-            GameObject gameObject = GameObject.Find(objectName);
+            GameObject gameObject = FindObjectIncludingInactive(objectName);
             if (gameObject == null)
             {
                 return;
@@ -215,7 +234,7 @@ namespace EcoGarden.UI
 
         private static void SetButtonLabel(string objectName, string label)
         {
-            GameObject gameObject = GameObject.Find(objectName);
+            GameObject gameObject = FindObjectIncludingInactive(objectName);
             if (gameObject == null)
             {
                 return;
@@ -226,6 +245,34 @@ namespace EcoGarden.UI
             {
                 text.text = label;
             }
+        }
+
+        private static GameObject FindObjectIncludingInactive(string objectName)
+        {
+            if (string.IsNullOrEmpty(objectName))
+            {
+                return null;
+            }
+
+            GameObject activeObject = GameObject.Find(objectName);
+            if (activeObject != null)
+            {
+                return activeObject;
+            }
+
+            Transform[] transforms = Resources.FindObjectsOfTypeAll<Transform>();
+            for (int i = 0; i < transforms.Length; i++)
+            {
+                Transform candidate = transforms[i];
+                if (candidate != null &&
+                    candidate.gameObject.scene.IsValid() &&
+                    candidate.name == objectName)
+                {
+                    return candidate.gameObject;
+                }
+            }
+
+            return null;
         }
     }
 }

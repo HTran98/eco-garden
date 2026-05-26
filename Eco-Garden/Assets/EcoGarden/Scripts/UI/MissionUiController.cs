@@ -368,10 +368,10 @@ namespace EcoGarden.UI
             GameObject panel = CreatePanel("MissionPanel", parent, AndroidHudLayoutMetrics.PanelAnchorMin, AndroidHudLayoutMetrics.PanelAnchorMax);
             missionPanel = panel;
 
-            CreateText("MissionTitleText", panel.transform, "Missions", TextAnchor.MiddleLeft, new Vector2(0.05f, 0.90f), new Vector2(0.62f, 0.98f), 34);
-            CreateButton("MissionCloseButton", panel.transform, "X", new Vector2(0.86f, 0.90f), new Vector2(0.96f, 0.98f));
+            CreateText("MissionTitleText", panel.transform, "Missions", TextAnchor.MiddleLeft, PanelUiLayoutMetrics.TitleAnchorMin, PanelUiLayoutMetrics.TitleAnchorMax, 34);
+            CreateButton("MissionCloseButton", panel.transform, "X", PanelUiLayoutMetrics.CloseAnchorMin, PanelUiLayoutMetrics.CloseAnchorMax);
 
-            GameObject viewport = CreatePanel("MissionViewport", panel.transform, new Vector2(0.04f, 0.06f), new Vector2(0.96f, 0.88f));
+            GameObject viewport = CreatePanel("MissionViewport", panel.transform, PanelUiLayoutMetrics.FullContentAnchorMin, PanelUiLayoutMetrics.FullContentAnchorMax);
             Mask mask = viewport.AddComponent<Mask>();
             mask.showMaskGraphic = true;
 

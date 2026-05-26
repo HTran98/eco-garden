@@ -364,10 +364,10 @@ namespace EcoGarden.UI
             GameObject panel = CreatePanel("ShopPanel", parent, AndroidHudLayoutMetrics.PanelAnchorMin, AndroidHudLayoutMetrics.PanelAnchorMax);
             shopPanel = panel;
 
-            CreateText("ShopTitleText", panel.transform, "Shop", TextAnchor.MiddleLeft, new Vector2(0.05f, 0.90f), new Vector2(0.55f, 0.98f), 34);
-            CreateButton("ShopCloseButton", panel.transform, "X", new Vector2(0.86f, 0.90f), new Vector2(0.96f, 0.98f));
+            CreateText("ShopTitleText", panel.transform, "Shop", TextAnchor.MiddleLeft, PanelUiLayoutMetrics.TitleAnchorMin, PanelUiLayoutMetrics.TitleAnchorMax, 34);
+            CreateButton("ShopCloseButton", panel.transform, "X", PanelUiLayoutMetrics.CloseAnchorMin, PanelUiLayoutMetrics.CloseAnchorMax);
 
-            GameObject categoryBar = CreateRect("ShopCategoryBar", panel.transform, new Vector2(0.04f, 0.80f), new Vector2(0.96f, 0.89f));
+            GameObject categoryBar = CreateRect("ShopCategoryBar", panel.transform, PanelUiLayoutMetrics.ShopCategoryAnchorMin, PanelUiLayoutMetrics.ShopCategoryAnchorMax);
             categoryRoot = categoryBar.transform;
             CreateButton("ShopCategoryBoosterButton", categoryRoot, "Boost", new Vector2(0.00f, 0.05f), new Vector2(0.19f, 0.95f));
             CreateButton("ShopCategoryDecorationButton", categoryRoot, "Decor", new Vector2(0.205f, 0.05f), new Vector2(0.395f, 0.95f));
@@ -375,7 +375,7 @@ namespace EcoGarden.UI
             CreateButton("ShopCategoryCurrencyButton", categoryRoot, "Gem", new Vector2(0.615f, 0.05f), new Vector2(0.805f, 0.95f));
             CreateButton("ShopCategoryBundleButton", categoryRoot, "Bundle", new Vector2(0.82f, 0.05f), new Vector2(1f, 0.95f));
 
-            GameObject viewport = CreatePanel("ShopProductViewport", panel.transform, new Vector2(0.04f, 0.06f), new Vector2(0.96f, 0.78f));
+            GameObject viewport = CreatePanel("ShopProductViewport", panel.transform, PanelUiLayoutMetrics.ShopContentAnchorMin, PanelUiLayoutMetrics.ShopContentAnchorMax);
             Image viewportImage = viewport.GetComponent<Image>();
             if (viewportImage != null)
             {
