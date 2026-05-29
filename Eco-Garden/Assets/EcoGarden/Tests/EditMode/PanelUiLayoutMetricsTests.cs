@@ -71,11 +71,23 @@ namespace EcoGarden.Tests.EditMode
                 PanelUiLayoutMetrics.ResultNextAnchorMin,
                 PanelUiLayoutMetrics.ResultNextAnchorMax,
                 resultPanel.size);
+            Rect countdown = AndroidHudLayoutMetrics.ToPixelRect(
+                PanelUiLayoutMetrics.ResultCountdownAnchorMin,
+                PanelUiLayoutMetrics.ResultCountdownAnchorMax,
+                resultPanel.size);
+            Rect message = AndroidHudLayoutMetrics.ToPixelRect(
+                PanelUiLayoutMetrics.ResultMessageAnchorMin,
+                PanelUiLayoutMetrics.ResultMessageAnchorMax,
+                resultPanel.size);
 
             Assert.GreaterOrEqual(restart.width, PanelUiLayoutMetrics.MinimumResultActionWidth);
             Assert.GreaterOrEqual(next.width, PanelUiLayoutMetrics.MinimumResultActionWidth);
             Assert.GreaterOrEqual(restart.height, PanelUiLayoutMetrics.MinimumResultActionHeight);
             Assert.GreaterOrEqual(next.height, PanelUiLayoutMetrics.MinimumResultActionHeight);
+            Assert.GreaterOrEqual(countdown.height, PanelUiLayoutMetrics.MinimumResultCountdownHeight);
+            Assert.IsFalse(AndroidHudLayoutMetrics.Overlaps(message, countdown, 6f));
+            Assert.IsFalse(AndroidHudLayoutMetrics.Overlaps(countdown, restart, 6f));
+            Assert.IsFalse(AndroidHudLayoutMetrics.Overlaps(countdown, next, 6f));
             Assert.IsFalse(AndroidHudLayoutMetrics.Overlaps(restart, next, 12f));
         }
     }

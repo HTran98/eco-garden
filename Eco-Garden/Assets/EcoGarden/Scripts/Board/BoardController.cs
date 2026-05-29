@@ -17,9 +17,9 @@ namespace EcoGarden.Board
         [SerializeField] private BoardView boardView;
         [SerializeField] private bool loadOnStart = true;
         [SerializeField] private bool frameCameraOnLoad = true;
-        [SerializeField] private float cameraPadding = 1.25f;
-        [SerializeField] private float hudTopWorldPadding = 1.15f;
-        [SerializeField] private float hudBottomWorldPadding = 1.05f;
+        [SerializeField] private float cameraPadding = 1.55f;
+        [SerializeField] private float hudTopWorldPadding = 1.25f;
+        [SerializeField] private float hudBottomWorldPadding = 1.25f;
 
         public BoardState BoardState { get; private set; }
         public LevelDefinition LevelDefinition { get { return levelDefinition; } }
@@ -299,6 +299,67 @@ namespace EcoGarden.Board
             return IsActiveOrderComplete();
         }
 
+        public List<GridPosition> CaptureClearedObstaclePositions()
+        {
+            List<GridPosition> positions = new List<GridPosition>();
+            if (BoardState == null || levelDefinition == null || levelDefinition.RowsTopToBottom == null)
+            {
+                return positions;
+            }
+
+            IReadOnlyList<string> rows = levelDefinition.RowsTopToBottom;
+            if (rows.Count != levelDefinition.Height)
+            {
+                return positions;
+            }
+
+            for (int row = 0; row < rows.Count; row++)
+            {
+                string sourceRow = rows[row];
+                if (string.IsNullOrEmpty(sourceRow) || sourceRow.Length != levelDefinition.Width)
+                {
+                    continue;
+                }
+
+                int y = levelDefinition.Height - 1 - row;
+                for (int x = 0; x < levelDefinition.Width; x++)
+                {
+                    if (!IsObstacleToken(sourceRow[x]))
+                    {
+                        continue;
+                    }
+
+                    GridPosition position = new GridPosition(x, y);
+                    BoardCell cell = BoardState.GetCell(position);
+                    if (cell != null && cell.Kind != CellKind.Obstacle)
+                    {
+                        positions.Add(position);
+                    }
+                }
+            }
+
+            return positions;
+        }
+
+        public void RestoreClearedObstacles(IEnumerable<GridPosition> positions, bool refreshView = true)
+        {
+            if (BoardState == null || positions == null)
+            {
+                return;
+            }
+
+            bool changed = false;
+            foreach (GridPosition position in positions)
+            {
+                changed |= BoardState.TryRemoveObstacle(position);
+            }
+
+            if (changed && refreshView)
+            {
+                RefreshView();
+            }
+        }
+
         public void RestoreBoardItems(System.Collections.Generic.IEnumerable<EcoGarden.Items.BoardItem> items, System.Collections.Generic.IEnumerable<GridPosition> positions)
         {
             if (BoardState == null || items == null || positions == null)
@@ -339,14 +400,17 @@ namespace EcoGarden.Board
             float boardHeight = boardView.GetBoardWorldHeight(BoardState);
             float boardWidth = boardView.GetBoardWorldWidth(BoardState);
             float aspect = mainCamera.aspect > 0f ? mainCamera.aspect : 1f;
-            float sizeByHeight = boardHeight * 0.5f + cameraPadding + (hudTopWorldPadding + hudBottomWorldPadding) * 0.5f;
-            float sizeByWidth = boardWidth * 0.5f / aspect + cameraPadding;
+            float safeCameraPadding = Mathf.Max(cameraPadding, 1.55f);
+            float safeHudTopPadding = Mathf.Max(hudTopWorldPadding, 1.25f);
+            float safeHudBottomPadding = Mathf.Max(hudBottomWorldPadding, 1.25f);
+            float sizeByHeight = boardHeight * 0.5f + safeCameraPadding + (safeHudTopPadding + safeHudBottomPadding) * 0.5f;
+            float sizeByWidth = boardWidth * 0.5f / aspect + safeCameraPadding;
             mainCamera.orthographicSize = Mathf.Max(sizeByHeight, sizeByWidth);
 
             // Offset toward available play space between top and bottom HUD.
             mainCamera.transform.position = new Vector3(
                 boardView.transform.position.x,
-                boardView.transform.position.y + (hudTopWorldPadding - hudBottomWorldPadding) * 0.5f,
+                boardView.transform.position.y + (safeHudTopPadding - safeHudBottomPadding) * 0.5f,
                 mainCamera.transform.position.z);
         }
 
@@ -427,6 +491,11 @@ namespace EcoGarden.Board
             }
 
             return true;
+        }
+
+        private static bool IsObstacleToken(char token)
+        {
+            return token == 'W' || token == 'P';
         }
 
         private bool WillMerge(GridPosition from, GridPosition to)

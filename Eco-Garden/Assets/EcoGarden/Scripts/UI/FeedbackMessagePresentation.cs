@@ -61,6 +61,21 @@ namespace EcoGarden.UI
             }
         }
 
+        public static Color SurfaceColorFor(FeedbackMessageSeverity severity)
+        {
+            switch (severity)
+            {
+                case FeedbackMessageSeverity.Success:
+                    return new Color(0.18f, 0.42f, 0.24f, 0.82f);
+                case FeedbackMessageSeverity.Warning:
+                    return new Color(0.46f, 0.34f, 0.12f, 0.84f);
+                case FeedbackMessageSeverity.Error:
+                    return new Color(0.46f, 0.16f, 0.14f, 0.86f);
+                default:
+                    return new Color(0.10f, 0.20f, 0.22f, 0.76f);
+            }
+        }
+
         public static float DurationFor(FeedbackMessageSeverity severity)
         {
             switch (severity)

@@ -64,8 +64,8 @@ namespace EcoGarden.Editor
             rect.sizeDelta = new Vector2(0f, 92f);
 
             CreateText("TimerText", topBar.transform, "03:00", TextAnchor.MiddleLeft, AndroidHudLayoutMetrics.TimerAnchorMin, AndroidHudLayoutMetrics.TimerAnchorMax);
-            CreateText("GoldText", topBar.transform, UiIconLabelCatalog.Gold + " 0", TextAnchor.MiddleCenter, AndroidHudLayoutMetrics.GoldAnchorMin, AndroidHudLayoutMetrics.GoldAnchorMax);
-            CreateText("GemText", topBar.transform, UiIconLabelCatalog.Gem + " 0", TextAnchor.MiddleCenter, AndroidHudLayoutMetrics.GemAnchorMin, AndroidHudLayoutMetrics.GemAnchorMax);
+            CreateText("GoldText", topBar.transform, "0", TextAnchor.MiddleRight, AndroidHudLayoutMetrics.GoldAnchorMin, AndroidHudLayoutMetrics.GoldAnchorMax);
+            CreateText("GemText", topBar.transform, "0", TextAnchor.MiddleRight, AndroidHudLayoutMetrics.GemAnchorMin, AndroidHudLayoutMetrics.GemAnchorMax);
             CreateButton("LevelButton", topBar.transform, UiIconLabelCatalog.Level, AndroidHudLayoutMetrics.LevelButtonAnchorMin, AndroidHudLayoutMetrics.LevelButtonAnchorMax);
             CreateButton("MissionButton", topBar.transform, UiIconLabelCatalog.Mission, AndroidHudLayoutMetrics.MissionButtonAnchorMin, AndroidHudLayoutMetrics.MissionButtonAnchorMax);
             CreateButton("ShopButton", topBar.transform, UiIconLabelCatalog.Shop, AndroidHudLayoutMetrics.ShopButtonAnchorMin, AndroidHudLayoutMetrics.ShopButtonAnchorMax);
@@ -86,9 +86,9 @@ namespace EcoGarden.Editor
             RectTransform rect = bar.GetComponent<RectTransform>();
             rect.sizeDelta = new Vector2(-80f, 150f);
 
-            CreateButton("ShovelButton", bar.transform, UiIconLabelCatalog.AbilityWithCount(EcoGarden.Abilities.AbilityKind.Shovel, 2), AndroidHudLayoutMetrics.ShovelButtonAnchorMin, AndroidHudLayoutMetrics.ShovelButtonAnchorMax);
-            CreateButton("MagicWandButton", bar.transform, UiIconLabelCatalog.AbilityWithCount(EcoGarden.Abilities.AbilityKind.MagicWand, 1), AndroidHudLayoutMetrics.MagicWandButtonAnchorMin, AndroidHudLayoutMetrics.MagicWandButtonAnchorMax);
-            CreateButton("SortingMagnetButton", bar.transform, UiIconLabelCatalog.AbilityWithCount(EcoGarden.Abilities.AbilityKind.SortingMagnet, 1), AndroidHudLayoutMetrics.SortingMagnetButtonAnchorMin, AndroidHudLayoutMetrics.SortingMagnetButtonAnchorMax);
+            CreateButton("ShovelButton", bar.transform, UiIconLabelCatalog.Count(2), AndroidHudLayoutMetrics.ShovelButtonAnchorMin, AndroidHudLayoutMetrics.ShovelButtonAnchorMax);
+            CreateButton("MagicWandButton", bar.transform, UiIconLabelCatalog.Count(1), AndroidHudLayoutMetrics.MagicWandButtonAnchorMin, AndroidHudLayoutMetrics.MagicWandButtonAnchorMax);
+            CreateButton("SortingMagnetButton", bar.transform, UiIconLabelCatalog.Count(1), AndroidHudLayoutMetrics.SortingMagnetButtonAnchorMin, AndroidHudLayoutMetrics.SortingMagnetButtonAnchorMax);
         }
 
         private static void CreateSellBasket(Transform parent)

@@ -2,7 +2,10 @@ using EcoGarden.Board;
 using EcoGarden.Config;
 using EcoGarden.Progression;
 using EcoGarden.Save;
+using EcoGarden.UI;
+using EcoGarden.Utilities;
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -14,16 +17,29 @@ namespace EcoGarden.Level
         [SerializeField] private BoardController boardController;
         [SerializeField] private Text timerText;
         [SerializeField] private Text objectiveText;
+        [SerializeField] private GameObject objectivePanel;
         [SerializeField] private Text feedbackText;
         [SerializeField] private GameObject resultPanel;
         [SerializeField] private Text resultTitleText;
         [SerializeField] private Text resultMessageText;
+        [SerializeField] private Text resultCountdownText;
         [SerializeField] private Button restartButton;
         [SerializeField] private Button nextLevelButton;
         [SerializeField] private Button pauseButton;
         [SerializeField] private LevelCatalogController levelCatalogController;
+        [SerializeField] private float timerWarningSeconds = 20f;
+        [SerializeField] private float timerCriticalSeconds = 10f;
+        [SerializeField] private bool autoAdvanceToNextLevel = true;
+        [SerializeField] private float autoAdvanceDelaySeconds = 5f;
 
+        private const float MinimumAutoAdvanceDelaySeconds = 5f;
         private float remainingSeconds;
+        private RectTransform timerRectTransform;
+        private Color timerBaseColor;
+        private Vector3 timerBaseScale;
+        private bool timerPresentationCached;
+        private Coroutine autoAdvanceRoutine;
+        private float autoAdvanceStartRealtime;
 
         public LevelPlayState State { get; private set; } = LevelPlayState.NotStarted;
         public bool IsPlaying { get { return State == LevelPlayState.Playing; } }
@@ -56,6 +72,12 @@ namespace EcoGarden.Level
 
         private void OnDisable()
         {
+            if (autoAdvanceRoutine != null)
+            {
+                StopCoroutine(autoAdvanceRoutine);
+                autoAdvanceRoutine = null;
+            }
+
             if (boardController != null)
             {
                 boardController.OrderProgressChanged -= RefreshObjective;
@@ -70,6 +92,12 @@ namespace EcoGarden.Level
 
         private void Update()
         {
+            if (State == LevelPlayState.Completed)
+            {
+                RefreshResultCountdown();
+                return;
+            }
+
             if (State != LevelPlayState.Playing)
             {
                 return;
@@ -96,7 +124,9 @@ namespace EcoGarden.Level
             State = LevelPlayState.Playing;
             SetResultPanelVisible(false);
             SetFeedback(string.Empty);
+            ClearResultCountdown();
             RefreshObjective();
+            CacheTimerPresentation();
             RefreshTimer();
             RefreshPauseButton();
             RefreshNextLevelButton();
@@ -115,6 +145,8 @@ namespace EcoGarden.Level
             RefreshResultActionLabels();
             ShowResult("Level Complete", BuildCompletionMessage());
             LevelCompleted?.Invoke();
+            ScheduleAutoAdvanceToNextLevel();
+            RefreshResultCountdown();
         }
 
         public void FailLevel()
@@ -129,6 +161,7 @@ namespace EcoGarden.Level
             RefreshNextLevelButton();
             RefreshResultActionLabels();
             ShowResult("Time Up", BuildFailureMessage());
+            ClearResultCountdown();
             LevelFailed?.Invoke();
         }
 
@@ -165,29 +198,79 @@ namespace EcoGarden.Level
 
         public void StartNextLevel()
         {
+            if (autoAdvanceRoutine != null)
+            {
+                StopCoroutine(autoAdvanceRoutine);
+                autoAdvanceRoutine = null;
+            }
+
             if (boardController == null || boardController.LevelDefinition == null)
             {
+                SetResultPanelVisible(false);
                 return;
             }
 
             if (levelCatalogController == null)
             {
-                levelCatalogController = FindAnyObjectByType<LevelCatalogController>();
+                levelCatalogController = FindObjectOfTypeIncludingInactive<LevelCatalogController>();
             }
 
             if (levelCatalogController == null)
             {
+                RestartCurrentLevelFromComplete();
                 return;
             }
 
-            int nextLevelId = boardController.LevelDefinition.LevelId + 1;
+            if (!TryGetNextCatalogLevel(out LevelDefinition nextLevel))
+            {
+                RestartCurrentLevelFromComplete();
+                return;
+            }
+
             SaveData saveData = SaveService.Load();
             LevelProgressionService.TryUnlockNextLevel(saveData, boardController.LevelDefinition);
+            if (nextLevel.LevelId > saveData.highestUnlockedLevel)
+            {
+                saveData.highestUnlockedLevel = nextLevel.LevelId;
+            }
+
             SaveService.Save(saveData);
 
-            if (levelCatalogController.SelectLevel(nextLevelId, saveData))
+            if (levelCatalogController.SelectLevel(nextLevel, saveData))
             {
+                HideBlockingPanels();
+                SetResultPanelVisible(false);
                 StartLevel();
+                return;
+            }
+
+            RestartCurrentLevelFromComplete();
+        }
+
+        private void ScheduleAutoAdvanceToNextLevel()
+        {
+            autoAdvanceStartRealtime = Time.unscaledTime;
+            if (!autoAdvanceToNextLevel || !Application.isPlaying || State != LevelPlayState.Completed)
+            {
+                return;
+            }
+
+            if (autoAdvanceRoutine != null)
+            {
+                StopCoroutine(autoAdvanceRoutine);
+            }
+
+            autoAdvanceRoutine = StartCoroutine(AutoAdvanceToNextLevelRoutine());
+        }
+
+        private IEnumerator AutoAdvanceToNextLevelRoutine()
+        {
+            yield return new WaitForSecondsRealtime(GetAutoAdvanceDelaySeconds());
+            autoAdvanceRoutine = null;
+
+            if (State == LevelPlayState.Completed)
+            {
+                StartNextLevel();
             }
         }
 
@@ -202,6 +285,44 @@ namespace EcoGarden.Level
             int minutes = totalSeconds / 60;
             int seconds = totalSeconds % 60;
             timerText.text = minutes.ToString("00") + ":" + seconds.ToString("00");
+            RefreshTimerUrgency();
+        }
+
+        private void RefreshTimerUrgency()
+        {
+            CacheTimerPresentation();
+            if (timerText == null || timerRectTransform == null)
+            {
+                return;
+            }
+
+            if (remainingSeconds > timerWarningSeconds || State != LevelPlayState.Playing)
+            {
+                timerText.color = timerBaseColor;
+                timerRectTransform.localScale = timerBaseScale;
+                return;
+            }
+
+            float pulse = (Mathf.Sin(Time.unscaledTime * 7.5f) + 1f) * 0.5f;
+            bool critical = remainingSeconds <= timerCriticalSeconds;
+            Color warningColor = critical
+                ? new Color(1f, 0.42f, 0.34f, 1f)
+                : UiThemePalette.SecondaryButton;
+            timerText.color = Color.Lerp(warningColor, Color.white, pulse * 0.18f);
+            timerRectTransform.localScale = timerBaseScale * Mathf.Lerp(1.02f, 1.075f, pulse);
+        }
+
+        private void CacheTimerPresentation()
+        {
+            if (timerPresentationCached || timerText == null)
+            {
+                return;
+            }
+
+            timerRectTransform = timerText.GetComponent<RectTransform>();
+            timerBaseColor = timerText.color;
+            timerBaseScale = timerRectTransform != null ? timerRectTransform.localScale : Vector3.one;
+            timerPresentationCached = true;
         }
 
         private void RefreshObjective()
@@ -215,10 +336,70 @@ namespace EcoGarden.Level
             if (order == null)
             {
                 objectiveText.text = "Deliver order";
+                RefreshObjectivePresentation(0, 0);
                 return;
             }
 
             objectiveText.text = "Deliver: " + BuildOrderDescription(order);
+            GetOrderProgress(out int submittedCount, out int requiredCount);
+            RefreshObjectivePresentation(submittedCount, requiredCount);
+        }
+
+        private void RefreshObjectivePresentation(int submittedCount, int requiredCount)
+        {
+            if (objectiveText == null)
+            {
+                return;
+            }
+
+            if (objectivePanel == null)
+            {
+                objectivePanel = FindObjectIncludingInactive("ObjectivePanel");
+            }
+
+            float progress = requiredCount > 0
+                ? Mathf.Clamp01((float)submittedCount / requiredCount)
+                : 0f;
+            Color accentColor = progress >= 1f
+                ? UiThemePalette.Success
+                : progress >= 0.66f
+                    ? UiThemePalette.SecondaryButton
+                    : UiThemePalette.PrimaryButton;
+
+            objectiveText.color = progress >= 1f
+                ? UiThemePalette.Success
+                : UiThemePalette.TextDark;
+
+            if (objectivePanel != null)
+            {
+                UiRowAccent.Apply(objectivePanel.transform, accentColor);
+            }
+        }
+
+        private void GetOrderProgress(out int submittedCount, out int requiredCount)
+        {
+            submittedCount = 0;
+            requiredCount = 0;
+
+            var runtimeRequirements = boardController != null
+                ? boardController.ActiveOrderRequirements
+                : null;
+            if (runtimeRequirements == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < runtimeRequirements.Count; i++)
+            {
+                var requirement = runtimeRequirements[i];
+                if (requirement == null)
+                {
+                    continue;
+                }
+
+                submittedCount += Mathf.Clamp(requirement.SubmittedCount, 0, requirement.RequiredCount);
+                requiredCount += Mathf.Max(0, requirement.RequiredCount);
+            }
         }
 
         private string BuildOrderDescription(NpcOrderDefinition order)
@@ -274,6 +455,7 @@ namespace EcoGarden.Level
 
         private void ShowResult(string title, string message)
         {
+            HideBlockingPanels();
             SetResultPanelVisible(true);
 
             if (resultTitleText != null)
@@ -287,6 +469,7 @@ namespace EcoGarden.Level
             }
 
             SetFeedback(message);
+            RefreshResultCountdown();
         }
 
         private string BuildCompletionMessage()
@@ -332,6 +515,11 @@ namespace EcoGarden.Level
                 objectiveText = FindText("ObjectiveText");
             }
 
+            if (objectivePanel == null)
+            {
+                objectivePanel = FindObjectIncludingInactive("ObjectivePanel");
+            }
+
             if (resultPanel == null)
             {
                 GameObject resultObject = FindObjectIncludingInactive("ResultPanel");
@@ -349,6 +537,11 @@ namespace EcoGarden.Level
             if (resultMessageText == null)
             {
                 resultMessageText = FindText("ResultMessageText");
+            }
+
+            if (resultCountdownText == null)
+            {
+                resultCountdownText = FindText("ResultCountdownText");
             }
 
             if (restartButton == null)
@@ -397,6 +590,7 @@ namespace EcoGarden.Level
 
         private void WireNextLevelButton()
         {
+            EnsureNextLevelButton();
             if (nextLevelButton == null)
             {
                 return;
@@ -431,34 +625,129 @@ namespace EcoGarden.Level
             Text label = pauseButton.GetComponentInChildren<Text>();
             if (label != null)
             {
-                label.text = State == LevelPlayState.Paused ? "Resume" : "Pause";
+                label.text = State == LevelPlayState.Paused ? "Play" : "Pause";
             }
+
+            RefreshPauseButtonIcon();
+        }
+
+        private void RefreshPauseButtonIcon()
+        {
+            if (pauseButton == null)
+            {
+                return;
+            }
+
+            Image iconImage = EnsureButtonRuntimeIcon(pauseButton);
+            if (iconImage == null)
+            {
+                return;
+            }
+
+            Sprite pauseSprite = Resources.Load<Sprite>("UiIcons/icon_pause");
+            iconImage.sprite = State == LevelPlayState.Paused
+                ? PlaceholderSpriteFactory.PlayIconSprite
+                : pauseSprite ?? iconImage.sprite;
+            iconImage.enabled = iconImage.sprite != null;
         }
 
         private void RefreshNextLevelButton()
         {
+            EnsureNextLevelButton();
             if (nextLevelButton == null)
             {
                 return;
             }
 
-            bool canStartNext = false;
-            if (State == LevelPlayState.Completed &&
-                boardController != null &&
-                boardController.LevelDefinition != null)
-            {
-                if (levelCatalogController == null)
-                {
-                    levelCatalogController = FindAnyObjectByType<LevelCatalogController>();
-                }
+            bool canUseNext = State == LevelPlayState.Completed && boardController != null;
 
-                int nextLevelId = boardController.LevelDefinition.LevelId + 1;
-                canStartNext = levelCatalogController != null &&
-                               levelCatalogController.Catalog.TryGetLevel(nextLevelId, out _);
+            nextLevelButton.gameObject.SetActive(canUseNext);
+            nextLevelButton.interactable = canUseNext;
+        }
+
+        private bool CanStartNextLevel()
+        {
+            if (State != LevelPlayState.Completed ||
+                boardController == null ||
+                boardController.LevelDefinition == null)
+            {
+                return false;
             }
 
-            nextLevelButton.gameObject.SetActive(canStartNext);
-            nextLevelButton.interactable = canStartNext;
+            return TryGetNextCatalogLevel(out _);
+        }
+
+        private bool TryGetNextCatalogLevel(out LevelDefinition nextLevel)
+        {
+            nextLevel = null;
+            if (levelCatalogController == null)
+            {
+                levelCatalogController = FindObjectOfTypeIncludingInactive<LevelCatalogController>();
+            }
+
+            if (levelCatalogController == null ||
+                levelCatalogController.Catalog == null ||
+                levelCatalogController.Catalog.Levels.Count == 0 ||
+                boardController == null ||
+                boardController.LevelDefinition == null)
+            {
+                return false;
+            }
+
+            int currentLevelId = boardController.LevelDefinition.LevelId;
+            bool catalogContainsCurrent = false;
+            var levels = levelCatalogController.Catalog.Levels;
+            for (int i = 0; i < levels.Count; i++)
+            {
+                LevelDefinition candidate = levels[i];
+                if (candidate == null)
+                {
+                    continue;
+                }
+
+                if (candidate.LevelId == currentLevelId)
+                {
+                    catalogContainsCurrent = true;
+                    continue;
+                }
+
+                if (candidate.LevelId > currentLevelId)
+                {
+                    nextLevel = candidate;
+                    return true;
+                }
+            }
+
+            if (!catalogContainsCurrent)
+            {
+                nextLevel = levels[0];
+                return nextLevel != null;
+            }
+
+            return false;
+        }
+
+        private void HideBlockingPanels()
+        {
+            SetPanelsInactive("ShopPanel");
+            SetPanelsInactive("MissionPanel");
+            SetPanelsInactive("MissionTrackerPanel");
+            SetPanelsInactive("LevelPanel");
+        }
+
+        private static void SetPanelsInactive(string objectName)
+        {
+            Transform[] transforms = Resources.FindObjectsOfTypeAll<Transform>();
+            for (int i = 0; i < transforms.Length; i++)
+            {
+                Transform candidate = transforms[i];
+                if (candidate != null &&
+                    candidate.gameObject.scene.IsValid() &&
+                    candidate.name == objectName)
+                {
+                    candidate.gameObject.SetActive(false);
+                }
+            }
         }
 
         private void RefreshResultActionLabels()
@@ -467,12 +756,128 @@ namespace EcoGarden.Level
             SetButtonLabel(nextLevelButton, "Next");
         }
 
+        private float GetAutoAdvanceDelaySeconds()
+        {
+            return Mathf.Max(MinimumAutoAdvanceDelaySeconds, autoAdvanceDelaySeconds);
+        }
+
+        private void RefreshResultCountdown()
+        {
+            EnsureResultCountdownText();
+            if (resultCountdownText == null)
+            {
+                return;
+            }
+
+            if (State != LevelPlayState.Completed)
+            {
+                ClearResultCountdown();
+                return;
+            }
+
+            if (!autoAdvanceToNextLevel || !Application.isPlaying)
+            {
+                resultCountdownText.text = "Tap Next to continue";
+                resultCountdownText.gameObject.SetActive(true);
+                return;
+            }
+
+            float remaining = Mathf.Max(0f, GetAutoAdvanceDelaySeconds() - (Time.unscaledTime - autoAdvanceStartRealtime));
+            resultCountdownText.text = "Auto next in " + Mathf.CeilToInt(remaining) + "s";
+            resultCountdownText.gameObject.SetActive(true);
+        }
+
+        private void ClearResultCountdown()
+        {
+            if (resultCountdownText != null)
+            {
+                resultCountdownText.text = string.Empty;
+                resultCountdownText.gameObject.SetActive(false);
+            }
+        }
+
+        private void RestartCurrentLevelFromComplete()
+        {
+            HideBlockingPanels();
+            SetResultPanelVisible(false);
+            if (boardController != null && boardController.LevelDefinition != null)
+            {
+                boardController.LoadLevel();
+                StartLevel();
+                SetFeedback("Next level unavailable. Replaying current level.");
+            }
+        }
+
         private void SetResultPanelVisible(bool visible)
         {
             if (resultPanel != null)
             {
                 resultPanel.SetActive(visible);
             }
+        }
+
+        private void EnsureNextLevelButton()
+        {
+            if (nextLevelButton == null)
+            {
+                GameObject nextObject = FindObjectIncludingInactive("NextLevelButton");
+                if (nextObject != null)
+                {
+                    nextLevelButton = nextObject.GetComponent<Button>();
+                }
+            }
+
+            if (nextLevelButton == null && resultPanel != null)
+            {
+                GameObject buttonObject = CreateResultButton(
+                    "NextLevelButton",
+                    resultPanel.transform,
+                    "Next",
+                    PanelUiLayoutMetrics.ResultNextAnchorMin,
+                    PanelUiLayoutMetrics.ResultNextAnchorMax);
+                nextLevelButton = buttonObject.GetComponent<Button>();
+            }
+
+            if (nextLevelButton == null)
+            {
+                return;
+            }
+
+            nextLevelButton.onClick.RemoveListener(StartNextLevel);
+            nextLevelButton.onClick.AddListener(StartNextLevel);
+        }
+
+        private void EnsureResultCountdownText()
+        {
+            if (resultCountdownText == null)
+            {
+                resultCountdownText = FindText("ResultCountdownText");
+            }
+
+            if (resultCountdownText != null || resultPanel == null)
+            {
+                return;
+            }
+
+            GameObject textObject = new GameObject("ResultCountdownText", typeof(RectTransform), typeof(Text));
+            textObject.transform.SetParent(resultPanel.transform, false);
+
+            RectTransform rect = textObject.GetComponent<RectTransform>();
+            rect.anchorMin = PanelUiLayoutMetrics.ResultCountdownAnchorMin;
+            rect.anchorMax = PanelUiLayoutMetrics.ResultCountdownAnchorMax;
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = Vector2.zero;
+            rect.sizeDelta = Vector2.zero;
+
+            resultCountdownText = textObject.GetComponent<Text>();
+            resultCountdownText.alignment = TextAnchor.MiddleCenter;
+            resultCountdownText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            resultCountdownText.fontSize = 20;
+            resultCountdownText.resizeTextForBestFit = true;
+            resultCountdownText.resizeTextMinSize = 12;
+            resultCountdownText.resizeTextMaxSize = 20;
+            resultCountdownText.color = UiThemePalette.TextLight;
+            resultCountdownText.raycastTarget = false;
         }
 
         private void SetFeedback(string message)
@@ -503,6 +908,77 @@ namespace EcoGarden.Level
             }
         }
 
+        private static GameObject CreateResultButton(string name, Transform parent, string label, Vector2 anchorMin, Vector2 anchorMax)
+        {
+            GameObject buttonObject = new GameObject(name, typeof(RectTransform), typeof(Image), typeof(Button));
+            buttonObject.transform.SetParent(parent, false);
+
+            RectTransform rect = buttonObject.GetComponent<RectTransform>();
+            rect.anchorMin = anchorMin;
+            rect.anchorMax = anchorMax;
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = Vector2.zero;
+            rect.sizeDelta = Vector2.zero;
+
+            Image image = buttonObject.GetComponent<Image>();
+            Sprite skinSprite = Resources.Load<Sprite>("UiSkins/ui_button_primary");
+            image.sprite = skinSprite ?? PlaceholderSpriteFactory.HudButtonSprite;
+            image.color = skinSprite != null ? Color.white : UiThemePalette.PrimaryButton;
+
+            Button button = buttonObject.GetComponent<Button>();
+            button.colors = UiThemePalette.BuildButtonColors(UiThemePalette.PrimaryButton);
+            buttonObject.AddComponent<UiButtonFeedback>();
+
+            GameObject labelObject = new GameObject("Label", typeof(RectTransform), typeof(Text));
+            labelObject.transform.SetParent(buttonObject.transform, false);
+            RectTransform labelRect = labelObject.GetComponent<RectTransform>();
+            labelRect.anchorMin = Vector2.zero;
+            labelRect.anchorMax = Vector2.one;
+            labelRect.pivot = new Vector2(0.5f, 0.5f);
+            labelRect.anchoredPosition = Vector2.zero;
+            labelRect.sizeDelta = Vector2.zero;
+
+            Text text = labelObject.GetComponent<Text>();
+            text.text = label;
+            text.alignment = TextAnchor.MiddleCenter;
+            text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            text.fontSize = 28;
+            text.resizeTextForBestFit = true;
+            text.resizeTextMinSize = 14;
+            text.resizeTextMaxSize = 28;
+            text.color = UiThemePalette.TextLight;
+            text.raycastTarget = false;
+
+            return buttonObject;
+        }
+
+        private static Image EnsureButtonRuntimeIcon(Button button)
+        {
+            if (button == null)
+            {
+                return null;
+            }
+
+            Transform iconTransform = button.transform.Find("RuntimeIcon");
+            GameObject iconObject = iconTransform != null
+                ? iconTransform.gameObject
+                : new GameObject("RuntimeIcon", typeof(RectTransform), typeof(Image));
+            iconObject.transform.SetParent(button.transform, false);
+            iconObject.transform.SetAsLastSibling();
+
+            RectTransform iconRect = iconObject.GetComponent<RectTransform>();
+            iconRect.anchorMin = new Vector2(0.18f, 0.18f);
+            iconRect.anchorMax = new Vector2(0.82f, 0.82f);
+            iconRect.offsetMin = Vector2.zero;
+            iconRect.offsetMax = Vector2.zero;
+
+            Image iconImage = iconObject.GetComponent<Image>();
+            iconImage.color = Color.white;
+            iconImage.preserveAspect = true;
+            iconImage.raycastTarget = false;
+            return iconImage;
+        }
+
         private static GameObject FindObjectIncludingInactive(string objectName)
         {
             if (string.IsNullOrEmpty(objectName))
@@ -525,6 +1001,27 @@ namespace EcoGarden.Level
                     candidate.name == objectName)
                 {
                     return candidate.gameObject;
+                }
+            }
+
+            return null;
+        }
+
+        private static T FindObjectOfTypeIncludingInactive<T>() where T : Component
+        {
+            T activeObject = FindAnyObjectByType<T>();
+            if (activeObject != null)
+            {
+                return activeObject;
+            }
+
+            T[] candidates = Resources.FindObjectsOfTypeAll<T>();
+            for (int i = 0; i < candidates.Length; i++)
+            {
+                T candidate = candidates[i];
+                if (candidate != null && candidate.gameObject.scene.IsValid())
+                {
+                    return candidate;
                 }
             }
 

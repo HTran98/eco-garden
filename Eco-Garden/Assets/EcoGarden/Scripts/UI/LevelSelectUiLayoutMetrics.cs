@@ -7,6 +7,12 @@ namespace EcoGarden.UI
         public const float LevelRowHeight = 126f;
         public const float MinimumTitleWidth = 320f;
         public const float MinimumActionWidth = 160f;
+        public const float MinimumLevelSummaryHeight = 48f;
+
+        public static readonly Vector2 PanelSummaryAnchorMin = new Vector2(0.05f, 0.795f);
+        public static readonly Vector2 PanelSummaryAnchorMax = new Vector2(0.95f, 0.875f);
+        public static readonly Vector2 PanelContentAnchorMin = new Vector2(0.04f, 0.06f);
+        public static readonly Vector2 PanelContentAnchorMax = new Vector2(0.96f, 0.775f);
 
         public static readonly Vector2 StatusAnchorMin = new Vector2(0.035f, 0.58f);
         public static readonly Vector2 StatusAnchorMax = new Vector2(0.18f, 0.88f);

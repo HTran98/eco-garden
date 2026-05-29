@@ -63,13 +63,44 @@ namespace EcoGarden.Tests.EditMode
         }
 
         [Test]
-        public void StartNextLevel_SelectsNextCatalogLevel()
+        public void CompleteLevel_HidesBlockingPanels()
+        {
+            GameObject boardObject = new GameObject("Board");
+            GameObject levelObject = new GameObject("LevelStateController");
+            GameObject missionPanel = new GameObject("MissionPanel");
+            GameObject missionTrackerPanel = new GameObject("MissionTrackerPanel");
+            try
+            {
+                BoardController boardController = boardObject.AddComponent<BoardController>();
+                boardController.SetLevelDefinition(TestLevelFactory.CreateLevel15());
+                missionPanel.SetActive(true);
+                missionTrackerPanel.SetActive(true);
+
+                LevelStateController levelStateController = levelObject.AddComponent<LevelStateController>();
+                levelStateController.StartLevel();
+                levelStateController.CompleteLevel();
+
+                Assert.IsFalse(missionPanel.activeSelf);
+                Assert.IsFalse(missionTrackerPanel.activeSelf);
+            }
+            finally
+            {
+                Object.DestroyImmediate(missionTrackerPanel);
+                Object.DestroyImmediate(missionPanel);
+                Object.DestroyImmediate(levelObject);
+                Object.DestroyImmediate(boardObject);
+            }
+        }
+
+        [Test]
+        public void CompleteLevel_CreatesRuntimeNextButtonWhenMissing()
         {
             SaveService.Clear();
 
             GameObject boardObject = new GameObject("Board");
             GameObject catalogObject = new GameObject("LevelCatalogController");
             GameObject levelObject = new GameObject("LevelStateController");
+            GameObject resultPanel = new GameObject("ResultPanel", typeof(RectTransform));
             try
             {
                 LevelDefinition level1 = CreateLevel(1);
@@ -84,13 +115,92 @@ namespace EcoGarden.Tests.EditMode
 
                 LevelStateController levelStateController = levelObject.AddComponent<LevelStateController>();
                 levelStateController.StartLevel();
-                levelStateController.StartNextLevel();
+                levelStateController.CompleteLevel();
 
-                Assert.AreEqual(2, boardController.LevelDefinition.LevelId);
+                Transform nextButton = resultPanel.transform.Find("NextLevelButton");
+                Assert.IsNotNull(nextButton);
+                Assert.IsTrue(nextButton.gameObject.activeSelf);
+                Assert.IsTrue(nextButton.GetComponent<UnityEngine.UI.Button>().interactable);
             }
             finally
             {
                 SaveService.Clear();
+                Object.DestroyImmediate(resultPanel);
+                Object.DestroyImmediate(levelObject);
+                Object.DestroyImmediate(catalogObject);
+                Object.DestroyImmediate(boardObject);
+            }
+        }
+
+        [Test]
+        public void StartNextLevelWithoutCatalog_ClosesResultPanelAndReplaysCurrentLevel()
+        {
+            GameObject boardObject = new GameObject("Board");
+            GameObject levelObject = new GameObject("LevelStateController");
+            GameObject resultPanel = new GameObject("ResultPanel", typeof(RectTransform));
+            try
+            {
+                BoardController boardController = boardObject.AddComponent<BoardController>();
+                boardObject.AddComponent<BoardView>();
+                boardController.SetLevelDefinition(CreateLevel(1));
+
+                LevelStateController levelStateController = levelObject.AddComponent<LevelStateController>();
+                levelStateController.StartLevel();
+                levelStateController.CompleteLevel();
+
+                Assert.IsTrue(resultPanel.activeSelf);
+
+                levelStateController.StartNextLevel();
+
+                Assert.IsFalse(resultPanel.activeSelf);
+                Assert.AreEqual(LevelPlayState.Playing, levelStateController.State);
+                Assert.AreEqual(1, boardController.LevelDefinition.LevelId);
+            }
+            finally
+            {
+                Object.DestroyImmediate(resultPanel);
+                Object.DestroyImmediate(levelObject);
+                Object.DestroyImmediate(boardObject);
+            }
+        }
+
+        [Test]
+        public void StartNextLevel_SelectsNextCatalogLevel()
+        {
+            SaveService.Clear();
+
+            GameObject boardObject = new GameObject("Board");
+            GameObject catalogObject = new GameObject("LevelCatalogController");
+            GameObject levelObject = new GameObject("LevelStateController");
+            GameObject objectiveObject = new GameObject("ObjectiveText");
+            try
+            {
+                LevelDefinition level1 = CreateLevel(1);
+                LevelDefinition level2 = CreateLevelWithOrder(2, new NpcOrderDefinition(
+                    "level_2_order",
+                    "Level 2 Order",
+                    new[] { new OrderRequirementDefinition("lotus", 2, 1) }));
+
+                BoardController boardController = boardObject.AddComponent<BoardController>();
+                boardController.SetLevelDefinition(level1);
+                objectiveObject.AddComponent<UnityEngine.UI.Text>();
+
+                LevelCatalogController catalogController = catalogObject.AddComponent<LevelCatalogController>();
+                catalogController.SetBoardController(boardController);
+                catalogController.SetCatalog(CreateCatalog(level1, level2));
+
+                LevelStateController levelStateController = levelObject.AddComponent<LevelStateController>();
+                levelStateController.StartLevel();
+                levelStateController.StartNextLevel();
+
+                Assert.AreEqual(2, boardController.LevelDefinition.LevelId);
+                Assert.AreEqual(LevelPlayState.Playing, levelStateController.State);
+                StringAssert.Contains("0/1", objectiveObject.GetComponent<UnityEngine.UI.Text>().text);
+            }
+            finally
+            {
+                SaveService.Clear();
+                Object.DestroyImmediate(objectiveObject);
                 Object.DestroyImmediate(levelObject);
                 Object.DestroyImmediate(catalogObject);
                 Object.DestroyImmediate(boardObject);
@@ -105,6 +215,12 @@ namespace EcoGarden.Tests.EditMode
         }
 
         private static LevelDefinition CreateLevel(int levelId)
+        {
+            LevelDefinition template = TestLevelFactory.CreateLevel15();
+            return CreateLevelWithOrder(levelId, template.NpcOrder);
+        }
+
+        private static LevelDefinition CreateLevelWithOrder(int levelId, NpcOrderDefinition order)
         {
             LevelDefinition level = TestLevelFactory.CreateLevel15();
             level.EditorSetValues(
@@ -122,7 +238,7 @@ namespace EcoGarden.Tests.EditMode
                     level.GetItemDefinitionForLevel(4),
                     level.GetItemDefinitionForLevel(5)
                 },
-                level.NpcOrder,
+                order,
                 new System.Collections.Generic.List<AbilityCountDefinition>(level.StartingAbilities),
                 level.TimerSeconds,
                 level.ThemeId,

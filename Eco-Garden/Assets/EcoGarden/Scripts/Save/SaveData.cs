@@ -15,6 +15,7 @@ namespace EcoGarden.Save
         public bool hasBoardState;
         public int plantCount;
         public BoardItemSaveData[] boardItems;
+        public ClearedObstacleSaveData[] clearedObstacles;
         public string activeOrderId;
         public OrderRequirementSaveData[] orderRequirements;
         public PlantTierUnlockSaveData[] plantTierUnlocks;
@@ -34,6 +35,14 @@ namespace EcoGarden.Save
         public string familyId;
         public int level;
         public string itemId;
+    }
+
+    [Serializable]
+    public sealed class ClearedObstacleSaveData
+    {
+        public int levelId;
+        public int x;
+        public int y;
     }
 
     [Serializable]

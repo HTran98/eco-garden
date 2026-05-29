@@ -85,6 +85,7 @@ namespace EcoGarden.Save
                 }
             }
 
+            ApplyClearedObstacles();
             ApplyBoardItems();
             ApplyPlantTierUnlocks();
             ApplyShopInventory();
@@ -120,6 +121,7 @@ namespace EcoGarden.Save
             }
 
             CaptureBoardItems();
+            CaptureClearedObstacles();
             CapturePlantTierUnlocks();
             CaptureShopInventory();
             CaptureMissionProgress();
@@ -258,6 +260,7 @@ namespace EcoGarden.Save
             }
 
             CaptureBoardItems();
+            CaptureClearedObstacles();
             CaptureOrderProgress();
             SaveService.Save(data);
         }
@@ -379,6 +382,42 @@ namespace EcoGarden.Save
             data.hasBoardState = true;
             data.plantCount = savedItems.Count;
             data.boardItems = savedItems.ToArray();
+        }
+
+        private void CaptureClearedObstacles()
+        {
+            if (boardController == null || boardController.BoardState == null || boardController.LevelDefinition == null)
+            {
+                return;
+            }
+
+            List<GridPosition> clearedPositions = boardController.CaptureClearedObstaclePositions();
+            List<ClearedObstacleSaveData> savedObstacles = new List<ClearedObstacleSaveData>();
+            int levelId = boardController.LevelDefinition.LevelId;
+            if (data.clearedObstacles != null)
+            {
+                for (int i = 0; i < data.clearedObstacles.Length; i++)
+                {
+                    ClearedObstacleSaveData obstacle = data.clearedObstacles[i];
+                    if (obstacle != null && obstacle.levelId != levelId)
+                    {
+                        savedObstacles.Add(obstacle);
+                    }
+                }
+            }
+
+            for (int i = 0; i < clearedPositions.Count; i++)
+            {
+                GridPosition position = clearedPositions[i];
+                savedObstacles.Add(new ClearedObstacleSaveData
+                {
+                    levelId = levelId,
+                    x = position.X,
+                    y = position.Y
+                });
+            }
+
+            data.clearedObstacles = savedObstacles.ToArray();
         }
 
         private void CaptureOrderProgress()
@@ -506,6 +545,32 @@ namespace EcoGarden.Save
             }
 
             boardController.RestoreBoardItems(items, positions);
+        }
+
+        private void ApplyClearedObstacles()
+        {
+            if (data.clearedObstacles == null ||
+                boardController == null ||
+                boardController.BoardState == null ||
+                boardController.LevelDefinition == null)
+            {
+                return;
+            }
+
+            List<GridPosition> positions = new List<GridPosition>();
+            int levelId = boardController.LevelDefinition.LevelId;
+            for (int i = 0; i < data.clearedObstacles.Length; i++)
+            {
+                ClearedObstacleSaveData obstacle = data.clearedObstacles[i];
+                if (obstacle == null || obstacle.levelId != levelId)
+                {
+                    continue;
+                }
+
+                positions.Add(new GridPosition(obstacle.x, obstacle.y));
+            }
+
+            boardController.RestoreClearedObstacles(positions);
         }
 
         private void ApplyOrderProgress()

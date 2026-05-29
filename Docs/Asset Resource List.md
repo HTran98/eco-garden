@@ -31,34 +31,51 @@ Acceptance status meanings:
 
 | Asset Id | Type | Target Folder | Status | Notes |
 | --- | --- | --- | --- | --- |
-| `bg_pond_foggy_01` | Background | `Assets/EcoGarden/Art/Backgrounds` | Needs authored art before release | No authored or procedural full-scene background exists; board contrast must remain clear. |
-| `tile_empty_01` | Board tile | `Assets/EcoGarden/Art/Board` | Runtime placeholder accepted for first release | `PlaceholderSpriteFactory.EmptyTileSprite` is readable and low-noise. |
-| `tile_locked_01` | Board tile | `Assets/EcoGarden/Art/Board` | Runtime placeholder accepted for first release | `PlaceholderSpriteFactory.LockedTileSprite` clearly separates blocked cells. |
+| `bg_pond_foggy_01` | Background | `Assets/EcoGarden/Art/Backgrounds/Resources/Backgrounds` | First-pass PNG wired | `EcoGardenBackgroundController` loads the pond/garden background, scales it to the orthographic camera, and keeps it behind gameplay. Needs device contrast validation. |
+| `ui_board_backdrop` | UI/world skin | `Assets/EcoGarden/Art/UI/Resources/UiSkins` | First-pass transparent PNG wired | `BoardBackdropController` scales this soft panel behind the board so the pond background does not reduce tile/item contrast. Needs portrait Game view validation. |
+| `tile_empty_01` | Board tile | `Assets/EcoGarden/Art/Board` | Runtime placeholder accepted for first release | `PlaceholderSpriteFactory.EmptyTileSprite` is readable and low-noise; `CellView` adds a subtle runtime shadow for board depth. |
+| `tile_locked_01` | Board tile | `Assets/EcoGarden/Art/Board` | Runtime placeholder accepted for first release | `PlaceholderSpriteFactory.LockedTileSprite` clearly separates blocked cells; `CellView` adds a subtle runtime shadow for board depth. |
 | `tile_highlight_valid_01` | Board tile | `Assets/EcoGarden/Art/Board` | Needs authored art before release | Current interaction feedback is functional but lacks a distinct authored valid-target marker. |
 | `tile_highlight_invalid_01` | Board tile | `Assets/EcoGarden/Art/Board` | Needs authored art before release | Current interaction feedback is functional but lacks a distinct authored invalid-target marker. |
 | `obs_weed_01` | Obstacle | `Assets/EcoGarden/Art/Obstacles` | Runtime placeholder accepted for first release | `PlaceholderSpriteFactory.WeedSprite` is recognizable at board size. |
 | `obs_pebble_01` | Obstacle | `Assets/EcoGarden/Art/Obstacles` | Runtime placeholder accepted for first release | `PlaceholderSpriteFactory.PebbleSprite` is readable and can represent secondary shovel targets. |
 | `producer_lotus_seed_01` | Producer | `Assets/EcoGarden/Art/Producers` | Runtime placeholder accepted for first release | `PlaceholderSpriteFactory.ProducerSprite` communicates a pond/seed source. |
-| `item_lotus_lv01_dried_seed` | Item | `Assets/EcoGarden/Art/Items` | Runtime placeholder accepted for first release | Runtime Lotus Lv1 sprite is distinct from higher tiers. |
-| `item_lotus_lv02_sprout` | Item | `Assets/EcoGarden/Art/Items` | Runtime placeholder accepted for first release | Runtime Lotus Lv2 sprite is distinct from Lv1/Lv3. |
-| `item_lotus_lv03_baby_leaf` | Item | `Assets/EcoGarden/Art/Items` | Runtime placeholder accepted for first release | Runtime Lotus Lv3 sprite is distinct enough for merge progression. |
-| `item_lotus_lv04_flower_bud` | Item | `Assets/EcoGarden/Art/Items` | Runtime placeholder accepted for first release | Runtime Lotus Lv4 bud reads as the pre-bloom tier. |
-| `item_lotus_lv05_blooming_lotus` | Item | `Assets/EcoGarden/Art/Items` | Runtime placeholder accepted for first release | Runtime Lotus Lv5 bloom is the clearest objective item in the current set. |
+| `item_lotus_lv01_dried_seed` | Item | `Assets/EcoGarden/Art/Items` | Runtime placeholder accepted for first release | Runtime Lotus Lv1 sprite is distinct from higher tiers; `ItemView` adds a subtle runtime shadow for readability. |
+| `item_lotus_lv02_sprout` | Item | `Assets/EcoGarden/Art/Items` | Runtime placeholder accepted for first release | Runtime Lotus Lv2 sprite is distinct from Lv1/Lv3; `ItemView` adds a subtle runtime shadow for readability. |
+| `item_lotus_lv03_baby_leaf` | Item | `Assets/EcoGarden/Art/Items` | Runtime placeholder accepted for first release | Runtime Lotus Lv3 sprite is distinct enough for merge progression; `ItemView` adds a subtle runtime shadow for readability. |
+| `item_lotus_lv04_flower_bud` | Item | `Assets/EcoGarden/Art/Items` | Runtime placeholder accepted for first release | Runtime Lotus Lv4 bud reads as the pre-bloom tier; `ItemView` adds a subtle runtime shadow for readability. |
+| `item_lotus_lv05_blooming_lotus` | Item | `Assets/EcoGarden/Art/Items` | Runtime placeholder accepted for first release | Runtime Lotus Lv5 bloom is the clearest objective item in the current set; `ItemView` adds a subtle runtime shadow for readability. |
 | `char_customer_01` | Character | `Assets/EcoGarden/Art/Characters` | Runtime placeholder accepted for first release | `PlaceholderSpriteFactory.NpcSprite` is simple but usable for order/customer movement. |
 | `char_butterfly_a_01` | Character | `Assets/EcoGarden/Art/Characters` | Runtime placeholder accepted for first release | `PlaceholderSpriteFactory.ButterflySprite` supports current ambient pathing. |
 | `char_butterfly_b_01` | Character | `Assets/EcoGarden/Art/Characters` | Runtime placeholder accepted for first release | Shares the accepted butterfly runtime sprite until variants are authored. |
 | `decor_tree_01` | Decor | `Assets/EcoGarden/Art/Decor` | Deferred from first release | Decoration purchases are hidden until visible cosmetic application exists. |
 | `decor_pond_grass_01` | Decor | `Assets/EcoGarden/Art/Decor` | Deferred from first release | Decoration purchases are hidden until visible cosmetic application exists. |
 | `decor_stone_small_01` | Decor | `Assets/EcoGarden/Art/Decor` | Deferred from first release | Decoration purchases are hidden until visible cosmetic application exists. |
-| `icon_ability_shovel` | UI icon | `Assets/EcoGarden/Art/UI` | Runtime symbolic placeholder accepted for first release | Uses compact `SH` runtime label through `UiIconLabelCatalog`; authored icon can replace later. |
-| `icon_ability_magic_wand` | UI icon | `Assets/EcoGarden/Art/UI` | Runtime symbolic placeholder accepted for first release | Uses compact `WD` runtime label through `UiIconLabelCatalog`; authored icon can replace later. |
-| `icon_ability_sorting_magnet` | UI icon | `Assets/EcoGarden/Art/UI` | Runtime symbolic placeholder accepted for first release | Uses compact `MG` runtime label through `UiIconLabelCatalog`; authored icon can replace later. |
-| `icon_currency_gold` | UI icon | `Assets/EcoGarden/Art/UI` | Runtime symbolic placeholder accepted for first release | Uses compact `G` runtime label through `UiIconLabelCatalog`; authored icon can replace later. |
-| `icon_currency_gem` | UI icon | `Assets/EcoGarden/Art/UI` | Runtime symbolic placeholder accepted for first release | Uses compact `*` runtime label through `UiIconLabelCatalog`; authored icon can replace later. |
-| `icon_timer` | UI icon | `Assets/EcoGarden/Art/UI` | Needs authored art before release | Timer display works through text but lacks an icon. |
-| `icon_pause` | UI icon | `Assets/EcoGarden/Art/UI` | Runtime symbolic placeholder accepted for first release | Uses compact `II` runtime label through `UiIconLabelCatalog`; authored icon can replace later. |
-| `icon_restart` | UI icon | `Assets/EcoGarden/Art/UI` | Runtime symbolic placeholder accepted for first release | Uses compact `R` runtime label through `UiIconLabelCatalog`; authored icon can replace later. |
-| `icon_next` | UI icon | `Assets/EcoGarden/Art/UI` | Runtime symbolic placeholder accepted for first release | Uses compact `>` runtime label through `UiIconLabelCatalog`; authored icon can replace later. |
+| `icon_ability_shovel` | UI icon | `Assets/EcoGarden/Art/UI/Resources/UiIcons` | First-pass transparent PNG wired | `HudSkinController` loads the icon and `AbilityHudController` keeps the count as `xN`. |
+| `icon_ability_magic_wand` | UI icon | `Assets/EcoGarden/Art/UI/Resources/UiIcons` | First-pass transparent PNG wired | `HudSkinController` loads the icon and `AbilityHudController` keeps the count as `xN`. |
+| `icon_ability_sorting_magnet` | UI icon | `Assets/EcoGarden/Art/UI/Resources/UiIcons` | First-pass transparent PNG wired | `HudSkinController` loads the icon and `AbilityHudController` keeps the count as `xN`. |
+| `icon_currency_gold` | UI icon | `Assets/EcoGarden/Art/UI/Resources/UiIcons` | First-pass transparent PNG wired | `HudSkinController` loads the icon and `EconomyController` keeps the numeric value as text. |
+| `icon_currency_gem` | UI icon | `Assets/EcoGarden/Art/UI/Resources/UiIcons` | First-pass transparent PNG wired | `HudSkinController` loads the icon and `EconomyController` keeps the numeric value as text. |
+| `icon_timer` | UI icon | `Assets/EcoGarden/Art/UI/Resources/UiIcons` | First-pass transparent PNG wired | `HudSkinController` loads the icon and `LevelStateController` keeps the timer value as text. |
+| `icon_pause` | UI icon | `Assets/EcoGarden/Art/UI/Resources/UiIcons` | First-pass transparent PNG wired | `HudSkinController` loads the icon at runtime when available. |
+| `icon_restart` | UI icon | `Assets/EcoGarden/Art/UI/Resources/UiIcons` | First-pass transparent PNG wired | `HudSkinController` loads the icon at runtime when available. |
+| `icon_next` | UI icon | `Assets/EcoGarden/Art/UI/Resources/UiIcons` | First-pass transparent PNG wired | `HudSkinController` loads the icon at runtime when available. |
+| `icon_nav_shop` | UI icon | `Assets/EcoGarden/Art/UI/Resources/UiIcons` | First-pass transparent PNG wired | `HudSkinController` loads the icon at runtime when available. |
+| `icon_nav_mission` | UI icon | `Assets/EcoGarden/Art/UI/Resources/UiIcons` | First-pass transparent PNG wired | `HudSkinController` loads the icon at runtime when available. |
+| `icon_nav_level` | UI icon | `Assets/EcoGarden/Art/UI/Resources/UiIcons` | First-pass transparent PNG wired | `HudSkinController` loads the icon at runtime when available. |
+| `icon_close` | UI icon | `Assets/EcoGarden/Art/UI/Resources/UiIcons` | First-pass transparent PNG wired | `HudSkinController` loads the icon for Shop, Mission, and Level close buttons when available. |
+| `ui_panel_light` | UI skin | `Assets/EcoGarden/Art/UI/Resources/UiSkins` | First-pass transparent PNG wired | Used by HUD/panel skin pass when imported; fallback remains procedural panel sprite. |
+| `ui_panel_strong` | UI skin | `Assets/EcoGarden/Art/UI/Resources/UiSkins` | First-pass transparent PNG wired | Used by AbilityBar and strong panel surfaces. |
+| `ui_panel_overlay` | UI skin | `Assets/EcoGarden/Art/UI/Resources/UiSkins` | First-pass transparent PNG wired | Used by TopBar, Result, and compact tracker overlay surfaces. |
+| `ui_row_light` | UI skin | `Assets/EcoGarden/Art/UI/Resources/UiSkins` | First-pass transparent PNG wired | Used by Shop, Mission, Level, and viewport row surfaces. |
+| `ui_button_primary` | UI skin | `Assets/EcoGarden/Art/UI/Resources/UiSkins` | First-pass transparent PNG wired | Used by runtime/generated buttons. |
+| `ui_button_secondary` | UI skin | `Assets/EcoGarden/Art/UI/Resources/UiSkins` | First-pass transparent PNG wired | Used by selected Shop category tabs. |
+| `ui_button_disabled` | UI skin | `Assets/EcoGarden/Art/UI/Resources/UiSkins` | First-pass transparent PNG wired | Used by disabled Shop category tabs and unavailable price fallback. |
+| `ui_badge_gold` | UI skin | `Assets/EcoGarden/Art/UI/Resources/UiSkins` | First-pass transparent PNG wired | Used by Gold price badges. |
+| `ui_badge_gem` | UI skin | `Assets/EcoGarden/Art/UI/Resources/UiSkins` | First-pass transparent PNG wired | Used by Gem price badges. |
+| `ui_badge_store` | UI skin | `Assets/EcoGarden/Art/UI/Resources/UiSkins` | First-pass transparent PNG wired | Used by Store/IAP price badges. |
+| `ui_drop_delivery` | UI skin | `Assets/EcoGarden/Art/UI/Resources/UiSkins` | First-pass transparent PNG wired | Used by Delivery drop zone when imported. |
+| `ui_drop_sell` | UI skin | `Assets/EcoGarden/Art/UI/Resources/UiSkins` | First-pass transparent PNG wired | Used by Sell drop zone when imported. |
 | `vfx_merge_sparkle_01` | VFX sprite | `Assets/EcoGarden/Art/VFX` | Needs authored art before release | Merge feedback exists through runtime feedback hooks, but no dedicated sparkle sprite is authored. |
 | `vfx_producer_pulse_01` | VFX sprite | `Assets/EcoGarden/Art/VFX` | Needs authored art before release | Producer feedback is functional but lacks a dedicated pulse sprite. |
 | `vfx_ability_burst_01` | VFX sprite | `Assets/EcoGarden/Art/VFX` | Needs authored art before release | Ability feedback is functional but lacks a dedicated burst sprite. |
@@ -89,3 +106,22 @@ Audio is not release-ready yet. Current gameplay has saved sound/music settings 
 | UI icons | Prefer strong silhouettes over detail |
 | VFX | Short, readable, non-blocking |
 | Audio | Soft, low-fatigue, mobile-friendly volume |
+
+## UI Visual Direction
+
+First-release UI should use the existing responsive layout and replace only the visual layer where possible.
+
+Style target:
+
+- Cozy garden mobile UI with light leaf-panel surfaces, saturated green primary actions, warm gold secondary accents, and clear purple/blue Store or Gem accents.
+- Panels and repeated rows should stay calm and readable; visual detail belongs in icons, badges, drop zones, and reward feedback.
+- Runtime symbolic labels remain acceptable during implementation, but authored transparent PNG icons should replace the most visible symbols before final presentation signoff.
+
+Runtime skin baseline:
+
+- `UiThemePalette` centralizes the first visual-skin palette for HUD, panels, buttons, Shop rows, Mission rows, Level Select rows, Delivery, and Sell.
+- `HudSkinController` applies the shared palette at runtime so existing scenes can receive the pass without scene regeneration.
+- PNG replacement should prefer non-layout assets first: currency icons, top-bar icons, ability icons, result action icons, Delivery/Sell art, and 9-slice panel/button sprites.
+- First-pass icon PNGs live under `Assets/EcoGarden/Art/UI/Resources/UiIcons` so Android runtime can load them through `Resources.Load<Sprite>` without scene-specific serialized references.
+- First-pass panel/button/row/badge/drop-zone PNGs live under `Assets/EcoGarden/Art/UI/Resources/UiSkins`; runtime code loads them opportunistically and falls back to procedural sprites if Unity has not imported them yet.
+- `ui_board_backdrop` uses the same `UiSkins` resource path and is rendered in world space behind the board to preserve board readability over the new background.

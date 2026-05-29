@@ -7,6 +7,7 @@ namespace EcoGarden.Board
     public sealed class ItemView : MonoBehaviour
     {
         [SerializeField] private SpriteRenderer spriteRenderer;
+        [SerializeField] private SpriteRenderer shadowRenderer;
         [SerializeField] private TextMesh label;
         [SerializeField] private BoardItem item;
         [SerializeField] private GridPosition position;
@@ -34,6 +35,7 @@ namespace EcoGarden.Board
             spriteRenderer.sprite = sprite;
             spriteRenderer.color = color;
             spriteRenderer.sortingOrder = 10;
+            RefreshShadow(sprite, 8, 0.30f);
             transform.position = worldPosition + new Vector3(0f, 0f, -0.1f);
             transform.localScale = new Vector3(size, size, 1f);
             name = "Item_" + boardItem.ItemId + "_" + gridPosition.X + "_" + gridPosition.Y;
@@ -53,6 +55,7 @@ namespace EcoGarden.Board
 
             spriteRenderer.sprite = sprite;
             spriteRenderer.color = color;
+            RefreshShadow(sprite, 8, color.a * 0.30f);
             transform.position = worldPosition + new Vector3(0f, 0f, -0.1f);
             transform.localScale = new Vector3(size, size, 1f);
             name = "Item_" + boardItem.ItemId + "_" + gridPosition.X + "_" + gridPosition.Y;
@@ -65,6 +68,11 @@ namespace EcoGarden.Board
             if (spriteRenderer != null)
             {
                 spriteRenderer.sortingOrder = 100;
+            }
+
+            if (shadowRenderer != null)
+            {
+                shadowRenderer.sortingOrder = 90;
             }
 
             if (showLevelLabel && label != null)
@@ -98,6 +106,11 @@ namespace EcoGarden.Board
             if (spriteRenderer != null)
             {
                 spriteRenderer.sortingOrder = 10;
+            }
+
+            if (shadowRenderer != null)
+            {
+                shadowRenderer.sortingOrder = 8;
             }
 
             if (showLevelLabel && label != null)
@@ -156,11 +169,48 @@ namespace EcoGarden.Board
                 spriteRenderer.color = color;
             }
 
+            if (shadowRenderer != null)
+            {
+                Color shadowColor = shadowRenderer.color;
+                shadowColor.a = alpha * 0.30f;
+                shadowRenderer.color = shadowColor;
+            }
+
             if (showLevelLabel && label != null)
             {
                 Color color = label.color;
                 color.a = alpha;
                 label.color = color;
+            }
+        }
+
+        private void RefreshShadow(Sprite sprite, int sortingOrder, float alpha)
+        {
+            EnsureShadowRenderer();
+            shadowRenderer.sprite = sprite;
+            shadowRenderer.color = new Color(0.04f, 0.09f, 0.08f, Mathf.Clamp01(alpha));
+            shadowRenderer.sortingOrder = sortingOrder;
+        }
+
+        private void EnsureShadowRenderer()
+        {
+            if (shadowRenderer != null)
+            {
+                return;
+            }
+
+            Transform existing = transform.Find("ItemShadow");
+            GameObject shadowObject = existing != null
+                ? existing.gameObject
+                : new GameObject("ItemShadow");
+            shadowObject.transform.SetParent(transform, false);
+            shadowObject.transform.localPosition = new Vector3(0.055f, -0.07f, 0.035f);
+            shadowObject.transform.localScale = new Vector3(1.05f, 1.05f, 1f);
+
+            shadowRenderer = shadowObject.GetComponent<SpriteRenderer>();
+            if (shadowRenderer == null)
+            {
+                shadowRenderer = shadowObject.AddComponent<SpriteRenderer>();
             }
         }
     }

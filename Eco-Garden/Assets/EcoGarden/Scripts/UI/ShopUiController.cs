@@ -11,6 +11,7 @@ namespace EcoGarden.UI
         [SerializeField] private Button shopButton;
         [SerializeField] private Button closeButton;
         [SerializeField] private GameObject shopPanel;
+        [SerializeField] private Text shopSummaryText;
         [SerializeField] private Transform categoryRoot;
         [SerializeField] private Transform productListRoot;
         [SerializeField] private GameplayFeedbackController gameplayFeedbackController;
@@ -95,6 +96,7 @@ namespace EcoGarden.UI
             RefreshCategoryTabs();
 
             List<ShopItemDefinition> items = shopController.Catalog.GetItemsByCategory(selectedCategory);
+            RefreshShopSummary(items);
             for (int i = 0; i < items.Count; i++)
             {
                 CreateProductRow(items[i]);
@@ -114,8 +116,9 @@ namespace EcoGarden.UI
             rowRect.sizeDelta = new Vector2(0f, ShopUiLayoutMetrics.ProductRowHeight);
 
             Image rowImage = row.GetComponent<Image>();
-            rowImage.sprite = PlaceholderSpriteFactory.ShopProductRowSprite;
+            rowImage.sprite = LoadSprite("UiSkins/ui_row_light") ?? PlaceholderSpriteFactory.ShopProductRowSprite;
             rowImage.color = Color.white;
+            UiRowAccent.Apply(row.transform, GetShopRowAccentColor(item));
 
             GameObject iconBadge = CreateImage("TypeBadge", row.transform, PlaceholderSpriteFactory.ShopIconBadgeSprite, GetCategoryAccentColor(item.Category), ShopUiLayoutMetrics.TypeBadgeAnchorMin, ShopUiLayoutMetrics.TypeBadgeAnchorMax);
             CreateText("Type", iconBadge.transform, GetCategoryShortName(item.Category), TextAnchor.MiddleCenter, Vector2.zero, Vector2.one, 22);
@@ -123,7 +126,7 @@ namespace EcoGarden.UI
             CreateText("Name", row.transform, item.DisplayName, TextAnchor.MiddleLeft, ShopUiLayoutMetrics.NameAnchorMin, ShopUiLayoutMetrics.NameAnchorMax, 25);
             CreateText("Description", row.transform, BuildDescription(item), TextAnchor.UpperLeft, ShopUiLayoutMetrics.DescriptionAnchorMin, ShopUiLayoutMetrics.DescriptionAnchorMax, 18);
 
-            GameObject priceBadge = CreateImage("PriceBadge", row.transform, PlaceholderSpriteFactory.ShopPriceBadgeSprite, GetPriceColor(item), ShopUiLayoutMetrics.PriceAnchorMin, ShopUiLayoutMetrics.PriceAnchorMax);
+            GameObject priceBadge = CreateImage("PriceBadge", row.transform, GetPriceBadgeSprite(item), GetPriceColor(item), ShopUiLayoutMetrics.PriceAnchorMin, ShopUiLayoutMetrics.PriceAnchorMax);
             CreateText("Price", priceBadge.transform, BuildPriceText(item), TextAnchor.MiddleCenter, Vector2.zero, Vector2.one, 20);
 
             GameObject buyObject = CreateButton("BuyButton", row.transform, BuildBuyLabel(item), ShopUiLayoutMetrics.BuyAnchorMin, ShopUiLayoutMetrics.BuyAnchorMax);
@@ -132,7 +135,7 @@ namespace EcoGarden.UI
             Image buyImage = buyObject.GetComponent<Image>();
             if (buyImage != null && !buyButton.interactable)
             {
-                buyImage.color = new Color(0.42f, 0.48f, 0.48f, 0.92f);
+                buyImage.color = UiThemePalette.DisabledButton;
             }
 
             buyButton.onClick.AddListener(() => TryBuy(item.ProductId));
@@ -347,6 +350,24 @@ namespace EcoGarden.UI
                 categoryRoot = categoryObject != null ? categoryObject.transform : null;
             }
 
+            if (shopSummaryText == null)
+            {
+                GameObject summaryObject = FindObjectIncludingInactive("ShopSummaryText");
+                shopSummaryText = summaryObject != null ? summaryObject.GetComponent<Text>() : null;
+            }
+
+            if (shopSummaryText == null && shopPanel != null)
+            {
+                shopSummaryText = CreateText(
+                    "ShopSummaryText",
+                    shopPanel.transform,
+                    string.Empty,
+                    TextAnchor.MiddleLeft,
+                    ShopUiLayoutMetrics.SummaryAnchorMin,
+                    ShopUiLayoutMetrics.SummaryAnchorMax,
+                    22).GetComponent<Text>();
+            }
+
             if (productListRoot == null)
             {
                 GameObject listObject = FindObjectIncludingInactive("ShopProductList");
@@ -441,13 +462,16 @@ namespace EcoGarden.UI
             image.sprite = PlaceholderSpriteFactory.HudButtonSprite;
             if (!hasItems)
             {
-                image.color = new Color(0.28f, 0.34f, 0.34f, 0.76f);
+                image.sprite = LoadSprite("UiSkins/ui_button_disabled") ?? PlaceholderSpriteFactory.HudButtonSprite;
+                image.color = UiThemePalette.DisabledButton;
                 return;
             }
 
+            image.sprite = LoadSprite(selectedCategory == category ? "UiSkins/ui_button_secondary" : "UiSkins/ui_button_primary")
+                ?? PlaceholderSpriteFactory.HudButtonSprite;
             image.color = selectedCategory == category
                 ? GetCategoryAccentColor(category)
-                : new Color(0.76f, 0.88f, 0.84f, 0.82f);
+                : UiThemePalette.PanelMuted;
         }
 
         private void EnsureSelectedCategoryHasItems()
@@ -517,12 +541,14 @@ namespace EcoGarden.UI
             CreateButton("ShopCategoryCurrencyButton", categoryRoot, "Gem", new Vector2(0.615f, 0.05f), new Vector2(0.805f, 0.95f));
             CreateButton("ShopCategoryBundleButton", categoryRoot, "Bundle", new Vector2(0.82f, 0.05f), new Vector2(1f, 0.95f));
 
-            GameObject viewport = CreatePanel("ShopProductViewport", panel.transform, PanelUiLayoutMetrics.ShopContentAnchorMin, PanelUiLayoutMetrics.ShopContentAnchorMax);
+            shopSummaryText = CreateText("ShopSummaryText", panel.transform, string.Empty, TextAnchor.MiddleLeft, ShopUiLayoutMetrics.SummaryAnchorMin, ShopUiLayoutMetrics.SummaryAnchorMax, 22).GetComponent<Text>();
+
+            GameObject viewport = CreatePanel("ShopProductViewport", panel.transform, ShopUiLayoutMetrics.ContentAnchorMin, ShopUiLayoutMetrics.ContentAnchorMax);
             Image viewportImage = viewport.GetComponent<Image>();
             if (viewportImage != null)
             {
-                viewportImage.sprite = PlaceholderSpriteFactory.HudPanelSprite;
-                viewportImage.color = new Color(0.06f, 0.09f, 0.10f, 0.70f);
+                viewportImage.sprite = LoadSprite("UiSkins/ui_row_light") ?? PlaceholderSpriteFactory.HudPanelSprite;
+                viewportImage.color = UiThemePalette.PanelMuted;
             }
 
             Mask mask = viewport.AddComponent<Mask>();
@@ -561,8 +587,9 @@ namespace EcoGarden.UI
         {
             GameObject panel = CreateRect(name, parent, anchorMin, anchorMax);
             Image image = panel.AddComponent<Image>();
-            image.sprite = name == "ShopPanel" ? PlaceholderSpriteFactory.ShopPanelSprite : PlaceholderSpriteFactory.HudPanelSprite;
-            image.color = name == "ShopPanel" ? Color.white : new Color(0.12f, 0.16f, 0.18f, 0.97f);
+            Sprite resourceSprite = LoadSprite(name == "ShopPanel" ? "UiSkins/ui_panel_light" : "UiSkins/ui_row_light");
+            image.sprite = resourceSprite ?? (name == "ShopPanel" ? PlaceholderSpriteFactory.ShopPanelSprite : PlaceholderSpriteFactory.HudPanelSprite);
+            image.color = resourceSprite != null ? Color.white : (name == "ShopPanel" ? UiThemePalette.Panel : UiThemePalette.PanelMuted);
             return panel;
         }
 
@@ -598,9 +625,11 @@ namespace EcoGarden.UI
         {
             GameObject buttonObject = CreateRect(name, parent, anchorMin, anchorMax);
             Image image = buttonObject.AddComponent<Image>();
-            image.sprite = PlaceholderSpriteFactory.HudButtonSprite;
-            image.color = Color.white;
-            buttonObject.AddComponent<Button>();
+            image.sprite = LoadSprite("UiSkins/ui_button_primary") ?? PlaceholderSpriteFactory.HudButtonSprite;
+            image.color = UiThemePalette.PrimaryButton;
+            Button button = buttonObject.AddComponent<Button>();
+            button.colors = UiThemePalette.BuildButtonColors(UiThemePalette.PrimaryButton);
+            buttonObject.AddComponent<UiButtonFeedback>();
             CreateText("Label", buttonObject.transform, label, TextAnchor.MiddleCenter, Vector2.zero, Vector2.one, 22);
             return buttonObject;
         }
@@ -626,7 +655,7 @@ namespace EcoGarden.UI
             text.resizeTextForBestFit = true;
             text.resizeTextMinSize = 14;
             text.resizeTextMaxSize = fontSize;
-            text.color = Color.white;
+            text.color = UiThemePalette.TextDark;
             text.horizontalOverflow = HorizontalWrapMode.Wrap;
             text.verticalOverflow = VerticalWrapMode.Truncate;
             text.raycastTarget = false;
@@ -671,43 +700,120 @@ namespace EcoGarden.UI
             }
         }
 
+        private void RefreshShopSummary(IReadOnlyList<ShopItemDefinition> visibleItems)
+        {
+            if (shopSummaryText == null)
+            {
+                return;
+            }
+
+            int visibleCount = visibleItems != null ? visibleItems.Count : 0;
+            int storeCount = 0;
+            int ownedCount = 0;
+            if (visibleItems != null)
+            {
+                for (int i = 0; i < visibleItems.Count; i++)
+                {
+                    ShopItemDefinition item = visibleItems[i];
+                    if (item == null)
+                    {
+                        continue;
+                    }
+
+                    if (item.Price != null && item.Price.PurchaseKind == ShopPurchaseKind.Iap)
+                    {
+                        storeCount++;
+                    }
+
+                    if (!item.Repeatable && shopController != null && shopController.Inventory.IsProductPurchased(item.ProductId))
+                    {
+                        ownedCount++;
+                    }
+                }
+            }
+
+            shopSummaryText.text = GetCategoryDisplayName(selectedCategory) + "  /  Items " + visibleCount + "  /  Store " + storeCount + "  /  Owned " + ownedCount;
+        }
+
         private static Color GetCategoryAccentColor(ShopItemCategory category)
         {
             switch (category)
             {
                 case ShopItemCategory.Booster:
-                    return new Color(0.38f, 0.78f, 0.82f, 1f);
+                    return new Color(0.36f, 0.73f, 0.72f, 1f);
                 case ShopItemCategory.Decoration:
-                    return new Color(0.78f, 0.70f, 0.96f, 1f);
+                    return UiThemePalette.Gem;
                 case ShopItemCategory.Unlock:
-                    return new Color(0.82f, 0.92f, 0.48f, 1f);
+                    return UiThemePalette.Selected;
                 case ShopItemCategory.Currency:
-                    return new Color(0.95f, 0.68f, 0.92f, 1f);
+                    return UiThemePalette.Gem;
                 case ShopItemCategory.Bundle:
-                    return new Color(0.96f, 0.74f, 0.42f, 1f);
+                    return UiThemePalette.SecondaryButton;
                 default:
                     return Color.white;
             }
+        }
+
+        private Color GetShopRowAccentColor(ShopItemDefinition item)
+        {
+            if (item == null || !CanBuy(item))
+            {
+                return UiThemePalette.DisabledButton;
+            }
+
+            if (item.Price != null && item.Price.PurchaseKind == ShopPurchaseKind.Iap)
+            {
+                return UiThemePalette.Store;
+            }
+
+            return GetCategoryAccentColor(item.Category);
         }
 
         private static Color GetPriceColor(ShopItemDefinition item)
         {
             if (item == null || item.Price == null)
             {
-                return new Color(0.34f, 0.38f, 0.38f, 1f);
+                return UiThemePalette.DisabledButton;
             }
 
             if (item.Price.PurchaseKind == ShopPurchaseKind.Iap)
             {
-                return new Color(0.48f, 0.42f, 0.76f, 1f);
+                return UiThemePalette.Store;
             }
 
             if (item.Price.PurchaseKind == ShopPurchaseKind.Gem)
             {
-                return new Color(0.42f, 0.30f, 0.58f, 1f);
+                return UiThemePalette.Gem;
             }
 
-            return new Color(0.58f, 0.42f, 0.18f, 1f);
+            return UiThemePalette.Gold;
+        }
+
+        private static Sprite GetPriceBadgeSprite(ShopItemDefinition item)
+        {
+            if (item == null || item.Price == null)
+            {
+                return LoadSprite("UiSkins/ui_button_disabled") ?? PlaceholderSpriteFactory.ShopPriceBadgeSprite;
+            }
+
+            if (item.Price.PurchaseKind == ShopPurchaseKind.Iap)
+            {
+                return LoadSprite("UiSkins/ui_badge_store") ?? PlaceholderSpriteFactory.ShopPriceBadgeSprite;
+            }
+
+            if (item.Price.PurchaseKind == ShopPurchaseKind.Gem)
+            {
+                return LoadSprite("UiSkins/ui_badge_gem") ?? PlaceholderSpriteFactory.ShopPriceBadgeSprite;
+            }
+
+            return LoadSprite("UiSkins/ui_badge_gold") ?? PlaceholderSpriteFactory.ShopPriceBadgeSprite;
+        }
+
+        private static Sprite LoadSprite(string resourcePath)
+        {
+            return string.IsNullOrWhiteSpace(resourcePath)
+                ? null
+                : Resources.Load<Sprite>(resourcePath);
         }
 
         private static GameObject CreateRect(string name, Transform parent, Vector2 anchorMin, Vector2 anchorMax)

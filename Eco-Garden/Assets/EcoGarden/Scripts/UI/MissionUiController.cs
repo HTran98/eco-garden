@@ -12,16 +12,20 @@ namespace EcoGarden.UI
         [SerializeField] private Button missionButton;
         [SerializeField] private Button closeButton;
         [SerializeField] private GameObject missionPanel;
+        [SerializeField] private Text missionSummaryText;
         [SerializeField] private Transform missionListRoot;
         [SerializeField] private GameObject missionTrackerPanel;
         [SerializeField] private Transform missionTrackerRoot;
         [SerializeField] private GameObject shopPanel;
         [SerializeField] private GameObject levelPanel;
+        [SerializeField] private GameObject resultPanel;
         [SerializeField] private GameplayFeedbackController gameplayFeedbackController;
 
         private MissionController missionController;
         private readonly List<GameObject> missionRows = new List<GameObject>();
         private readonly List<GameObject> trackerRows = new List<GameObject>();
+        private GameObject missionAlertBadge;
+        private bool missionReadyMessageShown;
         private bool buttonsWired;
 
         private void Awake()
@@ -100,51 +104,28 @@ namespace EcoGarden.UI
             if (missionController == null || missionListRoot == null)
             {
                 RefreshTrackerRows();
+                RefreshMissionAlertBadge();
                 return;
             }
 
-            IReadOnlyList<MissionRuntimeState> missions = missionController.Missions;
-            for (int i = 0; i < missions.Count; i++)
+            List<MissionRuntimeState> sortedMissions = new List<MissionRuntimeState>(missionController.Missions);
+            sortedMissions.Sort(CompareMissionStates);
+            for (int i = 0; i < sortedMissions.Count; i++)
             {
-                CreateMissionRow(missions[i]);
+                CreateMissionRow(sortedMissions[i]);
             }
 
+            RefreshMissionSummary(sortedMissions);
             RefreshTrackerRows();
+            RefreshMissionAlertBadge();
         }
 
         private void RefreshTrackerRows()
         {
             ClearTrackerRows();
-
-            if (missionController == null || missionTrackerRoot == null)
+            if (missionTrackerPanel != null && missionTrackerPanel.activeSelf)
             {
-                return;
-            }
-
-            IReadOnlyList<MissionRuntimeState> missions = missionController.Missions;
-            int createdCount = 0;
-            for (int i = 0; i < missions.Count && createdCount < AndroidHudLayoutMetrics.MaxCompactMissionRows; i++)
-            {
-                MissionRuntimeState state = missions[i];
-                if (state == null || state.RewardClaimed || !state.CanClaim)
-                {
-                    continue;
-                }
-
-                CreateTrackerRow(state);
-                createdCount++;
-            }
-
-            for (int i = 0; i < missions.Count && createdCount < AndroidHudLayoutMetrics.MaxCompactMissionRows; i++)
-            {
-                MissionRuntimeState state = missions[i];
-                if (state == null || state.RewardClaimed || state.CanClaim)
-                {
-                    continue;
-                }
-
-                CreateTrackerRow(state);
-                createdCount++;
+                missionTrackerPanel.SetActive(false);
             }
         }
 
@@ -162,7 +143,9 @@ namespace EcoGarden.UI
             rowRect.sizeDelta = new Vector2(0f, MissionUiLayoutMetrics.MissionRowHeight);
 
             Image rowImage = row.GetComponent<Image>();
+            rowImage.sprite = Resources.Load<Sprite>("UiSkins/ui_row_light") ?? PlaceholderSpriteFactory.HudPanelSprite;
             rowImage.color = GetMissionRowColor(state);
+            UiRowAccent.Apply(row.transform, GetMissionAccentColor(state));
 
             CreateText("Name", row.transform, BuildMissionTitle(definition), TextAnchor.MiddleLeft, MissionUiLayoutMetrics.RowTitleAnchorMin, MissionUiLayoutMetrics.RowTitleAnchorMax, 24);
             CreateText("Progress", row.transform, BuildProgressText(state), TextAnchor.MiddleLeft, MissionUiLayoutMetrics.RowProgressAnchorMin, MissionUiLayoutMetrics.RowProgressAnchorMax, 20);
@@ -191,7 +174,9 @@ namespace EcoGarden.UI
             rowRect.sizeDelta = new Vector2(0f, MissionUiLayoutMetrics.TrackerRowHeight);
 
             Image rowImage = row.GetComponent<Image>();
+            rowImage.sprite = Resources.Load<Sprite>("UiSkins/ui_row_light") ?? PlaceholderSpriteFactory.HudPanelSprite;
             rowImage.color = GetMissionRowColor(state);
+            UiRowAccent.Apply(row.transform, GetMissionAccentColor(state));
 
             CreateText("Name", row.transform, BuildMissionTitle(definition), TextAnchor.MiddleLeft, MissionUiLayoutMetrics.TrackerTitleAnchorMin, MissionUiLayoutMetrics.TrackerTitleAnchorMax, 22);
             CreateText("Progress", row.transform, BuildTrackerProgressText(state), TextAnchor.MiddleLeft, MissionUiLayoutMetrics.TrackerProgressAnchorMin, MissionUiLayoutMetrics.TrackerProgressAnchorMax, 19);
@@ -261,14 +246,27 @@ namespace EcoGarden.UI
                 missionListRoot = listObject != null ? listObject.transform : null;
             }
 
-            if (missionTrackerPanel == null)
+            if (missionSummaryText == null)
             {
-                missionTrackerPanel = FindObjectIncludingInactive("MissionTrackerPanel");
+                GameObject summaryObject = FindObjectIncludingInactive("MissionSummaryText");
+                missionSummaryText = summaryObject != null ? summaryObject.GetComponent<Text>() : null;
+            }
+
+            if (missionSummaryText == null && missionPanel != null)
+            {
+                missionSummaryText = CreateText(
+                    "MissionSummaryText",
+                    missionPanel.transform,
+                    string.Empty,
+                    TextAnchor.MiddleLeft,
+                    MissionUiLayoutMetrics.SummaryAnchorMin,
+                    MissionUiLayoutMetrics.SummaryAnchorMax,
+                    22).GetComponent<Text>();
             }
 
             if (missionTrackerPanel == null)
             {
-                CreateRuntimeMissionTracker();
+                missionTrackerPanel = FindObjectIncludingInactive("MissionTrackerPanel");
             }
 
             if (missionTrackerRoot == null)
@@ -286,6 +284,11 @@ namespace EcoGarden.UI
             {
                 levelPanel = FindObjectIncludingInactive("LevelPanel");
             }
+
+            if (resultPanel == null)
+            {
+                resultPanel = FindObjectIncludingInactive("ResultPanel");
+            }
         }
 
         private void WireButtons()
@@ -294,6 +297,7 @@ namespace EcoGarden.UI
             {
                 missionButton.onClick.RemoveListener(ToggleMissions);
                 missionButton.onClick.AddListener(ToggleMissions);
+                EnsureMissionAlertBadge();
             }
 
             if (closeButton != null)
@@ -350,14 +354,137 @@ namespace EcoGarden.UI
                 return;
             }
 
-            bool shopOpen = shopPanel != null && shopPanel.activeSelf;
-            bool levelOpen = levelPanel != null && levelPanel.activeSelf;
-            bool fullMissionOpen = missionPanel != null && missionPanel.activeSelf;
-            bool shouldShow = !shopOpen && !levelOpen && !fullMissionOpen;
-            if (missionTrackerPanel.activeSelf != shouldShow)
+            if (missionTrackerPanel.activeSelf)
             {
-                missionTrackerPanel.SetActive(shouldShow);
+                missionTrackerPanel.SetActive(false);
             }
+        }
+
+        private void RefreshMissionAlertBadge()
+        {
+            bool hasClaimableMission = HasClaimableMission();
+            EnsureMissionAlertBadge();
+
+            if (missionAlertBadge != null)
+            {
+                missionAlertBadge.SetActive(hasClaimableMission);
+            }
+
+            if (hasClaimableMission && !missionReadyMessageShown)
+            {
+                PlayMessage("Mission complete. Claim reward from Missions.");
+            }
+
+            missionReadyMessageShown = hasClaimableMission;
+        }
+
+        private void RefreshMissionSummary(IReadOnlyList<MissionRuntimeState> missions)
+        {
+            if (missionSummaryText == null)
+            {
+                return;
+            }
+
+            int readyCount = 0;
+            int activeCount = 0;
+            int claimedCount = 0;
+            for (int i = 0; i < missions.Count; i++)
+            {
+                MissionRuntimeState state = missions[i];
+                if (state == null)
+                {
+                    continue;
+                }
+
+                if (state.RewardClaimed)
+                {
+                    claimedCount++;
+                }
+                else if (state.CanClaim)
+                {
+                    readyCount++;
+                }
+                else
+                {
+                    activeCount++;
+                }
+            }
+
+            missionSummaryText.text = "Ready " + readyCount + "  /  Active " + activeCount + "  /  Claimed " + claimedCount;
+        }
+
+        private static int CompareMissionStates(MissionRuntimeState first, MissionRuntimeState second)
+        {
+            return GetMissionSortRank(first).CompareTo(GetMissionSortRank(second));
+        }
+
+        private static int GetMissionSortRank(MissionRuntimeState state)
+        {
+            if (state == null)
+            {
+                return int.MaxValue;
+            }
+
+            if (state.CanClaim)
+            {
+                return 0;
+            }
+
+            return state.RewardClaimed ? 2 : 1;
+        }
+
+        private bool HasClaimableMission()
+        {
+            if (missionController == null)
+            {
+                return false;
+            }
+
+            IReadOnlyList<MissionRuntimeState> missions = missionController.Missions;
+            for (int i = 0; i < missions.Count; i++)
+            {
+                MissionRuntimeState state = missions[i];
+                if (state != null && state.CanClaim)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private void EnsureMissionAlertBadge()
+        {
+            if (missionAlertBadge != null || missionButton == null)
+            {
+                return;
+            }
+
+            Transform existing = missionButton.transform.Find("MissionAlertBadge");
+            if (existing != null)
+            {
+                missionAlertBadge = existing.gameObject;
+                return;
+            }
+
+            missionAlertBadge = new GameObject("MissionAlertBadge", typeof(RectTransform), typeof(Image));
+            missionAlertBadge.transform.SetParent(missionButton.transform, false);
+            missionAlertBadge.transform.SetAsLastSibling();
+
+            RectTransform rect = missionAlertBadge.GetComponent<RectTransform>();
+            rect.anchorMin = Vector2.one;
+            rect.anchorMax = Vector2.one;
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = new Vector2(-4f, -4f);
+            rect.sizeDelta = new Vector2(26f, 26f);
+
+            Image image = missionAlertBadge.GetComponent<Image>();
+            image.sprite = PlaceholderSpriteFactory.SquareSprite;
+            image.color = new Color(0.96f, 0.12f, 0.10f, 1f);
+            image.raycastTarget = false;
+            Text badgeText = CreateText("Label", missionAlertBadge.transform, "!", TextAnchor.MiddleCenter, Vector2.zero, Vector2.one, 18).GetComponent<Text>();
+            badgeText.color = Color.white;
+            missionAlertBadge.SetActive(false);
         }
 
         private void CreateRuntimeMissionButton()
@@ -380,8 +507,9 @@ namespace EcoGarden.UI
 
             CreateText("MissionTitleText", panel.transform, "Missions", TextAnchor.MiddleLeft, PanelUiLayoutMetrics.TitleAnchorMin, PanelUiLayoutMetrics.TitleAnchorMax, 34);
             CreateButton("MissionCloseButton", panel.transform, "X", PanelUiLayoutMetrics.CloseAnchorMin, PanelUiLayoutMetrics.CloseAnchorMax);
+            missionSummaryText = CreateText("MissionSummaryText", panel.transform, string.Empty, TextAnchor.MiddleLeft, MissionUiLayoutMetrics.SummaryAnchorMin, MissionUiLayoutMetrics.SummaryAnchorMax, 22).GetComponent<Text>();
 
-            GameObject viewport = CreatePanel("MissionViewport", panel.transform, PanelUiLayoutMetrics.FullContentAnchorMin, PanelUiLayoutMetrics.FullContentAnchorMax);
+            GameObject viewport = CreatePanel("MissionViewport", panel.transform, MissionUiLayoutMetrics.ContentAnchorMin, MissionUiLayoutMetrics.ContentAnchorMax);
             Mask mask = viewport.AddComponent<Mask>();
             mask.showMaskGraphic = true;
 
@@ -567,15 +695,30 @@ namespace EcoGarden.UI
         {
             if (state.RewardClaimed)
             {
-                return new Color(0.08f, 0.13f, 0.11f, 0.78f);
+                return Color.Lerp(UiThemePalette.PanelMuted, UiThemePalette.DisabledButton, 0.35f);
             }
 
             if (state.CanClaim)
             {
-                return new Color(0.18f, 0.30f, 0.18f, 0.90f);
+                return Color.Lerp(UiThemePalette.PanelStrong, UiThemePalette.Success, 0.24f);
             }
 
-            return new Color(0.10f, 0.14f, 0.16f, 0.86f);
+            return UiThemePalette.Panel;
+        }
+
+        private static Color GetMissionAccentColor(MissionRuntimeState state)
+        {
+            if (state.RewardClaimed)
+            {
+                return UiThemePalette.DisabledButton;
+            }
+
+            if (state.CanClaim)
+            {
+                return UiThemePalette.Success;
+            }
+
+            return UiThemePalette.PrimaryButton;
         }
 
         private static void ApplyClaimButtonState(GameObject claimObject, MissionRuntimeState state)
@@ -588,13 +731,13 @@ namespace EcoGarden.UI
 
             if (state.CanClaim)
             {
-                image.color = new Color(0.72f, 0.92f, 0.58f, 1f);
+                image.color = UiThemePalette.Success;
                 return;
             }
 
             image.color = state.RewardClaimed
-                ? new Color(0.36f, 0.46f, 0.42f, 0.92f)
-                : new Color(0.50f, 0.58f, 0.60f, 0.86f);
+                ? UiThemePalette.DisabledButton
+                : UiThemePalette.PrimaryButton;
         }
 
         private static Button FindButton(string objectName)
@@ -635,8 +778,9 @@ namespace EcoGarden.UI
         {
             GameObject panel = CreateRect(name, parent, anchorMin, anchorMax);
             Image image = panel.AddComponent<Image>();
-            image.sprite = PlaceholderSpriteFactory.HudPanelSprite;
-            image.color = new Color(0.12f, 0.16f, 0.18f, 0.97f);
+            Sprite resourceSprite = Resources.Load<Sprite>("UiSkins/ui_panel_light");
+            image.sprite = resourceSprite ?? PlaceholderSpriteFactory.HudPanelSprite;
+            image.color = resourceSprite != null ? Color.white : UiThemePalette.Panel;
             return panel;
         }
 
@@ -644,9 +788,11 @@ namespace EcoGarden.UI
         {
             GameObject buttonObject = CreateRect(name, parent, anchorMin, anchorMax);
             Image image = buttonObject.AddComponent<Image>();
-            image.sprite = PlaceholderSpriteFactory.HudButtonSprite;
-            image.color = Color.white;
-            buttonObject.AddComponent<Button>();
+            image.sprite = Resources.Load<Sprite>("UiSkins/ui_button_primary") ?? PlaceholderSpriteFactory.HudButtonSprite;
+            image.color = UiThemePalette.PrimaryButton;
+            Button button = buttonObject.AddComponent<Button>();
+            button.colors = UiThemePalette.BuildButtonColors(UiThemePalette.PrimaryButton);
+            buttonObject.AddComponent<UiButtonFeedback>();
             CreateText("Label", buttonObject.transform, label, TextAnchor.MiddleCenter, Vector2.zero, Vector2.one, 22);
             return buttonObject;
         }
@@ -662,7 +808,7 @@ namespace EcoGarden.UI
             text.resizeTextForBestFit = true;
             text.resizeTextMinSize = 12;
             text.resizeTextMaxSize = fontSize;
-            text.color = Color.white;
+            text.color = UiThemePalette.TextDark;
             text.raycastTarget = false;
             return textObject;
         }

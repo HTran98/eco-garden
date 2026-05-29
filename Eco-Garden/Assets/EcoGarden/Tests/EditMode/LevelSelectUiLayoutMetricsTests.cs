@@ -23,10 +23,20 @@ namespace EcoGarden.Tests.EditMode
                 LevelSelectUiLayoutMetrics.ActionAnchorMin,
                 LevelSelectUiLayoutMetrics.ActionAnchorMax,
                 contentWidth);
+            Rect summary = AndroidHudLayoutMetrics.ToPixelRect(
+                LevelSelectUiLayoutMetrics.PanelSummaryAnchorMin,
+                LevelSelectUiLayoutMetrics.PanelSummaryAnchorMax,
+                panel.size);
+            Rect content = AndroidHudLayoutMetrics.ToPixelRect(
+                LevelSelectUiLayoutMetrics.PanelContentAnchorMin,
+                LevelSelectUiLayoutMetrics.PanelContentAnchorMax,
+                panel.size);
 
             Assert.GreaterOrEqual(LevelSelectUiLayoutMetrics.LevelRowHeight, 120f);
             Assert.GreaterOrEqual(titleWidth, LevelSelectUiLayoutMetrics.MinimumTitleWidth);
             Assert.GreaterOrEqual(actionWidth, LevelSelectUiLayoutMetrics.MinimumActionWidth);
+            Assert.GreaterOrEqual(summary.height, LevelSelectUiLayoutMetrics.MinimumLevelSummaryHeight);
+            Assert.IsFalse(AndroidHudLayoutMetrics.Overlaps(summary, content, 8f));
         }
     }
 }

@@ -311,3 +311,195 @@ This slice has the highest release impact because every play session depends on 
 - Added `Docs/Android UI Validation Log.md` with required profiles, release UI surfaces, interaction checks, evidence fields, and failure-recording rules.
 - Updated `Docs/Android Portrait Layout Matrix.md` with the latest UI-R2 through UI-R8 code-pass baseline.
 - RB-003 and RB-012 remain open as device-validation gates; no device screenshots have been captured in this environment.
+
+2026-05-28:
+
+- Started UI visual upgrade pass 1.
+- Added `UiThemePalette` as the shared cozy-garden palette for light panels, green primary actions, warm accent states, Gold/Gem/Store colors, Delivery/Sell highlights, and readable text choices.
+- `HudSkinController` now applies the palette across existing HUD, panel, button, viewport, and drop-zone objects at runtime while keeping existing Android layout metrics unchanged.
+- Shop, Mission, and Level Select runtime rows now reference the shared palette for disabled, selected, claimable, completed, locked, currency, Gem, and Store states.
+- Added EditMode coverage for core palette contrast and text-color selection.
+- Runtime and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false`; Unity-generated `.csproj` files were updated locally only for verification and remain untracked.
+- Authored PNG/icon replacement remains the next visual upgrade slice; Android device validation is still required before closing RB-003/RB-012.
+
+2026-05-28:
+
+- Continued UI visual upgrade with first-pass transparent PNG icons under `Assets/EcoGarden/Art/UI/Resources/UiIcons`.
+- Added PNGs for Gold, Gem, Timer, Pause, Restart, Next, Shop, Mission, Level, Close, Shovel, Magic Wand, and Sorting Magnet.
+- `HudSkinController` now creates a non-raycast `RuntimeIcon` child for Pause, Level, Mission, Shop, Close, Restart, and Next buttons when the resource sprite is available, while keeping text fallback behavior if the asset is missing.
+- Ability, currency, and timer PNGs are now wired as icon+number layouts: Economy shows numeric balances, timer keeps time text, and ability buttons keep `xN` counts beside the icon.
+- Runtime, editor, and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false`; Android visual/device validation is still required.
+
+2026-05-28:
+
+- Continued UI visual upgrade with first-pass surface skins under `Assets/EcoGarden/Art/UI/Resources/UiSkins`.
+- Added PNG skins for light/strong/overlay panels, row surfaces, primary/secondary/disabled buttons, Gold/Gem/Store price badges, Delivery, and Sell.
+- `HudSkinController` now loads surface skins for HUD panels, top bar, result panel, tracker, buttons, and drop zones while preserving procedural fallback sprites.
+- Shop product rows, price badges, category tabs, runtime Shop panels/buttons, Mission rows/buttons, and Level Select rows/buttons now use the skin sprites when available.
+- Runtime, editor, and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false`; Unity import plus Game view/device visual validation remain required.
+
+2026-05-28:
+
+- Continued UI visual upgrade with interaction/readability polish.
+- Added `UiButtonFeedback`, a lightweight pointer press scale effect for HUD, Shop, Mission, and Level Select buttons.
+- `HudSkinController` now applies subtle runtime text shadow to skinned text, improving contrast on the new panel/button PNG surfaces.
+- Runtime, editor, and EditMode test assemblies build successfully after local restore regenerated missing `Temp/obj/*/project.assets.json`.
+- Play Mode validation is required to judge button feel and confirm text shadows do not look too heavy on device.
+
+2026-05-28:
+
+- Continued visual upgrade with first-pass full-screen background art.
+- Added `bg_pond_foggy_01.png` under `Assets/EcoGarden/Art/Backgrounds/Resources/Backgrounds`.
+- Added `EcoGardenBackgroundController`, which loads the background sprite from Resources, follows/scales to the orthographic camera, and renders behind board sprites.
+- `GameBootstrapper` now ensures a background exists for old scenes, and scene generation adds the background for new generated scenes.
+- Runtime, editor, and EditMode test assemblies build successfully. Play Mode/Game view validation is required to confirm board contrast and HUD readability.
+
+2026-05-28:
+
+- Continued visual upgrade with board readability backing.
+- Added `ui_board_backdrop.png` under `Assets/EcoGarden/Art/UI/Resources/UiSkins`.
+- Added `BoardBackdropController`, which loads the backdrop sprite, tracks the active `BoardController`, and scales the backdrop from `BoardView.GetBoardWorldWidth/Height` so it fits each level.
+- `GameBootstrapper` now ensures old scenes receive the board backdrop, and scene generation creates it after board load for new generated scenes.
+- Runtime, editor, and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false`; Unity import plus portrait Game view/device validation remain required.
+
+2026-05-28:
+
+- Continued UI feel polish for drag/drop affordance.
+- Added `UiAmbientPulse`, which creates a non-raycast runtime glow child and animates alpha/scale without changing the parent RectTransform or touch target.
+- `HudSkinController` now applies the pulse to Delivery and Sell drop zones using their themed highlight colors.
+- Runtime, editor, and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false`; Play Mode validation is required to confirm the pulse is noticeable without feeling distracting.
+
+2026-05-28:
+
+- Continued board visual readability polish.
+- `CellView` now creates a subtle `CellShadow` child `SpriteRenderer` under each tile, using the same sprite with low alpha and lower sorting order.
+- `ItemView` now creates a subtle `ItemShadow` child `SpriteRenderer` under each item, follows refresh/drag alpha, and raises sorting order while dragging.
+- Runtime, editor, and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false`; Play Mode validation is required to confirm the extra depth does not make small boards feel busy.
+
+2026-05-28:
+
+- Continued ability HUD affordance polish.
+- `AbilityHudController` now adds a `RuntimeSelectionGlow` child image to ability buttons and toggles it with the selected ability state.
+- The selected booster now has both the existing selected color and a visible glow while preserving the same touch target and icon/count layout.
+- Runtime, editor, and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false`; Play Mode validation is required to confirm the selected state reads clearly on device.
+
+2026-05-28:
+
+- Continued panel feel polish.
+- Added `UiPanelTransition`, a lightweight CanvasGroup/scale entrance animation that runs from `OnEnable` using unscaled time.
+- `HudSkinController` now attaches the transition to Result, Level, Shop, and Mission panels so existing `SetActive` open flows get the animation without changing panel controllers.
+- Runtime, editor, and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false`; Play Mode validation is required to confirm the motion feels responsive on Android.
+
+2026-05-28:
+
+- Continued row hierarchy polish for panel scanability.
+- Added `UiRowAccent`, a shared non-raycast runtime accent strip for repeated rows.
+- Shop product rows now use category/Store/disabled accent colors; Mission rows use active/claimable/claimed accents; Level rows use current/done/locked accents.
+- Runtime, editor, and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false`; Play Mode validation is required to confirm the accent strip helps scanning without crowding text.
+
+2026-05-28:
+
+- Continued timer urgency polish.
+- `LevelStateController` now caches the Timer text presentation and applies a warning color/scale pulse under 20 seconds, with a stronger critical color under 10 seconds.
+- Timer presentation restores to its base color/scale when the level is restarted, paused/completed/failed, or above the warning threshold.
+- Runtime, editor, and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false`; Play Mode validation is required to judge whether the pulse is noticeable but not distracting.
+
+2026-05-28:
+
+- Continued objective readability polish.
+- `LevelStateController` now computes aggregate order submitted/required progress during objective refresh.
+- `ObjectivePanel` receives the shared `UiRowAccent` strip, shifting from primary to warm accent near completion and success when the order is complete.
+- Runtime, editor, and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false`; Play Mode validation is required to confirm the objective accent helps without competing with the timer.
+
+2026-05-29:
+
+- Completed finite-level order handoff polish.
+- `LevelStateController` now auto-advances to the next catalog level shortly after `OrderCompleted` when a next level exists, while standalone scenes without a catalog keep the existing result panel behavior.
+- `StartNextLevel` still unlocks/saves/selects the next level and calls `StartLevel`, so the next level's order objective is refreshed immediately after the board loads.
+- Added EditMode coverage that `StartNextLevel` selects level 2, returns to Playing, and refreshes the objective text for the new order. Runtime, editor, and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false`.
+
+2026-05-29:
+
+- Fixed completion result obstruction seen in Play Mode.
+- `LevelStateController.ShowResult` now hides Shop, Mission, and Level panels before showing the completion result, so open side panels cannot cover the Next action.
+- Next-level lookup now asks the catalog for the next higher level instead of only checking `currentLevelId + 1`, with a fallback to the first catalog level if the current scene level is not part of the catalog.
+- Added EditMode coverage that completing a level hides an open Mission panel. Runtime, editor, and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false`.
+
+2026-05-29:
+
+- Fixed the remaining completion/result handoff issues from Play Mode screenshots.
+- Completion now hides every Shop/Mission/MissionTracker/Level panel instance before showing result or advancing, and the compact Mission tracker no longer reopens while `ResultPanel` is active.
+- Old scenes that have a `ResultPanel` but no `NextLevelButton` now receive a runtime Next button with the shared result-action anchors and skin fallback.
+- Next-level selection now force-unlocks the selected next catalog level before calling `LevelCatalogController.SelectLevel`, so skipped/non-sequential first-release catalog ids do not leave the game stuck on the completed level.
+- `AndroidHudLayoutController` now reapplies layout during Unity Simulator screen/safe-area changes and sets CanvasScaler match dynamically for portrait vs landscape simulator profiles.
+- Runtime, editor, and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false`; Unity Simulator/Game view visual validation is still required.
+
+2026-05-29:
+
+- Continued Simulator portrait cleanup after review screenshot.
+- Board framing now uses more conservative camera padding so the full grid remains visible on narrow mobile Simulator profiles.
+- Delivery and Sell drop zones are smaller and placed lower, reducing board obstruction while keeping minimum touch-size coverage.
+- Compact Mission tracker is disabled during gameplay; mission readiness is now communicated by a red badge on the Mission top-bar button and a one-time HUD message when a mission becomes claimable.
+- Pause button now switches to a runtime Play icon while paused, then restores the Pause icon when resumed.
+- Runtime, editor, and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false`; Simulator visual validation is required to tune final drop-zone placement if needed.
+
+2026-05-29:
+
+- Hardened Level Complete panel behavior after Play Mode showed the panel could remain without an obvious Next action.
+- The Next result action is now visible for every completed level result, even when catalog lookup is not yet resolved.
+- Pressing Next closes the panel immediately; it advances to the next catalog level when available or reloads the current level as a no-catalog fallback.
+- Auto-advance uses the same path, and catalog lookup now includes inactive scene controllers.
+- Runtime, editor, and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false`.
+
+2026-05-29:
+
+- Tuned Level Complete auto-advance timing.
+- The completion panel now stays visible for at least 5 seconds before auto-advance, leaving time to read the reward text or tap Next manually.
+- Runtime and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false`.
+
+2026-05-29:
+
+- Continued result-panel release polish.
+- Added `ResultCountdownText` so players can see the remaining automatic handoff time on completion.
+- Replay/Next result actions now show icon plus readable text instead of icon-only buttons.
+- Added layout coverage to ensure the result message, countdown, and actions do not overlap on the 720x1280 portrait profile.
+- Runtime, editor, and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false`.
+
+2026-05-29:
+
+- Continued Mission UI release polish.
+- Full Mission panel now has a summary row for Ready/Active/Claimed counts and a shorter content area beneath it.
+- Claimable missions are sorted above active and claimed rows so reward actions are easier to find.
+- Mission top-bar alert badge is fixed-size with `!`, avoiding the stretched red mark seen in Simulator.
+- Compact mission tracker remains disabled in gameplay to keep the board clear.
+- Runtime, editor, and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false`.
+
+2026-05-29:
+
+- Continued Level Select UI release polish.
+- Level panel now has a summary row showing unlocked progress and current level.
+- Level list content is anchored below the summary row to avoid crowding the panel header.
+- Level row action labels now distinguish Current, Replay, Play, and Locked states.
+- Runtime, editor, and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false`.
+
+2026-05-29:
+
+- Continued Shop UI release polish.
+- Shop panel now has a summary row below category tabs showing selected category, item count, Store count, and owned count.
+- Product list content is anchored below the summary row to avoid crowding category tabs.
+- Runtime fallback Shop panels create the same summary row.
+- Runtime, editor, and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false`.
+
+2026-05-29:
+
+- Continued HUD feedback and drop-zone polish.
+- HUD feedback messages now get a severity-colored background surface for readability over the pond/board art.
+- Delivery and Sell labels receive text shadows, and highlighted drop zones scale up slightly while dragging over them.
+- Runtime, editor, and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false`.
+
+2026-05-29:
+
+- Continued ability HUD polish.
+- Booster buttons now disable when their count reaches zero and use disabled styling for the count label.
+- Selecting a booster now sends the target prompt through the HUD feedback presentation, making the next action clearer.
+- Runtime, editor, and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false`.

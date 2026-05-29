@@ -12,15 +12,29 @@ namespace EcoGarden.UI
         private RectTransform rectTransform;
         private Rect lastSafeArea;
         private Vector2Int lastScreenSize;
+        private bool applyingLayout;
 
         private void Awake()
         {
             rectTransform = GetComponent<RectTransform>();
         }
 
+        private void OnEnable()
+        {
+            ApplyLayout();
+        }
+
         private void Start()
         {
             ApplyLayout();
+        }
+
+        private void OnRectTransformDimensionsChange()
+        {
+            if (isActiveAndEnabled)
+            {
+                ApplyLayout();
+            }
         }
 
         private void Update()
@@ -35,9 +49,43 @@ namespace EcoGarden.UI
 
         public void ApplyLayout()
         {
-            ApplySafeArea();
-            ApplyHudRects();
-            ApplyTextRules();
+            if (applyingLayout)
+            {
+                return;
+            }
+
+            applyingLayout = true;
+            try
+            {
+                ApplyCanvasScaler();
+                ApplySafeArea();
+                ApplyHudRects();
+                ApplyTextRules();
+            }
+            finally
+            {
+                applyingLayout = false;
+            }
+        }
+
+        private void ApplyCanvasScaler()
+        {
+            Canvas canvas = GetComponentInParent<Canvas>();
+            if (canvas == null)
+            {
+                return;
+            }
+
+            CanvasScaler scaler = canvas.GetComponent<CanvasScaler>();
+            if (scaler == null)
+            {
+                return;
+            }
+
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = referenceResolution;
+            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+            scaler.matchWidthOrHeight = Screen.width > Screen.height ? 1f : 0f;
         }
 
         private void ApplySafeArea()
@@ -45,6 +93,11 @@ namespace EcoGarden.UI
             if (rectTransform == null)
             {
                 rectTransform = GetComponent<RectTransform>();
+            }
+
+            if (Screen.width <= 0 || Screen.height <= 0)
+            {
+                return;
             }
 
             Rect safeArea = Screen.safeArea;
@@ -130,12 +183,16 @@ namespace EcoGarden.UI
             SetAnchoredBox("LevelCloseButton", PanelUiLayoutMetrics.CloseAnchorMin, PanelUiLayoutMetrics.CloseAnchorMax);
             SetAnchoredBox("ShopCloseButton", PanelUiLayoutMetrics.CloseAnchorMin, PanelUiLayoutMetrics.CloseAnchorMax);
             SetAnchoredBox("MissionCloseButton", PanelUiLayoutMetrics.CloseAnchorMin, PanelUiLayoutMetrics.CloseAnchorMax);
-            SetAnchoredBox("LevelViewport", PanelUiLayoutMetrics.FullContentAnchorMin, PanelUiLayoutMetrics.FullContentAnchorMax);
-            SetAnchoredBox("MissionViewport", PanelUiLayoutMetrics.FullContentAnchorMin, PanelUiLayoutMetrics.FullContentAnchorMax);
+            SetAnchoredBox("LevelSummaryText", LevelSelectUiLayoutMetrics.PanelSummaryAnchorMin, LevelSelectUiLayoutMetrics.PanelSummaryAnchorMax);
+            SetAnchoredBox("LevelViewport", LevelSelectUiLayoutMetrics.PanelContentAnchorMin, LevelSelectUiLayoutMetrics.PanelContentAnchorMax);
+            SetAnchoredBox("MissionSummaryText", MissionUiLayoutMetrics.SummaryAnchorMin, MissionUiLayoutMetrics.SummaryAnchorMax);
+            SetAnchoredBox("MissionViewport", MissionUiLayoutMetrics.ContentAnchorMin, MissionUiLayoutMetrics.ContentAnchorMax);
             SetAnchoredBox("ShopCategoryBar", PanelUiLayoutMetrics.ShopCategoryAnchorMin, PanelUiLayoutMetrics.ShopCategoryAnchorMax);
-            SetAnchoredBox("ShopProductViewport", PanelUiLayoutMetrics.ShopContentAnchorMin, PanelUiLayoutMetrics.ShopContentAnchorMax);
+            SetAnchoredBox("ShopSummaryText", ShopUiLayoutMetrics.SummaryAnchorMin, ShopUiLayoutMetrics.SummaryAnchorMax);
+            SetAnchoredBox("ShopProductViewport", ShopUiLayoutMetrics.ContentAnchorMin, ShopUiLayoutMetrics.ContentAnchorMax);
             SetAnchoredBox("ResultTitleText", PanelUiLayoutMetrics.ResultTitleAnchorMin, PanelUiLayoutMetrics.ResultTitleAnchorMax);
             SetAnchoredBox("ResultMessageText", PanelUiLayoutMetrics.ResultMessageAnchorMin, PanelUiLayoutMetrics.ResultMessageAnchorMax);
+            SetAnchoredBox("ResultCountdownText", PanelUiLayoutMetrics.ResultCountdownAnchorMin, PanelUiLayoutMetrics.ResultCountdownAnchorMax);
             SetAnchoredBox("RestartButton", PanelUiLayoutMetrics.ResultRestartAnchorMin, PanelUiLayoutMetrics.ResultRestartAnchorMax);
             SetAnchoredBox("NextLevelButton", PanelUiLayoutMetrics.ResultNextAnchorMin, PanelUiLayoutMetrics.ResultNextAnchorMax);
         }

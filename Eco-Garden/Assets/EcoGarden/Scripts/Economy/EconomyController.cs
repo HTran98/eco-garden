@@ -165,7 +165,7 @@ namespace EcoGarden.Economy
             gemRect.sizeDelta = Vector2.zero;
 
             gemText = gemObject.AddComponent<Text>();
-            gemText.text = UiIconLabelCatalog.Gem + " 0";
+            gemText.text = "0";
             gemText.alignment = TextAnchor.MiddleCenter;
             gemText.font = goldText.font;
             gemText.fontSize = goldText.fontSize;
@@ -184,7 +184,7 @@ namespace EcoGarden.Economy
             {
                 if (gemText != null)
                 {
-                    gemText.text = UiIconLabelCatalog.Currency(CurrencyKind.Gem) + " " + Gem;
+                    gemText.text = Gem.ToString();
                 }
 
                 return;
@@ -192,7 +192,7 @@ namespace EcoGarden.Economy
 
             if (goldText != null)
             {
-                goldText.text = UiIconLabelCatalog.Currency(CurrencyKind.Gold) + " " + Gold;
+                goldText.text = Gold.ToString();
             }
         }
 

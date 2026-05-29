@@ -9,6 +9,7 @@ using EcoGarden.Missions;
 using EcoGarden.Progression;
 using EcoGarden.Save;
 using EcoGarden.Shop;
+using EcoGarden.UI;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -37,6 +38,7 @@ namespace EcoGarden.Editor
             scene.name = "EcoGarden_Level15_VerticalSlice";
 
             CreateCamera();
+            CreateBackground();
 
             GameObject boardRoot = new GameObject("BoardRoot");
             boardRoot.transform.position = new Vector3(0f, -0.45f, 0f);
@@ -67,6 +69,7 @@ namespace EcoGarden.Editor
 
             EcoGardenUiMenu.CreateGameHudSkeleton();
             boardController.LoadLevel();
+            CreateBoardBackdrop(boardController);
 
             EditorSceneManager.SaveScene(scene, ScenePath);
             EditorSceneManager.MarkSceneDirty(scene);
@@ -86,6 +89,7 @@ namespace EcoGarden.Editor
             scene.name = "EcoGarden_FirstRelease_Progression";
 
             CreateCamera();
+            CreateBackground();
 
             GameObject boardRoot = new GameObject("BoardRoot");
             boardRoot.transform.position = new Vector3(0f, -0.45f, 0f);
@@ -121,6 +125,7 @@ namespace EcoGarden.Editor
 
             EcoGardenUiMenu.CreateGameHudSkeleton();
             boardController.LoadLevel();
+            CreateBoardBackdrop(boardController);
 
             EditorSceneManager.SaveScene(scene, FirstReleaseScenePath);
             EditorSceneManager.MarkSceneDirty(scene);
@@ -215,8 +220,22 @@ namespace EcoGarden.Editor
             camera.orthographic = true;
             camera.orthographicSize = 5.25f;
             camera.clearFlags = CameraClearFlags.SolidColor;
-            camera.backgroundColor = new Color(0.30f, 0.43f, 0.60f, 1f);
+            camera.backgroundColor = new Color(0.70f, 0.86f, 0.78f, 1f);
             cameraObject.transform.position = new Vector3(0f, 0f, -10f);
+        }
+
+        private static void CreateBackground()
+        {
+            GameObject backgroundObject = new GameObject("EcoGardenBackground");
+            EcoGardenBackgroundController background = backgroundObject.AddComponent<EcoGardenBackgroundController>();
+            background.Configure(Camera.main);
+        }
+
+        private static void CreateBoardBackdrop(BoardController boardController)
+        {
+            GameObject backdropObject = new GameObject("BoardBackdrop");
+            BoardBackdropController backdrop = backdropObject.AddComponent<BoardBackdropController>();
+            backdrop.Configure(boardController);
         }
 
         private static void CreateButterflies(Vector3 boardCenter)

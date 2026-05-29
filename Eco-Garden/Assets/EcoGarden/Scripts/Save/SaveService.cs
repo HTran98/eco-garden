@@ -5,7 +5,7 @@ namespace EcoGarden.Save
     public static class SaveService
     {
         private const string SaveKey = "EcoGarden.SaveData.v1";
-        public const int CurrentSchemaVersion = 2;
+        public const int CurrentSchemaVersion = 3;
 
         public static SaveData Load()
         {
@@ -84,6 +84,7 @@ namespace EcoGarden.Save
             }
 
             data.boardItems = data.boardItems ?? new BoardItemSaveData[0];
+            data.clearedObstacles = data.clearedObstacles ?? new ClearedObstacleSaveData[0];
             data.orderRequirements = data.orderRequirements ?? new OrderRequirementSaveData[0];
             data.plantTierUnlocks = data.plantTierUnlocks ?? new PlantTierUnlockSaveData[0];
             data.purchasedShopProductIds = data.purchasedShopProductIds ?? new string[0];

@@ -24,5 +24,14 @@ namespace EcoGarden.Tests.EditMode
                 FeedbackMessagePresentation.DurationFor(FeedbackMessageSeverity.Error),
                 FeedbackMessagePresentation.DurationFor(FeedbackMessageSeverity.Info));
         }
+
+        [Test]
+        public void SurfaceColorFor_UsesReadableOpaqueHudSurfaces()
+        {
+            Assert.GreaterOrEqual(FeedbackMessagePresentation.SurfaceColorFor(FeedbackMessageSeverity.Info).a, 0.70f);
+            Assert.GreaterOrEqual(FeedbackMessagePresentation.SurfaceColorFor(FeedbackMessageSeverity.Success).a, 0.70f);
+            Assert.GreaterOrEqual(FeedbackMessagePresentation.SurfaceColorFor(FeedbackMessageSeverity.Warning).a, 0.70f);
+            Assert.GreaterOrEqual(FeedbackMessagePresentation.SurfaceColorFor(FeedbackMessageSeverity.Error).a, 0.70f);
+        }
     }
 }

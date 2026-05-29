@@ -94,6 +94,11 @@ namespace EcoGarden.UI
             HasSelectedAbility = true;
             SelectedAbility = abilityKind;
             SetFeedback("Select target");
+            if (gameplayFeedbackController != null)
+            {
+                gameplayFeedbackController.PlayHudMessage("Select target");
+            }
+
             RefreshButtonColors();
         }
 
@@ -112,10 +117,23 @@ namespace EcoGarden.UI
                 return;
             }
 
-            SetButtonLabel(shovelButton, UiIconLabelCatalog.AbilityWithCount(AbilityKind.Shovel, boardController.AbilityInventory.GetCount(AbilityKind.Shovel)));
-            SetButtonLabel(magicWandButton, UiIconLabelCatalog.AbilityWithCount(AbilityKind.MagicWand, boardController.AbilityInventory.GetCount(AbilityKind.MagicWand)));
-            SetButtonLabel(sortingMagnetButton, UiIconLabelCatalog.AbilityWithCount(AbilityKind.SortingMagnet, boardController.AbilityInventory.GetCount(AbilityKind.SortingMagnet)));
+            RefreshAbilityButton(shovelButton, AbilityKind.Shovel);
+            RefreshAbilityButton(magicWandButton, AbilityKind.MagicWand);
+            RefreshAbilityButton(sortingMagnetButton, AbilityKind.SortingMagnet);
             RefreshButtonColors();
+        }
+
+        private void RefreshAbilityButton(Button button, AbilityKind abilityKind)
+        {
+            if (button == null || boardController == null || boardController.AbilityInventory == null)
+            {
+                return;
+            }
+
+            int count = boardController.AbilityInventory.GetCount(abilityKind);
+            button.interactable = count > 0;
+            SetButtonLabel(button, UiIconLabelCatalog.Count(count));
+            RefreshAbilityCountPresentation(button, count);
         }
 
         private void AutoWireReferences()
@@ -218,9 +236,61 @@ namespace EcoGarden.UI
             if (image != null)
             {
                 image.color = selected
-                    ? new Color(0.36f, 0.68f, 0.78f, 1f)
-                    : new Color(0.24f, 0.48f, 0.62f, 1f);
+                    ? UiThemePalette.Selected
+                    : button.interactable
+                        ? UiThemePalette.PrimaryButton
+                        : UiThemePalette.DisabledButton;
             }
+
+            EnsureSelectionGlow(button, selected);
+        }
+
+        private static void RefreshAbilityCountPresentation(Button button, int count)
+        {
+            Text text = button.GetComponentInChildren<Text>(true);
+            if (text == null)
+            {
+                return;
+            }
+
+            text.color = count > 0 ? UiThemePalette.TextLight : UiThemePalette.TextDark;
+            text.alignment = TextAnchor.MiddleCenter;
+            Shadow shadow = text.GetComponent<Shadow>();
+            if (shadow == null)
+            {
+                shadow = text.gameObject.AddComponent<Shadow>();
+            }
+
+            shadow.effectColor = count > 0
+                ? new Color(0.02f, 0.08f, 0.05f, 0.46f)
+                : new Color(1f, 1f, 1f, 0.20f);
+            shadow.effectDistance = new Vector2(1.1f, -1.1f);
+            shadow.useGraphicAlpha = true;
+        }
+
+        private static void EnsureSelectionGlow(Button button, bool selected)
+        {
+            Transform existing = button.transform.Find("RuntimeSelectionGlow");
+            GameObject glowObject = existing != null
+                ? existing.gameObject
+                : new GameObject("RuntimeSelectionGlow", typeof(RectTransform), typeof(Image));
+            glowObject.transform.SetParent(button.transform, false);
+            glowObject.transform.SetAsFirstSibling();
+            glowObject.SetActive(selected);
+
+            RectTransform glowRect = glowObject.GetComponent<RectTransform>();
+            glowRect.anchorMin = Vector2.zero;
+            glowRect.anchorMax = Vector2.one;
+            glowRect.offsetMin = new Vector2(-6f, -6f);
+            glowRect.offsetMax = new Vector2(6f, 6f);
+
+            Image sourceImage = button.GetComponent<Image>();
+            Image glowImage = glowObject.GetComponent<Image>();
+            glowImage.sprite = sourceImage != null ? sourceImage.sprite : null;
+            glowImage.type = sourceImage != null ? sourceImage.type : Image.Type.Simple;
+            glowImage.preserveAspect = sourceImage != null && sourceImage.preserveAspect;
+            glowImage.color = new Color(1f, 0.95f, 0.46f, selected ? 0.46f : 0f);
+            glowImage.raycastTarget = false;
         }
 
         private void SetFeedback(string message)

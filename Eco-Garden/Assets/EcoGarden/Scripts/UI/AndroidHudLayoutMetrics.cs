@@ -4,10 +4,10 @@ namespace EcoGarden.UI
 {
     public static class AndroidHudLayoutMetrics
     {
-        public static readonly Vector2 DeliveryAnchorMin = new Vector2(0.04f, 0.19f);
-        public static readonly Vector2 DeliveryAnchorMax = new Vector2(0.29f, 0.325f);
-        public static readonly Vector2 SellAnchorMin = new Vector2(0.71f, 0.19f);
-        public static readonly Vector2 SellAnchorMax = new Vector2(0.96f, 0.325f);
+        public static readonly Vector2 DeliveryAnchorMin = new Vector2(0.06f, 0.125f);
+        public static readonly Vector2 DeliveryAnchorMax = new Vector2(0.24f, 0.235f);
+        public static readonly Vector2 SellAnchorMin = new Vector2(0.76f, 0.125f);
+        public static readonly Vector2 SellAnchorMax = new Vector2(0.94f, 0.235f);
         public static readonly Vector2 FeedbackAnchorMin = new Vector2(0.04f, 0.43f);
         public static readonly Vector2 FeedbackAnchorMax = new Vector2(0.96f, 0.53f);
         public static readonly Vector2 ResultAnchorMin = new Vector2(0.10f, 0.35f);
@@ -45,9 +45,9 @@ namespace EcoGarden.UI
         public const int MaxCompactMissionRows = 2;
         public const float MinimumCompactMissionTrackerWidth = 220f;
         public const float MinimumCompactMissionActionWidth = 58f;
-        public const float MinimumExternalDropZoneWidth = 170f;
-        public const float MinimumExternalDropZoneHeight = 150f;
-        public const float MinimumExternalDropZoneGap = 260f;
+        public const float MinimumExternalDropZoneWidth = 128f;
+        public const float MinimumExternalDropZoneHeight = 118f;
+        public const float MinimumExternalDropZoneGap = 360f;
         public const float MinimumTopBarActionWidth = 64f;
         public const float MinimumTopBarStatWidth = 104f;
         public const float MinimumAbilityButtonWidth = 160f;

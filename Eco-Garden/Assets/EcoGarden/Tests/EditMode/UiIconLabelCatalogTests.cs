@@ -13,6 +13,7 @@ namespace EcoGarden.Tests.EditMode
             Assert.AreEqual("SH\nx2", UiIconLabelCatalog.AbilityWithCount(AbilityKind.Shovel, 2));
             Assert.AreEqual("WD\nx1", UiIconLabelCatalog.AbilityWithCount(AbilityKind.MagicWand, 1));
             Assert.AreEqual("MG\nx1", UiIconLabelCatalog.AbilityWithCount(AbilityKind.SortingMagnet, 1));
+            Assert.AreEqual("x2", UiIconLabelCatalog.Count(2));
         }
 
         [Test]

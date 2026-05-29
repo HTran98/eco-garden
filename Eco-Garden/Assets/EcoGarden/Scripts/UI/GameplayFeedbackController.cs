@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Collections;
+using EcoGarden.Utilities;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,6 +17,7 @@ namespace EcoGarden.UI
         private Coroutine hudRoutine;
         private string lastHudMessage;
         private float lastHudMessageTime = -100f;
+        private Image hudFeedbackBackground;
 
         private void Awake()
         {
@@ -27,6 +29,8 @@ namespace EcoGarden.UI
                     hudFeedbackText = feedbackObject.GetComponent<Text>();
                 }
             }
+
+            EnsureHudFeedbackPresentation();
         }
 
         public void PlayHudMessage(string message)
@@ -79,6 +83,12 @@ namespace EcoGarden.UI
         {
             hudFeedbackText.text = message;
             hudFeedbackText.color = FeedbackMessagePresentation.ColorFor(severity);
+            if (hudFeedbackBackground != null)
+            {
+                hudFeedbackBackground.color = FeedbackMessagePresentation.SurfaceColorFor(severity);
+                hudFeedbackBackground.gameObject.SetActive(true);
+            }
+
             yield return new WaitForSeconds(Mathf.Max(hudMessageDuration, FeedbackMessagePresentation.DurationFor(severity)));
 
             if (hudFeedbackText != null && hudFeedbackText.text == message)
@@ -86,7 +96,73 @@ namespace EcoGarden.UI
                 hudFeedbackText.text = string.Empty;
             }
 
+            if (hudFeedbackBackground != null)
+            {
+                hudFeedbackBackground.gameObject.SetActive(false);
+            }
+
             hudRoutine = null;
+        }
+
+        private void EnsureHudFeedbackPresentation()
+        {
+            if (hudFeedbackText == null)
+            {
+                return;
+            }
+
+            hudFeedbackText.alignment = TextAnchor.MiddleCenter;
+            hudFeedbackText.raycastTarget = false;
+
+            Shadow shadow = hudFeedbackText.GetComponent<Shadow>();
+            if (shadow == null)
+            {
+                shadow = hudFeedbackText.gameObject.AddComponent<Shadow>();
+            }
+
+            shadow.effectColor = new Color(0.02f, 0.07f, 0.05f, 0.58f);
+            shadow.effectDistance = new Vector2(1.4f, -1.4f);
+            shadow.useGraphicAlpha = true;
+
+            if (hudFeedbackBackground != null)
+            {
+                return;
+            }
+
+            Transform existing = hudFeedbackText.transform.parent != null
+                ? hudFeedbackText.transform.parent.Find("FeedbackMessageBackground")
+                : null;
+            if (existing != null)
+            {
+                hudFeedbackBackground = existing.GetComponent<Image>();
+            }
+
+            if (hudFeedbackBackground == null && hudFeedbackText.transform.parent != null)
+            {
+                GameObject backgroundObject = new GameObject("FeedbackMessageBackground", typeof(RectTransform), typeof(Image));
+                backgroundObject.transform.SetParent(hudFeedbackText.transform.parent, false);
+                backgroundObject.transform.SetSiblingIndex(hudFeedbackText.transform.GetSiblingIndex());
+
+                RectTransform sourceRect = hudFeedbackText.GetComponent<RectTransform>();
+                RectTransform backgroundRect = backgroundObject.GetComponent<RectTransform>();
+                if (sourceRect != null)
+                {
+                    backgroundRect.anchorMin = sourceRect.anchorMin;
+                    backgroundRect.anchorMax = sourceRect.anchorMax;
+                    backgroundRect.pivot = sourceRect.pivot;
+                    backgroundRect.anchoredPosition = sourceRect.anchoredPosition;
+                    backgroundRect.sizeDelta = sourceRect.sizeDelta;
+                }
+
+                hudFeedbackBackground = backgroundObject.GetComponent<Image>();
+                hudFeedbackBackground.sprite = PlaceholderSpriteFactory.HudPanelSprite;
+                hudFeedbackBackground.raycastTarget = false;
+            }
+
+            if (hudFeedbackBackground != null)
+            {
+                hudFeedbackBackground.gameObject.SetActive(false);
+            }
         }
 
         private bool ShouldSuppressDuplicate(string message)

@@ -29,9 +29,45 @@ namespace EcoGarden.Level
 
             EnsureNpcMovement();
             EnsureButterflies();
+            EnsureBackground();
+            EnsureBoardBackdrop();
             EnsureHudSkin();
             EnsureSaveController();
             EnsureAndroidHudLayout();
+        }
+
+        private void EnsureBackground()
+        {
+            EcoGardenBackgroundController background = FindAnyObjectByType<EcoGardenBackgroundController>();
+            if (background == null)
+            {
+                GameObject backgroundObject = new GameObject("EcoGardenBackground");
+                background = backgroundObject.AddComponent<EcoGardenBackgroundController>();
+            }
+
+            background.Configure(Camera.main);
+            Camera mainCamera = Camera.main;
+            if (mainCamera != null)
+            {
+                mainCamera.backgroundColor = new Color(0.70f, 0.86f, 0.78f, 1f);
+            }
+        }
+
+        private void EnsureBoardBackdrop()
+        {
+            if (boardController == null)
+            {
+                return;
+            }
+
+            BoardBackdropController backdrop = FindAnyObjectByType<BoardBackdropController>();
+            if (backdrop == null)
+            {
+                GameObject backdropObject = new GameObject("BoardBackdrop");
+                backdrop = backdropObject.AddComponent<BoardBackdropController>();
+            }
+
+            backdrop.Configure(boardController);
         }
 
         private void EnsureNpcMovement()

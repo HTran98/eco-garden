@@ -68,6 +68,28 @@ Required interactions:
 - Runtime symbolic icon labels are accepted as first-release placeholders in `Docs/Asset Resource List.md`.
 - Device validation remains required before closing RB-003 and RB-012.
 
+2026-05-29:
+
+- Added a Simulator-focused layout recovery pass after Game view validation showed broken HUD forms.
+- `AndroidHudLayoutController` now reapplies layout on enable, rect-size changes, and screen/safe-area changes, and sets CanvasScaler match to portrait width or landscape height.
+- Result flow now hides the compact Mission tracker while the Result panel is open and runtime-creates a missing Next button for old scenes.
+- Re-run Unity Simulator profiles before RC: verify HUD forms remain visible outside the board on 720x1280, 1080x1920, 1080x2400, and one landscape/resize stress profile.
+
+2026-05-29:
+
+- Added a second Simulator cleanup pass based on portrait screenshot feedback.
+- Verify the full board is visible after the updated camera padding.
+- Verify Delivery and Sell are lower/smaller and do not cover important board cells.
+- Verify compact Mission tracker no longer appears over the board; claimable missions should show a red badge on the Mission top-bar button and a HUD message.
+- Verify Pause changes to a Play icon while paused and returns to Pause after resume.
+
+2026-05-29:
+
+- Mission panel validation target updated after UI polish.
+- Verify Mission panel summary row reads Ready/Active/Claimed and does not overlap the scroll list.
+- Verify claimable missions appear at the top of the Mission panel.
+- Verify the Mission top-bar badge is a small fixed `!` badge, not a stretched red rectangle.
+
 ## Failure Recording
 
 For every failed surface, record:

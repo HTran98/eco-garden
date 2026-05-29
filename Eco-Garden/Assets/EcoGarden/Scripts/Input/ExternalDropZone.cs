@@ -13,8 +13,11 @@ namespace EcoGarden.Input
         [SerializeField] private Image image;
         [SerializeField] private Color normalColor = new Color(0.30f, 0.44f, 0.34f, 0.92f);
         [SerializeField] private Color highlightedColor = new Color(0.48f, 0.70f, 0.40f, 1f);
+        [SerializeField] private float highlightedScale = 1.045f;
 
         private readonly Vector3[] worldCorners = new Vector3[4];
+        private Vector3 baseScale = Vector3.one;
+        private bool baseScaleCached;
 
         public ExternalDropZoneKind ZoneKind { get { return zoneKind; } }
         public RectTransform RectTransform { get; private set; }
@@ -80,11 +83,13 @@ namespace EcoGarden.Input
         private void Awake()
         {
             RectTransform = GetComponent<RectTransform>();
+            CacheBaseScale();
             if (image == null)
             {
                 image = GetComponent<Image>();
             }
 
+            ApplyTextPresentation();
             SetHighlighted(false);
         }
 
@@ -130,9 +135,42 @@ namespace EcoGarden.Input
 
         public void SetHighlighted(bool highlighted)
         {
+            CacheBaseScale();
             if (image != null)
             {
                 image.color = highlighted ? highlightedColor : normalColor;
+            }
+
+            transform.localScale = highlighted ? baseScale * highlightedScale : baseScale;
+        }
+
+        private void CacheBaseScale()
+        {
+            if (baseScaleCached)
+            {
+                return;
+            }
+
+            baseScale = transform.localScale;
+            baseScaleCached = true;
+        }
+
+        private void ApplyTextPresentation()
+        {
+            Text[] texts = GetComponentsInChildren<Text>(true);
+            for (int i = 0; i < texts.Length; i++)
+            {
+                Text text = texts[i];
+                text.alignment = TextAnchor.MiddleCenter;
+                Shadow shadow = text.GetComponent<Shadow>();
+                if (shadow == null)
+                {
+                    shadow = text.gameObject.AddComponent<Shadow>();
+                }
+
+                shadow.effectColor = new Color(0.02f, 0.08f, 0.04f, 0.45f);
+                shadow.effectDistance = new Vector2(1.1f, -1.1f);
+                shadow.useGraphicAlpha = true;
             }
         }
     }

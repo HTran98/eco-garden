@@ -89,6 +89,29 @@ namespace EcoGarden.Tests.EditMode
             Assert.AreEqual(0, completedCount);
         }
 
+        [Test]
+        public void ClearedObstacles_CanBeCapturedAndRestoredAfterLevelReload()
+        {
+            CreateBoardControllerWithOrder(new NpcOrderDefinition(
+                "one_sprout",
+                "One Sprout",
+                new[] { new OrderRequirementDefinition("lotus", 1, 1) }));
+            GridPosition obstaclePosition = new GridPosition(2, 5);
+
+            Assert.IsTrue(boardController.TryUseAbility(AbilityKind.Shovel, obstaclePosition));
+
+            List<GridPosition> clearedObstacles = boardController.CaptureClearedObstaclePositions();
+            CollectionAssert.Contains(clearedObstacles, obstaclePosition);
+
+            boardController.LoadLevel();
+            Assert.AreEqual(CellKind.Obstacle, boardController.BoardState.GetCell(obstaclePosition).Kind);
+
+            boardController.RestoreClearedObstacles(clearedObstacles, false);
+
+            Assert.AreEqual(CellKind.Empty, boardController.BoardState.GetCell(obstaclePosition).Kind);
+            Assert.AreEqual(ObstacleKind.None, boardController.BoardState.GetCell(obstaclePosition).ObstacleKind);
+        }
+
         private void CreateBoardControllerWithOrder(NpcOrderDefinition order)
         {
             LevelDefinition baseLevel = TestLevelFactory.CreateLevel15();

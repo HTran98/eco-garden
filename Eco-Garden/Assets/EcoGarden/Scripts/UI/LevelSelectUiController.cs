@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using EcoGarden.Config;
 using EcoGarden.Progression;
 using EcoGarden.Save;
+using EcoGarden.Utilities;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,6 +13,7 @@ namespace EcoGarden.UI
         [SerializeField] private Button levelButton;
         [SerializeField] private Button closeButton;
         [SerializeField] private GameObject levelPanel;
+        [SerializeField] private Text levelSummaryText;
         [SerializeField] private Transform levelListRoot;
         [SerializeField] private GameplayFeedbackController gameplayFeedbackController;
 
@@ -77,6 +79,7 @@ namespace EcoGarden.UI
 
             SaveData saveData = SaveService.Load();
             IReadOnlyList<LevelDefinition> levels = levelCatalogController.Catalog.Levels;
+            RefreshLevelSummary(levels, saveData);
             for (int i = 0; i < levels.Count; i++)
             {
                 CreateLevelRow(levels[i], saveData);
@@ -99,14 +102,16 @@ namespace EcoGarden.UI
             rowRect.sizeDelta = new Vector2(0f, LevelSelectUiLayoutMetrics.LevelRowHeight);
 
             Image rowImage = row.GetComponent<Image>();
+            rowImage.sprite = Resources.Load<Sprite>("UiSkins/ui_row_light") ?? PlaceholderSpriteFactory.HudPanelSprite;
             rowImage.color = GetRowColor(status);
+            UiRowAccent.Apply(row.transform, GetRowAccentColor(status));
 
             CreateText("Status", row.transform, status, TextAnchor.MiddleCenter, LevelSelectUiLayoutMetrics.StatusAnchorMin, LevelSelectUiLayoutMetrics.StatusAnchorMax, 18);
             CreateText("Name", row.transform, BuildLevelTitle(level), TextAnchor.MiddleLeft, LevelSelectUiLayoutMetrics.TitleAnchorMin, LevelSelectUiLayoutMetrics.TitleAnchorMax, 24);
             CreateText("Meta", row.transform, BuildLevelMeta(level), TextAnchor.MiddleLeft, LevelSelectUiLayoutMetrics.MetaAnchorMin, LevelSelectUiLayoutMetrics.MetaAnchorMax, 18);
             CreateText("Summary", row.transform, BuildLevelSummary(level), TextAnchor.MiddleLeft, LevelSelectUiLayoutMetrics.SummaryAnchorMin, LevelSelectUiLayoutMetrics.SummaryAnchorMax, 18);
 
-            GameObject buttonObject = CreateButton("PlayButton", row.transform, unlocked ? "Play" : "Locked", LevelSelectUiLayoutMetrics.ActionAnchorMin, LevelSelectUiLayoutMetrics.ActionAnchorMax);
+            GameObject buttonObject = CreateButton("PlayButton", row.transform, BuildActionLabel(status, unlocked), LevelSelectUiLayoutMetrics.ActionAnchorMin, LevelSelectUiLayoutMetrics.ActionAnchorMax);
             Button playButton = buttonObject.GetComponent<Button>();
             playButton.interactable = unlocked;
             ApplyPlayButtonState(buttonObject, unlocked);
@@ -172,19 +177,76 @@ namespace EcoGarden.UI
             return level.LevelId < highestUnlocked ? "Done" : "Current";
         }
 
-        private static Color GetRowColor(string status)
+        private static string BuildActionLabel(string status, bool unlocked)
         {
-            if (status == "Locked")
+            if (!unlocked)
             {
-                return new Color(0.08f, 0.09f, 0.10f, 0.72f);
+                return "Locked";
+            }
+
+            if (status == "Current")
+            {
+                return "Current";
             }
 
             if (status == "Done")
             {
-                return new Color(0.09f, 0.16f, 0.13f, 0.88f);
+                return "Replay";
             }
 
-            return new Color(0.12f, 0.18f, 0.20f, 0.92f);
+            return "Play";
+        }
+
+        private void RefreshLevelSummary(IReadOnlyList<LevelDefinition> levels, SaveData saveData)
+        {
+            EnsureLevelSummaryText();
+            if (levelSummaryText == null)
+            {
+                return;
+            }
+
+            int total = levels != null ? levels.Count : 0;
+            int highestUnlocked = saveData != null ? Mathf.Max(1, saveData.highestUnlockedLevel) : 1;
+            int unlockedCount = 0;
+            for (int i = 0; i < total; i++)
+            {
+                if (LevelProgressionService.IsLevelUnlocked(saveData, levels[i]))
+                {
+                    unlockedCount++;
+                }
+            }
+
+            levelSummaryText.text = "Unlocked " + unlockedCount + "/" + total + "  /  Current Level " + highestUnlocked;
+        }
+
+        private static Color GetRowColor(string status)
+        {
+            if (status == "Locked")
+            {
+                return Color.Lerp(UiThemePalette.PanelMuted, UiThemePalette.DisabledButton, 0.32f);
+            }
+
+            if (status == "Done")
+            {
+                return Color.Lerp(UiThemePalette.PanelStrong, UiThemePalette.Success, 0.20f);
+            }
+
+            return UiThemePalette.Panel;
+        }
+
+        private static Color GetRowAccentColor(string status)
+        {
+            if (status == "Locked")
+            {
+                return UiThemePalette.DisabledButton;
+            }
+
+            if (status == "Done")
+            {
+                return UiThemePalette.Success;
+            }
+
+            return UiThemePalette.Selected;
         }
 
         private static void ApplyPlayButtonState(GameObject buttonObject, bool unlocked)
@@ -196,8 +258,8 @@ namespace EcoGarden.UI
             }
 
             image.color = unlocked
-                ? new Color(0.26f, 0.48f, 0.44f, 0.98f)
-                : new Color(0.34f, 0.38f, 0.38f, 0.82f);
+                ? UiThemePalette.PrimaryButton
+                : UiThemePalette.DisabledButton;
         }
 
         private void ResolveReferences()
@@ -225,6 +287,8 @@ namespace EcoGarden.UI
                     levelListRoot = listObject.transform;
                 }
             }
+
+            EnsureLevelSummaryText();
 
             if (levelCatalogController == null)
             {
@@ -291,7 +355,11 @@ namespace EcoGarden.UI
             rect.offsetMax = Vector2.zero;
 
             Image image = gameObject.GetComponent<Image>();
-            image.color = new Color(0.20f, 0.34f, 0.36f, 0.95f);
+            image.sprite = Resources.Load<Sprite>("UiSkins/ui_button_primary") ?? PlaceholderSpriteFactory.HudButtonSprite;
+            image.color = UiThemePalette.PrimaryButton;
+            Button button = gameObject.GetComponent<Button>();
+            button.colors = UiThemePalette.BuildButtonColors(UiThemePalette.PrimaryButton);
+            gameObject.AddComponent<UiButtonFeedback>();
             CreateText("Label", gameObject.transform, label, TextAnchor.MiddleCenter, Vector2.zero, Vector2.one, 21);
             return gameObject;
         }
@@ -314,8 +382,31 @@ namespace EcoGarden.UI
             label.resizeTextForBestFit = true;
             label.resizeTextMinSize = 12;
             label.resizeTextMaxSize = fontSize;
-            label.color = Color.white;
+            label.color = UiThemePalette.TextDark;
             return gameObject;
+        }
+
+        private void EnsureLevelSummaryText()
+        {
+            if (levelSummaryText == null)
+            {
+                GameObject summaryObject = FindObjectIncludingInactive("LevelSummaryText");
+                levelSummaryText = summaryObject != null ? summaryObject.GetComponent<Text>() : null;
+            }
+
+            if (levelSummaryText != null || levelPanel == null)
+            {
+                return;
+            }
+
+            levelSummaryText = CreateText(
+                "LevelSummaryText",
+                levelPanel.transform,
+                string.Empty,
+                TextAnchor.MiddleLeft,
+                LevelSelectUiLayoutMetrics.PanelSummaryAnchorMin,
+                LevelSelectUiLayoutMetrics.PanelSummaryAnchorMax,
+                22).GetComponent<Text>();
         }
 
         private static Button FindButton(string objectName)

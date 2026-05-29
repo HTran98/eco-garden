@@ -23,6 +23,7 @@ namespace EcoGarden.Utilities
         private static Sprite shopIconBadgeSprite;
         private static Sprite deliverZoneSprite;
         private static Sprite sellBasketSprite;
+        private static Sprite playIconSprite;
         private static readonly Sprite[] lotusSprites = new Sprite[6];
 
         public static Sprite SquareSprite
@@ -298,6 +299,19 @@ namespace EcoGarden.Utilities
             }
         }
 
+        public static Sprite PlayIconSprite
+        {
+            get
+            {
+                if (playIconSprite == null)
+                {
+                    playIconSprite = CreatePlayIconSprite();
+                }
+
+                return playIconSprite;
+            }
+        }
+
         public static Sprite GetLotusSprite(int level)
         {
             int safeLevel = Mathf.Clamp(level, 1, 5);
@@ -474,6 +488,30 @@ namespace EcoGarden.Utilities
             return FinalizeSprite(texture);
         }
 
+        private static Sprite CreatePlayIconSprite()
+        {
+            Texture2D texture = CreateTexture("ui_icon_play_runtime");
+            FillClear(texture);
+
+            Color fill = Color.white;
+            Vector2 a = new Vector2(24f, 17f);
+            Vector2 b = new Vector2(24f, 47f);
+            Vector2 c = new Vector2(47f, 32f);
+            for (int y = 0; y < SpriteSize; y++)
+            {
+                for (int x = 0; x < SpriteSize; x++)
+                {
+                    Vector2 p = new Vector2(x, y);
+                    if (IsInsideTriangle(p, a, b, c))
+                    {
+                        texture.SetPixel(x, y, fill);
+                    }
+                }
+            }
+
+            return FinalizeSprite(texture);
+        }
+
         private static Texture2D CreateTexture(string name)
         {
             Texture2D texture = new Texture2D(SpriteSize, SpriteSize, TextureFormat.RGBA32, false);
@@ -536,6 +574,22 @@ namespace EcoGarden.Utilities
             int dx = x - nearestX;
             int dy = y - nearestY;
             return dx * dx + dy * dy <= radius * radius;
+        }
+
+        private static bool IsInsideTriangle(Vector2 p, Vector2 a, Vector2 b, Vector2 c)
+        {
+            float d1 = Sign(p, a, b);
+            float d2 = Sign(p, b, c);
+            float d3 = Sign(p, c, a);
+
+            bool hasNegative = d1 < 0f || d2 < 0f || d3 < 0f;
+            bool hasPositive = d1 > 0f || d2 > 0f || d3 > 0f;
+            return !(hasNegative && hasPositive);
+        }
+
+        private static float Sign(Vector2 p1, Vector2 p2, Vector2 p3)
+        {
+            return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
         }
 
         private static void DrawEllipse(Texture2D texture, int centerX, int centerY, int radiusX, int radiusY, Color color)

@@ -39,5 +39,10 @@ namespace EcoGarden.UI
         {
             return Ability(abilityKind) + "\nx" + count;
         }
+
+        public static string Count(int count)
+        {
+            return "x" + count;
+        }
     }
 }

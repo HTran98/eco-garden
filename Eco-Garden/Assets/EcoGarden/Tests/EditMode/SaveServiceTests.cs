@@ -15,6 +15,7 @@ namespace EcoGarden.Tests.EditMode
             Assert.IsTrue(data.soundEnabled);
             Assert.IsTrue(data.musicEnabled);
             Assert.IsNotNull(data.boardItems);
+            Assert.IsNotNull(data.clearedObstacles);
             Assert.IsNotNull(data.orderRequirements);
             Assert.IsNotNull(data.plantTierUnlocks);
             Assert.IsNotNull(data.purchasedShopProductIds);

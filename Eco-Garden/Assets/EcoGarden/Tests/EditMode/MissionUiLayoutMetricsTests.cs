@@ -23,10 +23,20 @@ namespace EcoGarden.Tests.EditMode
                 MissionUiLayoutMetrics.RowClaimAnchorMin,
                 MissionUiLayoutMetrics.RowClaimAnchorMax,
                 contentWidth);
+            Rect summary = AndroidHudLayoutMetrics.ToPixelRect(
+                MissionUiLayoutMetrics.SummaryAnchorMin,
+                MissionUiLayoutMetrics.SummaryAnchorMax,
+                panel.size);
+            Rect content = AndroidHudLayoutMetrics.ToPixelRect(
+                MissionUiLayoutMetrics.ContentAnchorMin,
+                MissionUiLayoutMetrics.ContentAnchorMax,
+                panel.size);
 
             Assert.GreaterOrEqual(MissionUiLayoutMetrics.MissionRowHeight, 120f);
             Assert.GreaterOrEqual(textWidth, MissionUiLayoutMetrics.MinimumMissionTextWidth);
             Assert.GreaterOrEqual(claimWidth, MissionUiLayoutMetrics.MinimumMissionClaimWidth);
+            Assert.GreaterOrEqual(summary.height, MissionUiLayoutMetrics.MinimumMissionSummaryHeight);
+            Assert.IsFalse(AndroidHudLayoutMetrics.Overlaps(summary, content, 8f));
         }
 
         [Test]

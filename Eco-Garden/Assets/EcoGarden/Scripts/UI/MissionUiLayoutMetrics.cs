@@ -10,6 +10,12 @@ namespace EcoGarden.UI
         public const float MinimumMissionClaimWidth = 160f;
         public const float MinimumTrackerTextWidth = 128f;
         public const float MinimumTrackerClaimWidth = 54f;
+        public const float MinimumMissionSummaryHeight = 48f;
+
+        public static readonly Vector2 SummaryAnchorMin = new Vector2(0.05f, 0.795f);
+        public static readonly Vector2 SummaryAnchorMax = new Vector2(0.95f, 0.875f);
+        public static readonly Vector2 ContentAnchorMin = new Vector2(0.04f, 0.06f);
+        public static readonly Vector2 ContentAnchorMax = new Vector2(0.96f, 0.775f);
 
         public static readonly Vector2 RowTitleAnchorMin = new Vector2(0.035f, 0.60f);
         public static readonly Vector2 RowTitleAnchorMax = new Vector2(0.66f, 0.94f);

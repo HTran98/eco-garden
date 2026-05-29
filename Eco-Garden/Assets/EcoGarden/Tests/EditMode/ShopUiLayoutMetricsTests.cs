@@ -28,12 +28,27 @@ namespace EcoGarden.Tests.EditMode
                 ShopUiLayoutMetrics.NameAnchorMin,
                 ShopUiLayoutMetrics.NameAnchorMax,
                 contentWidth);
+            Rect tabs = AndroidHudLayoutMetrics.ToPixelRect(
+                PanelUiLayoutMetrics.ShopCategoryAnchorMin,
+                PanelUiLayoutMetrics.ShopCategoryAnchorMax,
+                panel.size);
+            Rect summary = AndroidHudLayoutMetrics.ToPixelRect(
+                ShopUiLayoutMetrics.SummaryAnchorMin,
+                ShopUiLayoutMetrics.SummaryAnchorMax,
+                panel.size);
+            Rect content = AndroidHudLayoutMetrics.ToPixelRect(
+                ShopUiLayoutMetrics.ContentAnchorMin,
+                ShopUiLayoutMetrics.ContentAnchorMax,
+                panel.size);
 
             Assert.GreaterOrEqual(categoryTabWidth, ShopUiLayoutMetrics.MinimumCategoryTabWidth);
             Assert.GreaterOrEqual(priceWidth, ShopUiLayoutMetrics.MinimumPriceBadgeWidth);
             Assert.GreaterOrEqual(buyWidth, ShopUiLayoutMetrics.MinimumBuyButtonWidth);
             Assert.GreaterOrEqual(textWidth, ShopUiLayoutMetrics.MinimumProductTextWidth);
             Assert.GreaterOrEqual(ShopUiLayoutMetrics.ProductRowHeight, 112f);
+            Assert.GreaterOrEqual(summary.height, ShopUiLayoutMetrics.MinimumShopSummaryHeight);
+            Assert.IsFalse(AndroidHudLayoutMetrics.Overlaps(tabs, summary, 8f));
+            Assert.IsFalse(AndroidHudLayoutMetrics.Overlaps(summary, content, 8f));
         }
     }
 }
