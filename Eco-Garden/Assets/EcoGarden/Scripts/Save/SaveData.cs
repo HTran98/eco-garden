@@ -21,6 +21,7 @@ namespace EcoGarden.Save
         public PlantTierUnlockSaveData[] plantTierUnlocks;
         public string[] purchasedShopProductIds;
         public string[] ownedDecorationIds;
+        public string[] activeDecorationIds;
         public string[] processedIapTransactionIds;
         public MissionProgressSaveData[] missionProgress;
         public bool soundEnabled = true;

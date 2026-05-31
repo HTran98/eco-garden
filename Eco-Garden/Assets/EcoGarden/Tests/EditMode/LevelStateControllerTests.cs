@@ -207,6 +207,39 @@ namespace EcoGarden.Tests.EditMode
             }
         }
 
+        [Test]
+        public void TogglePause_ShowsAndHidesPausePanel()
+        {
+            GameObject boardObject = new GameObject("Board");
+            GameObject levelObject = new GameObject("LevelStateController");
+            GameObject pausePanel = new GameObject("PausePanel", typeof(RectTransform));
+            try
+            {
+                BoardController boardController = boardObject.AddComponent<BoardController>();
+                boardController.SetLevelDefinition(TestLevelFactory.CreateLevel15());
+                pausePanel.SetActive(false);
+
+                LevelStateController levelStateController = levelObject.AddComponent<LevelStateController>();
+                levelStateController.StartLevel();
+
+                levelStateController.TogglePause();
+
+                Assert.AreEqual(LevelPlayState.Paused, levelStateController.State);
+                Assert.IsTrue(pausePanel.activeSelf);
+
+                levelStateController.TogglePause();
+
+                Assert.AreEqual(LevelPlayState.Playing, levelStateController.State);
+                Assert.IsFalse(pausePanel.activeSelf);
+            }
+            finally
+            {
+                Object.DestroyImmediate(pausePanel);
+                Object.DestroyImmediate(levelObject);
+                Object.DestroyImmediate(boardObject);
+            }
+        }
+
         private static LevelCatalogDefinition CreateCatalog(params LevelDefinition[] levels)
         {
             LevelCatalogDefinition catalog = ScriptableObject.CreateInstance<LevelCatalogDefinition>();

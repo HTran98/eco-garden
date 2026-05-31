@@ -90,5 +90,35 @@ namespace EcoGarden.Tests.EditMode
             Assert.IsFalse(AndroidHudLayoutMetrics.Overlaps(countdown, next, 6f));
             Assert.IsFalse(AndroidHudLayoutMetrics.Overlaps(restart, next, 12f));
         }
+
+        [Test]
+        public void PausePanel_ActionsKeepTouchSizeAndAvoidMessageOnSmallPortraitProfile()
+        {
+            Vector2 screenSize = new Vector2(720f, 1280f);
+            Rect pausePanel = AndroidHudLayoutMetrics.ToPixelRect(
+                AndroidHudLayoutMetrics.ResultAnchorMin,
+                AndroidHudLayoutMetrics.ResultAnchorMax,
+                screenSize);
+            Rect message = AndroidHudLayoutMetrics.ToPixelRect(
+                PanelUiLayoutMetrics.PauseMessageAnchorMin,
+                PanelUiLayoutMetrics.PauseMessageAnchorMax,
+                pausePanel.size);
+            Rect resume = AndroidHudLayoutMetrics.ToPixelRect(
+                PanelUiLayoutMetrics.PauseResumeAnchorMin,
+                PanelUiLayoutMetrics.PauseResumeAnchorMax,
+                pausePanel.size);
+            Rect restart = AndroidHudLayoutMetrics.ToPixelRect(
+                PanelUiLayoutMetrics.PauseRestartAnchorMin,
+                PanelUiLayoutMetrics.PauseRestartAnchorMax,
+                pausePanel.size);
+
+            Assert.GreaterOrEqual(resume.width, PanelUiLayoutMetrics.MinimumPauseActionWidth);
+            Assert.GreaterOrEqual(restart.width, PanelUiLayoutMetrics.MinimumPauseActionWidth);
+            Assert.GreaterOrEqual(resume.height, PanelUiLayoutMetrics.MinimumPauseActionHeight);
+            Assert.GreaterOrEqual(restart.height, PanelUiLayoutMetrics.MinimumPauseActionHeight);
+            Assert.IsFalse(AndroidHudLayoutMetrics.Overlaps(message, resume, 10f));
+            Assert.IsFalse(AndroidHudLayoutMetrics.Overlaps(message, restart, 10f));
+            Assert.IsFalse(AndroidHudLayoutMetrics.Overlaps(resume, restart, 12f));
+        }
     }
 }

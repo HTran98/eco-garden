@@ -1,0 +1,30 @@
+fileFormatVersion: 2
+guid: 4b30958f1bce45db91ef9d84c7029094
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  textureType: 8
+  spriteMode: 1
+  spritePixelsToUnits: 100
+  alphaIsTransparency: 1
+  mipmapEnabled: 0
+  isReadable: 0
+  textureCompression: 1
+  maxTextureSize: 2048
+  platformSettings: []
+  spriteSheet:
+    serializedVersion: 2
+    sprites: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 05948d13e9d44c64b000000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

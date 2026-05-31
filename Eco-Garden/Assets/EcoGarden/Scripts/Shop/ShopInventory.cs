@@ -7,6 +7,7 @@ namespace EcoGarden.Shop
     {
         private readonly HashSet<string> purchasedProductIds = new HashSet<string>();
         private readonly HashSet<string> ownedDecorationIds = new HashSet<string>();
+        private readonly HashSet<string> activeDecorationIds = new HashSet<string>();
 
         public event Action Changed;
 
@@ -18,6 +19,11 @@ namespace EcoGarden.Shop
         public bool IsDecorationOwned(string decorationId)
         {
             return !string.IsNullOrWhiteSpace(decorationId) && ownedDecorationIds.Contains(decorationId);
+        }
+
+        public bool IsDecorationActive(string decorationId)
+        {
+            return !string.IsNullOrWhiteSpace(decorationId) && activeDecorationIds.Contains(decorationId);
         }
 
         public bool MarkProductPurchased(string productId)
@@ -55,10 +61,27 @@ namespace EcoGarden.Shop
             return addedCount;
         }
 
+        public bool UseDecoration(string decorationId)
+        {
+            if (!IsDecorationOwned(decorationId) || !activeDecorationIds.Add(decorationId))
+            {
+                return false;
+            }
+
+            Changed?.Invoke();
+            return true;
+        }
+
         public void Restore(string[] productIds, string[] decorationIds)
+        {
+            Restore(productIds, decorationIds, decorationIds);
+        }
+
+        public void Restore(string[] productIds, string[] decorationIds, string[] activeDecorationIds)
         {
             purchasedProductIds.Clear();
             ownedDecorationIds.Clear();
+            this.activeDecorationIds.Clear();
 
             if (productIds != null)
             {
@@ -81,6 +104,20 @@ namespace EcoGarden.Shop
                     }
                 }
             }
+
+            if (activeDecorationIds != null)
+            {
+                for (int i = 0; i < activeDecorationIds.Length; i++)
+                {
+                    string decorationId = activeDecorationIds[i];
+                    if (!string.IsNullOrWhiteSpace(decorationId) && ownedDecorationIds.Contains(decorationId))
+                    {
+                        this.activeDecorationIds.Add(decorationId);
+                    }
+                }
+            }
+
+            Changed?.Invoke();
         }
 
         public string[] GetPurchasedProductIds()
@@ -94,6 +131,13 @@ namespace EcoGarden.Shop
         {
             string[] result = new string[ownedDecorationIds.Count];
             ownedDecorationIds.CopyTo(result);
+            return result;
+        }
+
+        public string[] GetActiveDecorationIds()
+        {
+            string[] result = new string[activeDecorationIds.Count];
+            activeDecorationIds.CopyTo(result);
             return result;
         }
     }

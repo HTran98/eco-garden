@@ -96,6 +96,20 @@ namespace EcoGarden.AI
             }
         }
 
+        public void SetCosmeticColor(Color color)
+        {
+            npcColor = color;
+            if (spriteRenderer == null)
+            {
+                spriteRenderer = GetComponent<SpriteRenderer>();
+            }
+
+            if (spriteRenderer != null)
+            {
+                spriteRenderer.color = color;
+            }
+        }
+
         private IEnumerator EnterWhenBoardIsReady()
         {
             while (boardController == null || boardController.BoardState == null || boardController.BoardView == null)

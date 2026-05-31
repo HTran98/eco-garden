@@ -100,7 +100,7 @@ namespace EcoGarden.Tests.EditMode
         }
 
         [Test]
-        public void TryPurchase_DoesNotSellDeferredDecorationProductsByDefault()
+        public void TryPurchase_DecorationProductGrantsOwnedDecoration()
         {
             economyController.SetGold(500);
             shopController.SetCatalogItems(new[]
@@ -115,10 +115,10 @@ namespace EcoGarden.Tests.EditMode
 
             ShopPurchaseResult result = shopController.TryPurchase("shop_deco_butterfly");
 
-            Assert.AreEqual(ShopPurchaseStatus.ProductNotFound, result.Status);
-            Assert.AreEqual(500, economyController.Gold);
-            Assert.IsFalse(shopController.Inventory.IsProductPurchased("shop_deco_butterfly"));
-            Assert.IsFalse(shopController.Inventory.IsDecorationOwned("deco_butterfly_variant"));
+            Assert.IsTrue(result.Succeeded);
+            Assert.AreEqual(400, economyController.Gold);
+            Assert.IsTrue(shopController.Inventory.IsProductPurchased("shop_deco_butterfly"));
+            Assert.IsTrue(shopController.Inventory.IsDecorationOwned("deco_butterfly_variant"));
         }
 
         [Test]

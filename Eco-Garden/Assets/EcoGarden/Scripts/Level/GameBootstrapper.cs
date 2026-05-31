@@ -33,6 +33,8 @@ namespace EcoGarden.Level
             EnsureBoardBackdrop();
             EnsureHudSkin();
             EnsureSaveController();
+            EnsureDecorations();
+            EnsureInventoryUi();
             EnsureAndroidHudLayout();
         }
 
@@ -150,6 +152,36 @@ namespace EcoGarden.Level
             if (layoutController != null)
             {
                 layoutController.ApplyLayout();
+            }
+        }
+
+        private void EnsureDecorations()
+        {
+            if (FindAnyObjectByType<DecorationController>() != null)
+            {
+                return;
+            }
+
+            GameObject decorationObject = new GameObject("DecorationController");
+            decorationObject.AddComponent<DecorationController>();
+        }
+
+        private void EnsureInventoryUi()
+        {
+            if (FindAnyObjectByType<InventoryUiController>() != null)
+            {
+                return;
+            }
+
+            GameObject hudRoot = GameObject.Find("HUDRoot");
+            if (hudRoot != null)
+            {
+                hudRoot.AddComponent<InventoryUiController>();
+                HudSkinController skinController = FindAnyObjectByType<HudSkinController>();
+                if (skinController != null)
+                {
+                    skinController.Apply();
+                }
             }
         }
     }

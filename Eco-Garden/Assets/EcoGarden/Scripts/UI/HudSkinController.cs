@@ -18,8 +18,12 @@ namespace EcoGarden.UI
             SkinImage("ObjectivePanel", PlaceholderSpriteFactory.HudPanelSprite, UiThemePalette.Panel, true, "UiSkins/ui_panel_light");
             SkinImage("AbilityBar", PlaceholderSpriteFactory.HudPanelSprite, UiThemePalette.PanelStrong, true, "UiSkins/ui_panel_strong");
             SkinImage("ResultPanel", PlaceholderSpriteFactory.HudPanelSprite, UiThemePalette.PanelOverlay, true, "UiSkins/ui_panel_overlay");
+            SkinImage("PausePanel", PlaceholderSpriteFactory.HudPanelSprite, UiThemePalette.PanelOverlay, true, "UiSkins/ui_panel_overlay");
             SkinImage("LevelPanel", PlaceholderSpriteFactory.HudPanelSprite, UiThemePalette.Panel, true, "UiSkins/ui_panel_light");
             SkinImage("LevelViewport", PlaceholderSpriteFactory.HudPanelSprite, UiThemePalette.PanelMuted, true, "UiSkins/ui_row_light");
+            SkinImage("LevelPreviewPanel", PlaceholderSpriteFactory.HudPanelSprite, UiThemePalette.PanelOverlay, true, "UiSkins/ui_panel_overlay");
+            SkinImage("InventoryPanel", PlaceholderSpriteFactory.HudPanelSprite, UiThemePalette.Panel, true, "UiSkins/ui_panel_light");
+            SkinImage("InventoryViewport", PlaceholderSpriteFactory.HudPanelSprite, UiThemePalette.PanelMuted, true, "UiSkins/ui_row_light");
             SkinImage("ShopPanel", PlaceholderSpriteFactory.ShopPanelSprite, UiThemePalette.Panel, true, "UiSkins/ui_panel_light");
             SkinImage("ShopProductViewport", PlaceholderSpriteFactory.HudPanelSprite, UiThemePalette.PanelMuted, true, "UiSkins/ui_row_light");
             SkinImage("MissionPanel", PlaceholderSpriteFactory.HudPanelSprite, UiThemePalette.Panel, true, "UiSkins/ui_panel_light");
@@ -31,11 +35,15 @@ namespace EcoGarden.UI
             SkinButton("PauseButton");
             SkinButton("LevelButton");
             SkinButton("LevelCloseButton");
+            SkinButton("LevelPreviewPlayButton");
+            SkinButton("LevelPreviewCloseButton");
             SkinButton("MissionButton");
             SkinButton("MissionCloseButton");
             SkinButton("MissionTrackerOpenButton");
             SkinButton("ShopButton");
             SkinButton("ShopCloseButton");
+            SkinButton("BagButton");
+            SkinButton("InventoryCloseButton");
             SkinButton("ShopCategoryBoosterButton");
             SkinButton("ShopCategoryDecorationButton");
             SkinButton("ShopCategoryUnlockButton");
@@ -43,6 +51,8 @@ namespace EcoGarden.UI
             SkinButton("ShopCategoryBundleButton");
             SkinButton("RestartButton");
             SkinButton("NextLevelButton");
+            SkinButton("PauseResumeButton");
+            SkinButton("PauseRestartButton");
             SkinButton("ShovelButton");
             SkinButton("MagicWandButton");
             SkinButton("SortingMagnetButton");
@@ -51,11 +61,15 @@ namespace EcoGarden.UI
             SkinButtonIcon("LevelButton", "UiIcons/icon_nav_level", true);
             SkinButtonIcon("MissionButton", "UiIcons/icon_nav_mission", true);
             SkinButtonIcon("ShopButton", "UiIcons/icon_nav_shop", true);
+            SkinButtonIcon("BagButton", "UiIcons/icon_nav_bag", true);
             SkinButtonIcon("LevelCloseButton", "UiIcons/icon_close", true);
             SkinButtonIcon("MissionCloseButton", "UiIcons/icon_close", true);
             SkinButtonIcon("ShopCloseButton", "UiIcons/icon_close", true);
+            SkinButtonIcon("InventoryCloseButton", "UiIcons/icon_close", true);
             SkinButtonIcon("RestartButton", "UiIcons/icon_restart", false);
             SkinButtonIcon("NextLevelButton", "UiIcons/icon_next", false);
+            SkinButtonIcon("PauseResumeButton", null, false);
+            SkinButtonIcon("PauseRestartButton", "UiIcons/icon_restart", false);
             SkinInlineIcon("TimerText", "UiIcons/icon_timer", UiThemePalette.TextLight);
             SkinInlineIcon("GoldText", "UiIcons/icon_currency_gold", UiThemePalette.TextLight);
             SkinInlineIcon("GemText", "UiIcons/icon_currency_gem", UiThemePalette.TextLight);
@@ -64,9 +78,12 @@ namespace EcoGarden.UI
             SkinAbilityButtonIcon("SortingMagnetButton", "UiIcons/icon_ability_sorting_magnet");
 
             EnsurePanelTransition("ResultPanel");
+            EnsurePanelTransition("PausePanel");
             EnsurePanelTransition("LevelPanel");
+            EnsurePanelTransition("InventoryPanel");
             EnsurePanelTransition("ShopPanel");
             EnsurePanelTransition("MissionPanel");
+            EnsureModalBackdrop();
         }
 
         private static void SkinDropZone(string objectName, ExternalDropZoneKind kind)
@@ -135,7 +152,12 @@ namespace EcoGarden.UI
                 return;
             }
 
-            Sprite sprite = Resources.Load<Sprite>(resourcePath);
+            Sprite sprite = LoadSprite(resourcePath);
+            if (sprite == null && objectName == "PauseResumeButton")
+            {
+                sprite = PlaceholderSpriteFactory.PlayIconSprite;
+            }
+
             if (sprite == null)
             {
                 return;
@@ -357,6 +379,19 @@ namespace EcoGarden.UI
             {
                 gameObject.AddComponent<UiPanelTransition>();
             }
+        }
+
+        private void EnsureModalBackdrop()
+        {
+            GameObject hudRoot = FindObjectIncludingInactive("HUDRoot");
+            GameObject target = hudRoot != null ? hudRoot : gameObject;
+            UiModalBackdropController backdrop = target.GetComponent<UiModalBackdropController>();
+            if (backdrop == null)
+            {
+                backdrop = target.AddComponent<UiModalBackdropController>();
+            }
+
+            backdrop.RefreshBackdrop();
         }
 
         private static void EnsureTextShadow(Text text, Color color)

@@ -8,6 +8,7 @@ namespace EcoGarden.UI
         public const string Level = "Lv";
         public const string Mission = "Task";
         public const string Shop = "$";
+        public const string Bag = "Bag";
         public const string Pause = "II";
         public const string Close = "X";
         public const string Restart = "R";

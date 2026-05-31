@@ -32,6 +32,7 @@ Purpose: define the target portrait profiles and pass criteria for Milestone C m
 | Timer/currency row |  |  |  |  |  | Top row stays inside safe area. |
 | Pause/restart controls | Code pass | Code pass | Code pass | Pending device | Pending device | Buttons remain reachable and do not overlap currency. |
 | Shop entry | Code pass | Code pass | Code pass | Pending device | Pending device | Button remains visible without covering board. |
+| Bag entry | Code pass | Code pass | Code pass | Pending device | Pending device | Added between Shop and Pause; top-bar metric coverage includes the new action width. |
 | Mission entry/tracker | Code pass | Code pass | Code pass | Pending device | Pending device | Tracker avoids Delivery/Sell, keeps a readable minimum width, and shows two compact rows. |
 | Sell basket | Code pass | Code pass | Code pass | Pending device | Pending device | Drop target moved above AbilityBar and bottom safe-area root. |
 | Delivery zone | Code pass | Code pass | Code pass | Pending device | Pending device | Drop target moved above AbilityBar and kept separate from Sell basket. |
@@ -43,7 +44,9 @@ Purpose: define the target portrait profiles and pass criteria for Milestone C m
 | Shop | Code pass | Code pass | Code pass | Pending device | Pending device | Metric tests cover category tab, product text, price badge, and Buy/Owned button width. |
 | Mission | Code pass | Code pass | Code pass | Pending device | Pending device | Claim buttons stay reachable and reward text fits. |
 | Level Select | Code pass | Code pass | Code pass | Pending device | Pending device | Done/Current/Locked rows and Play/Locked buttons fit. |
-| Pause | Not run | Not run | Not run | Pending device | Pending device | Resume/restart controls fit without clipping. |
+| Level Preview | Code pass | Code pass | Code pass | Pending device | Pending device | Preview shows objective/reward/start boosters before Play; metric tests cover action sizes and text separation. |
+| Inventory Bag | Code pass | Code pass | Code pass | Pending device | Pending device | Booster counts and decor Use/Using actions fit below a summary row. |
+| Pause | Code pass | Code pass | Code pass | Pending device | Pending device | Runtime Pause panel uses shared Result-size anchors; metric tests cover Resume/Restart touch size and message separation. |
 | Win/fail result | Code pass | Code pass | Code pass | Pending device | Pending device | Result copy and action buttons stay visible. |
 
 ## Touch Parity Checklist
@@ -57,6 +60,7 @@ Purpose: define the target portrait profiles and pass criteria for Milestone C m
 | Drag to Delivery zone | Delivery target accepts only requested item. |
 | Select booster then tap item | Targeting works on all target profiles. |
 | Open/close Shop | Board input is blocked while panel is open and restored after close. |
+| Open/close Bag | Board input is blocked while panel is open; owned decor can be activated from the bag. |
 | Open/close Mission | Tracker and full panel do not overlap. |
 
 ## Execution Notes

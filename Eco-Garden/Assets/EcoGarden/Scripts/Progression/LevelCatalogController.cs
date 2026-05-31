@@ -98,6 +98,25 @@ namespace EcoGarden.Progression
             return true;
         }
 
+        public bool SelectLevelAfterUnlock(LevelDefinition level)
+        {
+            if (level == null)
+            {
+                return false;
+            }
+
+            ResolveReferences();
+            if (boardController == null)
+            {
+                return false;
+            }
+
+            SelectedLevel = level;
+            boardController.SetLevelDefinition(level);
+            boardController.LoadLevel();
+            return true;
+        }
+
         private void ResolveReferences()
         {
             if (boardController == null)

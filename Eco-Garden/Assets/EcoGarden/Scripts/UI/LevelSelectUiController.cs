@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using EcoGarden.Config;
 using EcoGarden.Progression;
+using EcoGarden.Rewards;
 using EcoGarden.Save;
 using EcoGarden.Utilities;
 using UnityEngine;
@@ -15,10 +16,18 @@ namespace EcoGarden.UI
         [SerializeField] private GameObject levelPanel;
         [SerializeField] private Text levelSummaryText;
         [SerializeField] private Transform levelListRoot;
+        [SerializeField] private GameObject previewPanel;
+        [SerializeField] private Text previewTitleText;
+        [SerializeField] private Text previewMetaText;
+        [SerializeField] private Text previewObjectiveText;
+        [SerializeField] private Text previewRewardText;
+        [SerializeField] private Button previewPlayButton;
+        [SerializeField] private Button previewCloseButton;
         [SerializeField] private GameplayFeedbackController gameplayFeedbackController;
 
         private LevelCatalogController levelCatalogController;
         private readonly List<GameObject> levelRows = new List<GameObject>();
+        private LevelDefinition previewLevel;
         private bool buttonsWired;
 
         private void Awake()
@@ -56,14 +65,27 @@ namespace EcoGarden.UI
 
         private void SetPanelVisible(bool visible)
         {
+            if (visible)
+            {
+                UiModalPanelUtility.HideOtherModalPanels("LevelPanel");
+            }
+
             if (levelPanel != null)
             {
                 levelPanel.SetActive(visible);
+                if (visible)
+                {
+                    UiModalPanelUtility.RaiseModalPanel(levelPanel);
+                }
             }
 
             if (visible)
             {
                 RefreshLevels();
+            }
+            else
+            {
+                SetPreviewVisible(false);
             }
         }
 
@@ -116,9 +138,42 @@ namespace EcoGarden.UI
             playButton.interactable = unlocked;
             ApplyPlayButtonState(buttonObject, unlocked);
             int levelId = level.LevelId;
-            playButton.onClick.AddListener(() => SelectLevel(levelId));
+            playButton.onClick.AddListener(() => ShowPreview(levelId));
 
             levelRows.Add(row);
+        }
+
+        private void ShowPreview(int levelId)
+        {
+            if (levelCatalogController == null || !levelCatalogController.Catalog.TryGetLevel(levelId, out LevelDefinition level))
+            {
+                PlayMessage("Level unavailable");
+                return;
+            }
+
+            SaveData saveData = SaveService.Load();
+            if (!LevelProgressionService.IsLevelUnlocked(saveData, level))
+            {
+                PlayMessage("Level locked");
+                RefreshLevels();
+                return;
+            }
+
+            previewLevel = level;
+            EnsurePreviewPanel();
+            RefreshPreview(level);
+            SetPreviewVisible(true);
+        }
+
+        private void SelectPreviewLevel()
+        {
+            if (previewLevel == null)
+            {
+                PlayMessage("Select a level");
+                return;
+            }
+
+            SelectLevel(previewLevel.LevelId);
         }
 
         private void SelectLevel(int levelId)
@@ -166,6 +221,138 @@ namespace EcoGarden.UI
             return "Order: " + level.NpcOrder.TotalRequiredItems + " item(s), tier " + level.NpcOrder.HighestRequiredLevel;
         }
 
+        private static string BuildPreviewObjective(LevelDefinition level)
+        {
+            if (level == null || level.NpcOrder == null)
+            {
+                return "Objective: deliver the customer order";
+            }
+
+            return "Objective: " + BuildOrderText(level);
+        }
+
+        private static string BuildOrderText(LevelDefinition level)
+        {
+            System.Text.StringBuilder builder = new System.Text.StringBuilder();
+            var requirements = level.NpcOrder.Requirements;
+            for (int i = 0; i < requirements.Count; i++)
+            {
+                OrderRequirementDefinition requirement = requirements[i];
+                if (requirement == null)
+                {
+                    continue;
+                }
+
+                if (builder.Length > 0)
+                {
+                    builder.Append(", ");
+                }
+
+                ItemDefinitionName(level, requirement.Level, out string itemName);
+                builder.Append(itemName);
+                builder.Append(" x");
+                builder.Append(requirement.Quantity);
+            }
+
+            return builder.Length > 0 ? builder.ToString() : "deliver order";
+        }
+
+        private static void ItemDefinitionName(LevelDefinition level, int itemLevel, out string itemName)
+        {
+            itemName = "Tier " + itemLevel;
+            if (level == null)
+            {
+                return;
+            }
+
+            var item = level.GetItemDefinitionForLevel(itemLevel);
+            if (item != null && !string.IsNullOrEmpty(item.DisplayName))
+            {
+                itemName = item.DisplayName;
+            }
+        }
+
+        private static string BuildPreviewReward(LevelDefinition level)
+        {
+            RewardDefinition reward = level != null && level.NpcOrder != null
+                ? level.NpcOrder.Reward
+                : null;
+            string rewardText = BuildRewardText(reward);
+            string abilityText = BuildStartingAbilityText(level);
+            return "Reward: " + rewardText + "  /  Start: " + abilityText;
+        }
+
+        private static string BuildRewardText(RewardDefinition reward)
+        {
+            if (reward == null)
+            {
+                return "none";
+            }
+
+            System.Text.StringBuilder builder = new System.Text.StringBuilder();
+            if (reward.Currencies != null)
+            {
+                for (int i = 0; i < reward.Currencies.Length; i++)
+                {
+                    CurrencyReward currency = reward.Currencies[i];
+                    if (currency == null || currency.Amount <= 0)
+                    {
+                        continue;
+                    }
+
+                    AppendPart(builder, currency.CurrencyKind + " +" + currency.Amount);
+                }
+            }
+
+            if (reward.Abilities != null)
+            {
+                for (int i = 0; i < reward.Abilities.Length; i++)
+                {
+                    AbilityReward ability = reward.Abilities[i];
+                    if (ability == null || ability.Count <= 0)
+                    {
+                        continue;
+                    }
+
+                    AppendPart(builder, ability.AbilityKind + " +" + ability.Count);
+                }
+            }
+
+            return builder.Length > 0 ? builder.ToString() : "none";
+        }
+
+        private static string BuildStartingAbilityText(LevelDefinition level)
+        {
+            if (level == null || level.StartingAbilities == null || level.StartingAbilities.Count == 0)
+            {
+                return "no boosters";
+            }
+
+            System.Text.StringBuilder builder = new System.Text.StringBuilder();
+            for (int i = 0; i < level.StartingAbilities.Count; i++)
+            {
+                AbilityCountDefinition ability = level.StartingAbilities[i];
+                if (ability == null || ability.Count <= 0)
+                {
+                    continue;
+                }
+
+                AppendPart(builder, ability.AbilityKind + " x" + ability.Count);
+            }
+
+            return builder.Length > 0 ? builder.ToString() : "no boosters";
+        }
+
+        private static void AppendPart(System.Text.StringBuilder builder, string text)
+        {
+            if (builder.Length > 0)
+            {
+                builder.Append(", ");
+            }
+
+            builder.Append(text);
+        }
+
         private static string BuildLevelStatus(LevelDefinition level, SaveData saveData, bool unlocked)
         {
             if (!unlocked)
@@ -186,7 +373,7 @@ namespace EcoGarden.UI
 
             if (status == "Current")
             {
-                return "Current";
+                return "Preview";
             }
 
             if (status == "Done")
@@ -289,6 +476,7 @@ namespace EcoGarden.UI
             }
 
             EnsureLevelSummaryText();
+            EnsurePreviewPanel();
 
             if (levelCatalogController == null)
             {
@@ -320,6 +508,18 @@ namespace EcoGarden.UI
                 closeButton.onClick.AddListener(CloseLevels);
             }
 
+            if (previewPlayButton != null)
+            {
+                previewPlayButton.onClick.RemoveListener(SelectPreviewLevel);
+                previewPlayButton.onClick.AddListener(SelectPreviewLevel);
+            }
+
+            if (previewCloseButton != null)
+            {
+                previewCloseButton.onClick.RemoveListener(HidePreview);
+                previewCloseButton.onClick.AddListener(HidePreview);
+            }
+
             buttonsWired = levelButton != null && closeButton != null;
         }
 
@@ -341,6 +541,54 @@ namespace EcoGarden.UI
             if (gameplayFeedbackController != null)
             {
                 gameplayFeedbackController.PlayHudMessage(message);
+            }
+        }
+
+        private void RefreshPreview(LevelDefinition level)
+        {
+            if (level == null)
+            {
+                return;
+            }
+
+            if (previewTitleText != null)
+            {
+                previewTitleText.text = BuildLevelTitle(level);
+            }
+
+            if (previewMetaText != null)
+            {
+                string notes = level.Difficulty != null && !string.IsNullOrEmpty(level.Difficulty.Notes)
+                    ? " / " + level.Difficulty.Notes
+                    : string.Empty;
+                previewMetaText.text = BuildLevelMeta(level) + notes;
+            }
+
+            if (previewObjectiveText != null)
+            {
+                previewObjectiveText.text = BuildPreviewObjective(level);
+            }
+
+            if (previewRewardText != null)
+            {
+                previewRewardText.text = BuildPreviewReward(level);
+            }
+        }
+
+        private void HidePreview()
+        {
+            SetPreviewVisible(false);
+        }
+
+        private void SetPreviewVisible(bool visible)
+        {
+            if (previewPanel != null)
+            {
+                previewPanel.SetActive(visible);
+                if (visible)
+                {
+                    previewPanel.transform.SetAsLastSibling();
+                }
             }
         }
 
@@ -407,6 +655,73 @@ namespace EcoGarden.UI
                 LevelSelectUiLayoutMetrics.PanelSummaryAnchorMin,
                 LevelSelectUiLayoutMetrics.PanelSummaryAnchorMax,
                 22).GetComponent<Text>();
+        }
+
+        private void EnsurePreviewPanel()
+        {
+            if (previewPanel == null)
+            {
+                previewPanel = FindObjectIncludingInactive("LevelPreviewPanel");
+            }
+
+            if (previewPanel == null && levelPanel != null)
+            {
+                previewPanel = CreatePreviewPanel(levelPanel.transform);
+            }
+
+            if (previewPanel == null)
+            {
+                return;
+            }
+
+            previewTitleText = previewTitleText ?? GetText("LevelPreviewTitleText");
+            previewMetaText = previewMetaText ?? GetText("LevelPreviewMetaText");
+            previewObjectiveText = previewObjectiveText ?? GetText("LevelPreviewObjectiveText");
+            previewRewardText = previewRewardText ?? GetText("LevelPreviewRewardText");
+            previewPlayButton = previewPlayButton ?? GetButton("LevelPreviewPlayButton");
+            previewCloseButton = previewCloseButton ?? GetButton("LevelPreviewCloseButton");
+            previewPanel.SetActive(false);
+        }
+
+        private static GameObject CreatePreviewPanel(Transform parent)
+        {
+            GameObject panel = new GameObject("LevelPreviewPanel", typeof(RectTransform), typeof(Image));
+            panel.transform.SetParent(parent, false);
+            RectTransform rect = panel.GetComponent<RectTransform>();
+            rect.anchorMin = LevelSelectUiLayoutMetrics.PreviewAnchorMin;
+            rect.anchorMax = LevelSelectUiLayoutMetrics.PreviewAnchorMax;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+
+            Image image = panel.GetComponent<Image>();
+            image.sprite = Resources.Load<Sprite>("UiSkins/ui_panel_overlay") ?? PlaceholderSpriteFactory.HudPanelSprite;
+            image.color = UiThemePalette.PanelOverlay;
+
+            CreateText("LevelPreviewTitleText", panel.transform, "Level", TextAnchor.MiddleLeft, LevelSelectUiLayoutMetrics.PreviewTitleAnchorMin, LevelSelectUiLayoutMetrics.PreviewTitleAnchorMax, 25);
+            CreateText("LevelPreviewMetaText", panel.transform, string.Empty, TextAnchor.MiddleLeft, LevelSelectUiLayoutMetrics.PreviewMetaAnchorMin, LevelSelectUiLayoutMetrics.PreviewMetaAnchorMax, 17);
+            CreateText("LevelPreviewObjectiveText", panel.transform, string.Empty, TextAnchor.MiddleLeft, LevelSelectUiLayoutMetrics.PreviewObjectiveAnchorMin, LevelSelectUiLayoutMetrics.PreviewObjectiveAnchorMax, 18);
+            CreateText("LevelPreviewRewardText", panel.transform, string.Empty, TextAnchor.MiddleLeft, LevelSelectUiLayoutMetrics.PreviewRewardAnchorMin, LevelSelectUiLayoutMetrics.PreviewRewardAnchorMax, 18);
+            CreateButton("LevelPreviewPlayButton", panel.transform, "Play", LevelSelectUiLayoutMetrics.PreviewPlayAnchorMin, LevelSelectUiLayoutMetrics.PreviewPlayAnchorMax);
+            CreateButton("LevelPreviewCloseButton", panel.transform, "Close", LevelSelectUiLayoutMetrics.PreviewCloseAnchorMin, LevelSelectUiLayoutMetrics.PreviewCloseAnchorMax);
+            Text[] texts = panel.GetComponentsInChildren<Text>(true);
+            for (int i = 0; i < texts.Length; i++)
+            {
+                texts[i].color = UiThemePalette.TextLight;
+            }
+
+            return panel;
+        }
+
+        private static Text GetText(string objectName)
+        {
+            GameObject gameObject = FindObjectIncludingInactive(objectName);
+            return gameObject != null ? gameObject.GetComponent<Text>() : null;
+        }
+
+        private static Button GetButton(string objectName)
+        {
+            GameObject gameObject = FindObjectIncludingInactive(objectName);
+            return gameObject != null ? gameObject.GetComponent<Button>() : null;
         }
 
         private static Button FindButton(string objectName)

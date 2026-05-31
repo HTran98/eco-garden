@@ -133,6 +133,8 @@ namespace EcoGarden.UI
             SetAnchoredBox("SellBasket", AndroidHudLayoutMetrics.SellAnchorMin, AndroidHudLayoutMetrics.SellAnchorMax);
             SetAnchoredBox("FeedbackText", AndroidHudLayoutMetrics.FeedbackAnchorMin, AndroidHudLayoutMetrics.FeedbackAnchorMax);
             SetAnchoredBox("ResultPanel", AndroidHudLayoutMetrics.ResultAnchorMin, AndroidHudLayoutMetrics.ResultAnchorMax);
+            SetAnchoredBox("PausePanel", AndroidHudLayoutMetrics.ResultAnchorMin, AndroidHudLayoutMetrics.ResultAnchorMax);
+            SetAnchoredBox("InventoryPanel", AndroidHudLayoutMetrics.PanelAnchorMin, AndroidHudLayoutMetrics.PanelAnchorMax);
             SetAnchoredBox("LevelPanel", AndroidHudLayoutMetrics.PanelAnchorMin, AndroidHudLayoutMetrics.PanelAnchorMax);
             SetAnchoredBox("ShopPanel", AndroidHudLayoutMetrics.PanelAnchorMin, AndroidHudLayoutMetrics.PanelAnchorMax);
             SetAnchoredBox("MissionPanel", AndroidHudLayoutMetrics.PanelAnchorMin, AndroidHudLayoutMetrics.PanelAnchorMax);
@@ -165,6 +167,7 @@ namespace EcoGarden.UI
             SetAnchoredBox("LevelButton", AndroidHudLayoutMetrics.LevelButtonAnchorMin, AndroidHudLayoutMetrics.LevelButtonAnchorMax);
             SetAnchoredBox("MissionButton", AndroidHudLayoutMetrics.MissionButtonAnchorMin, AndroidHudLayoutMetrics.MissionButtonAnchorMax);
             SetAnchoredBox("ShopButton", AndroidHudLayoutMetrics.ShopButtonAnchorMin, AndroidHudLayoutMetrics.ShopButtonAnchorMax);
+            SetAnchoredBox("BagButton", AndroidHudLayoutMetrics.BagButtonAnchorMin, AndroidHudLayoutMetrics.BagButtonAnchorMax);
             SetAnchoredBox("PauseButton", AndroidHudLayoutMetrics.PauseButtonAnchorMin, AndroidHudLayoutMetrics.PauseButtonAnchorMax);
         }
 
@@ -183,8 +186,19 @@ namespace EcoGarden.UI
             SetAnchoredBox("LevelCloseButton", PanelUiLayoutMetrics.CloseAnchorMin, PanelUiLayoutMetrics.CloseAnchorMax);
             SetAnchoredBox("ShopCloseButton", PanelUiLayoutMetrics.CloseAnchorMin, PanelUiLayoutMetrics.CloseAnchorMax);
             SetAnchoredBox("MissionCloseButton", PanelUiLayoutMetrics.CloseAnchorMin, PanelUiLayoutMetrics.CloseAnchorMax);
+            SetAnchoredBox("InventoryTitleText", PanelUiLayoutMetrics.TitleAnchorMin, PanelUiLayoutMetrics.TitleAnchorMax);
+            SetAnchoredBox("InventoryCloseButton", PanelUiLayoutMetrics.CloseAnchorMin, PanelUiLayoutMetrics.CloseAnchorMax);
+            SetAnchoredBox("InventorySummaryText", InventoryUiLayoutMetrics.SummaryAnchorMin, InventoryUiLayoutMetrics.SummaryAnchorMax);
+            SetAnchoredBox("InventoryViewport", InventoryUiLayoutMetrics.ContentAnchorMin, InventoryUiLayoutMetrics.ContentAnchorMax);
             SetAnchoredBox("LevelSummaryText", LevelSelectUiLayoutMetrics.PanelSummaryAnchorMin, LevelSelectUiLayoutMetrics.PanelSummaryAnchorMax);
             SetAnchoredBox("LevelViewport", LevelSelectUiLayoutMetrics.PanelContentAnchorMin, LevelSelectUiLayoutMetrics.PanelContentAnchorMax);
+            SetAnchoredBox("LevelPreviewPanel", LevelSelectUiLayoutMetrics.PreviewAnchorMin, LevelSelectUiLayoutMetrics.PreviewAnchorMax);
+            SetAnchoredBox("LevelPreviewTitleText", LevelSelectUiLayoutMetrics.PreviewTitleAnchorMin, LevelSelectUiLayoutMetrics.PreviewTitleAnchorMax);
+            SetAnchoredBox("LevelPreviewMetaText", LevelSelectUiLayoutMetrics.PreviewMetaAnchorMin, LevelSelectUiLayoutMetrics.PreviewMetaAnchorMax);
+            SetAnchoredBox("LevelPreviewObjectiveText", LevelSelectUiLayoutMetrics.PreviewObjectiveAnchorMin, LevelSelectUiLayoutMetrics.PreviewObjectiveAnchorMax);
+            SetAnchoredBox("LevelPreviewRewardText", LevelSelectUiLayoutMetrics.PreviewRewardAnchorMin, LevelSelectUiLayoutMetrics.PreviewRewardAnchorMax);
+            SetAnchoredBox("LevelPreviewPlayButton", LevelSelectUiLayoutMetrics.PreviewPlayAnchorMin, LevelSelectUiLayoutMetrics.PreviewPlayAnchorMax);
+            SetAnchoredBox("LevelPreviewCloseButton", LevelSelectUiLayoutMetrics.PreviewCloseAnchorMin, LevelSelectUiLayoutMetrics.PreviewCloseAnchorMax);
             SetAnchoredBox("MissionSummaryText", MissionUiLayoutMetrics.SummaryAnchorMin, MissionUiLayoutMetrics.SummaryAnchorMax);
             SetAnchoredBox("MissionViewport", MissionUiLayoutMetrics.ContentAnchorMin, MissionUiLayoutMetrics.ContentAnchorMax);
             SetAnchoredBox("ShopCategoryBar", PanelUiLayoutMetrics.ShopCategoryAnchorMin, PanelUiLayoutMetrics.ShopCategoryAnchorMax);
@@ -195,6 +209,10 @@ namespace EcoGarden.UI
             SetAnchoredBox("ResultCountdownText", PanelUiLayoutMetrics.ResultCountdownAnchorMin, PanelUiLayoutMetrics.ResultCountdownAnchorMax);
             SetAnchoredBox("RestartButton", PanelUiLayoutMetrics.ResultRestartAnchorMin, PanelUiLayoutMetrics.ResultRestartAnchorMax);
             SetAnchoredBox("NextLevelButton", PanelUiLayoutMetrics.ResultNextAnchorMin, PanelUiLayoutMetrics.ResultNextAnchorMax);
+            SetAnchoredBox("PauseTitleText", PanelUiLayoutMetrics.PauseTitleAnchorMin, PanelUiLayoutMetrics.PauseTitleAnchorMax);
+            SetAnchoredBox("PauseMessageText", PanelUiLayoutMetrics.PauseMessageAnchorMin, PanelUiLayoutMetrics.PauseMessageAnchorMax);
+            SetAnchoredBox("PauseResumeButton", PanelUiLayoutMetrics.PauseResumeAnchorMin, PanelUiLayoutMetrics.PauseResumeAnchorMax);
+            SetAnchoredBox("PauseRestartButton", PanelUiLayoutMetrics.PauseRestartAnchorMin, PanelUiLayoutMetrics.PauseRestartAnchorMax);
         }
 
         private static void ApplyCompactHudLabels()
@@ -202,6 +220,7 @@ namespace EcoGarden.UI
             SetButtonLabel("LevelButton", UiIconLabelCatalog.Level);
             SetButtonLabel("MissionButton", UiIconLabelCatalog.Mission);
             SetButtonLabel("ShopButton", UiIconLabelCatalog.Shop);
+            SetButtonLabel("BagButton", UiIconLabelCatalog.Bag);
             SetButtonLabel("PauseButton", UiIconLabelCatalog.Pause);
         }
 

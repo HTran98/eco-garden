@@ -81,6 +81,7 @@ namespace EcoGarden.UI
 
         private IEnumerator HudMessageRoutine(string message, FeedbackMessageSeverity severity)
         {
+            RaiseHudFeedback();
             hudFeedbackText.text = message;
             hudFeedbackText.color = FeedbackMessagePresentation.ColorFor(severity);
             if (hudFeedbackBackground != null)
@@ -102,6 +103,19 @@ namespace EcoGarden.UI
             }
 
             hudRoutine = null;
+        }
+
+        private void RaiseHudFeedback()
+        {
+            if (hudFeedbackBackground != null)
+            {
+                hudFeedbackBackground.transform.SetAsLastSibling();
+            }
+
+            if (hudFeedbackText != null)
+            {
+                hudFeedbackText.transform.SetAsLastSibling();
+            }
         }
 
         private void EnsureHudFeedbackPresentation()

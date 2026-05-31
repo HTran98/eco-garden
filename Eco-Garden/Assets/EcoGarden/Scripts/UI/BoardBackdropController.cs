@@ -15,6 +15,7 @@ namespace EcoGarden.UI
         [SerializeField] private int sortingOrder = -900;
 
         private SpriteRenderer spriteRenderer;
+        private Color cosmeticTint = Color.white;
 
         private void Awake()
         {
@@ -77,7 +78,13 @@ namespace EcoGarden.UI
                 spriteRenderer.sprite = PlaceholderSpriteFactory.EmptyTileSprite;
             }
 
-            spriteRenderer.color = Color.white;
+            spriteRenderer.color = cosmeticTint;
+        }
+
+        public void SetCosmeticTint(Color tint)
+        {
+            cosmeticTint = tint;
+            EnsureRenderer();
         }
     }
 }

@@ -48,9 +48,11 @@ Acceptance status meanings:
 | `char_customer_01` | Character | `Assets/EcoGarden/Art/Characters` | Runtime placeholder accepted for first release | `PlaceholderSpriteFactory.NpcSprite` is simple but usable for order/customer movement. |
 | `char_butterfly_a_01` | Character | `Assets/EcoGarden/Art/Characters` | Runtime placeholder accepted for first release | `PlaceholderSpriteFactory.ButterflySprite` supports current ambient pathing. |
 | `char_butterfly_b_01` | Character | `Assets/EcoGarden/Art/Characters` | Runtime placeholder accepted for first release | Shares the accepted butterfly runtime sprite until variants are authored. |
-| `decor_tree_01` | Decor | `Assets/EcoGarden/Art/Decor` | Deferred from first release | Decoration purchases are hidden until visible cosmetic application exists. |
-| `decor_pond_grass_01` | Decor | `Assets/EcoGarden/Art/Decor` | Deferred from first release | Decoration purchases are hidden until visible cosmetic application exists. |
-| `decor_stone_small_01` | Decor | `Assets/EcoGarden/Art/Decor` | Deferred from first release | Decoration purchases are hidden until visible cosmetic application exists. |
+| `skin_board_moss_stone` | Decor / board skin | Runtime tint via `DecorationController` | Runtime placeholder accepted for first release | Buying the Moss Stone board skin applies a board/backdrop/background tint. Authored board skin art can replace the tint later. |
+| `skin_background_lily_pond` | Decor / background skin | `Assets/EcoGarden/Art/Backgrounds/Resources/Backgrounds/bg_lily_pond_sunset_01.png` | First-pass transparent PNG wired | Buying Sunset Pond changes the gameplay background through the inventory bag. |
+| `deco_butterfly_variant` | Decor / butterfly | Runtime tint plus extra ambient butterfly via `DecorationController` | Runtime placeholder accepted for first release | Buying Butterfly Decoration recolors existing butterflies and adds one extra ambient butterfly. |
+| `deco_bee_visitor` | Decor / ambient visitor | Runtime placeholder via `DecorationController` | Runtime placeholder accepted for first release | Buying Bee Visitor adds a small ambient bee-style visitor using the current butterfly sprite/tint placeholder. |
+| `skin_npc_traveler` | Decor / NPC skin | Runtime tint via `DecorationController` | Runtime placeholder accepted for first release | Buying NPC Traveler changes the customer NPC color. Authored NPC costume art can replace the tint later. |
 | `icon_ability_shovel` | UI icon | `Assets/EcoGarden/Art/UI/Resources/UiIcons` | First-pass transparent PNG wired | `HudSkinController` loads the icon and `AbilityHudController` keeps the count as `xN`. |
 | `icon_ability_magic_wand` | UI icon | `Assets/EcoGarden/Art/UI/Resources/UiIcons` | First-pass transparent PNG wired | `HudSkinController` loads the icon and `AbilityHudController` keeps the count as `xN`. |
 | `icon_ability_sorting_magnet` | UI icon | `Assets/EcoGarden/Art/UI/Resources/UiIcons` | First-pass transparent PNG wired | `HudSkinController` loads the icon and `AbilityHudController` keeps the count as `xN`. |
@@ -61,9 +63,17 @@ Acceptance status meanings:
 | `icon_restart` | UI icon | `Assets/EcoGarden/Art/UI/Resources/UiIcons` | First-pass transparent PNG wired | `HudSkinController` loads the icon at runtime when available. |
 | `icon_next` | UI icon | `Assets/EcoGarden/Art/UI/Resources/UiIcons` | First-pass transparent PNG wired | `HudSkinController` loads the icon at runtime when available. |
 | `icon_nav_shop` | UI icon | `Assets/EcoGarden/Art/UI/Resources/UiIcons` | First-pass transparent PNG wired | `HudSkinController` loads the icon at runtime when available. |
+| `icon_nav_bag` | UI icon | `Assets/EcoGarden/Art/UI/Resources/UiIcons` | First-pass transparent PNG wired | `HudSkinController` loads the icon for the top-bar Bag button. |
 | `icon_nav_mission` | UI icon | `Assets/EcoGarden/Art/UI/Resources/UiIcons` | First-pass transparent PNG wired | `HudSkinController` loads the icon at runtime when available. |
 | `icon_nav_level` | UI icon | `Assets/EcoGarden/Art/UI/Resources/UiIcons` | First-pass transparent PNG wired | `HudSkinController` loads the icon at runtime when available. |
 | `icon_close` | UI icon | `Assets/EcoGarden/Art/UI/Resources/UiIcons` | First-pass transparent PNG wired | `HudSkinController` loads the icon for Shop, Mission, and Level close buttons when available. |
+| `icon_shop_booster` | UI icon | `Assets/EcoGarden/Art/UI/Resources/UiIcons` | First-pass transparent PNG wired | Reserved for shop/inventory booster presentation. |
+| `icon_shop_decor` | UI icon | `Assets/EcoGarden/Art/UI/Resources/UiIcons` | First-pass transparent PNG wired | Used as the empty-state decor icon in the inventory bag. |
+| `icon_decor_board` | UI icon | `Assets/EcoGarden/Art/UI/Resources/UiIcons` | First-pass transparent PNG wired | Inventory icon for the board skin decor. |
+| `icon_decor_butterfly` | UI icon | `Assets/EcoGarden/Art/UI/Resources/UiIcons` | First-pass transparent PNG wired | Inventory icon for the butterfly decor. |
+| `icon_decor_bee` | UI icon | `Assets/EcoGarden/Art/UI/Resources/UiIcons` | First-pass transparent PNG wired | Inventory icon for the Bee Visitor decor. |
+| `icon_decor_npc` | UI icon | `Assets/EcoGarden/Art/UI/Resources/UiIcons` | First-pass transparent PNG wired | Inventory icon for the Traveler NPC decor. |
+| `icon_decor_background` | UI icon | `Assets/EcoGarden/Art/UI/Resources/UiIcons` | First-pass transparent PNG wired | Inventory/shop icon for the Sunset Pond background decor. |
 | `ui_panel_light` | UI skin | `Assets/EcoGarden/Art/UI/Resources/UiSkins` | First-pass transparent PNG wired | Used by HUD/panel skin pass when imported; fallback remains procedural panel sprite. |
 | `ui_panel_strong` | UI skin | `Assets/EcoGarden/Art/UI/Resources/UiSkins` | First-pass transparent PNG wired | Used by AbilityBar and strong panel surfaces. |
 | `ui_panel_overlay` | UI skin | `Assets/EcoGarden/Art/UI/Resources/UiSkins` | First-pass transparent PNG wired | Used by TopBar, Result, and compact tracker overlay surfaces. |

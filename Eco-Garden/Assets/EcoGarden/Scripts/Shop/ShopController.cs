@@ -18,7 +18,7 @@ namespace EcoGarden.Shop
         [SerializeField] private MockIapProvider mockIapProvider;
         [SerializeField] private MonoBehaviour iapProviderBehaviour;
         [SerializeField] private MonoBehaviour receiptValidatorBehaviour;
-        [SerializeField] private bool includeDecorationCatalogItems;
+        [SerializeField] private bool includeDecorationCatalogItems = true;
 
         private ShopCatalogService catalog;
         private IapPurchaseService iapPurchaseService;
@@ -57,6 +57,16 @@ namespace EcoGarden.Shop
         public void RestoreInventory(string[] purchasedProductIds, string[] ownedDecorationIds)
         {
             Inventory.Restore(purchasedProductIds, ownedDecorationIds);
+        }
+
+        public void RestoreInventory(string[] purchasedProductIds, string[] ownedDecorationIds, string[] activeDecorationIds)
+        {
+            Inventory.Restore(purchasedProductIds, ownedDecorationIds, activeDecorationIds);
+        }
+
+        public bool UseDecoration(string decorationId)
+        {
+            return Inventory != null && Inventory.UseDecoration(decorationId);
         }
 
         public void RestoreProcessedIapTransactionIds(string[] transactionIds)

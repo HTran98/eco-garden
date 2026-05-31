@@ -1,4 +1,5 @@
 using EcoGarden.Shop;
+using EcoGarden.Abilities;
 using System.Collections.Generic;
 using EcoGarden.Utilities;
 using UnityEngine;
@@ -70,9 +71,18 @@ namespace EcoGarden.UI
 
         private void SetPanelVisible(bool visible)
         {
+            if (visible)
+            {
+                UiModalPanelUtility.HideOtherModalPanels("ShopPanel");
+            }
+
             if (shopPanel != null)
             {
                 shopPanel.SetActive(visible);
+                if (visible)
+                {
+                    UiModalPanelUtility.RaiseModalPanel(shopPanel);
+                }
             }
 
             if (visible)
@@ -121,10 +131,22 @@ namespace EcoGarden.UI
             UiRowAccent.Apply(row.transform, GetShopRowAccentColor(item));
 
             GameObject iconBadge = CreateImage("TypeBadge", row.transform, PlaceholderSpriteFactory.ShopIconBadgeSprite, GetCategoryAccentColor(item.Category), ShopUiLayoutMetrics.TypeBadgeAnchorMin, ShopUiLayoutMetrics.TypeBadgeAnchorMax);
-            CreateText("Type", iconBadge.transform, GetCategoryShortName(item.Category), TextAnchor.MiddleCenter, Vector2.zero, Vector2.one, 22);
+            Sprite itemIcon = LoadSprite(GetShopIconPath(item));
+            if (itemIcon != null)
+            {
+                CreateImage("ItemIcon", iconBadge.transform, itemIcon, Color.white, new Vector2(0.14f, 0.14f), new Vector2(0.86f, 0.86f));
+            }
+            else
+            {
+                CreateText("Type", iconBadge.transform, GetCategoryShortName(item.Category), TextAnchor.MiddleCenter, Vector2.zero, Vector2.one, 22);
+            }
+            GameObject statusBadge = CreateImage("StatusBadge", row.transform, PlaceholderSpriteFactory.ShopIconBadgeSprite, GetStatusColor(item), ShopUiLayoutMetrics.StatusAnchorMin, ShopUiLayoutMetrics.StatusAnchorMax);
+            CreateText("Status", statusBadge.transform, BuildStatusLabel(item), TextAnchor.MiddleCenter, Vector2.zero, Vector2.one, 15);
 
             CreateText("Name", row.transform, item.DisplayName, TextAnchor.MiddleLeft, ShopUiLayoutMetrics.NameAnchorMin, ShopUiLayoutMetrics.NameAnchorMax, 25);
             CreateText("Description", row.transform, BuildDescription(item), TextAnchor.UpperLeft, ShopUiLayoutMetrics.DescriptionAnchorMin, ShopUiLayoutMetrics.DescriptionAnchorMax, 18);
+            Text effectText = CreateText("Effect", row.transform, BuildEffectText(item), TextAnchor.MiddleLeft, ShopUiLayoutMetrics.EffectAnchorMin, ShopUiLayoutMetrics.EffectAnchorMax, 17).GetComponent<Text>();
+            effectText.color = UiThemePalette.TextMuted;
 
             GameObject priceBadge = CreateImage("PriceBadge", row.transform, GetPriceBadgeSprite(item), GetPriceColor(item), ShopUiLayoutMetrics.PriceAnchorMin, ShopUiLayoutMetrics.PriceAnchorMax);
             CreateText("Price", priceBadge.transform, BuildPriceText(item), TextAnchor.MiddleCenter, Vector2.zero, Vector2.one, 20);
@@ -205,6 +227,178 @@ namespace EcoGarden.UI
             }
 
             return "Buy";
+        }
+
+        private string BuildStatusLabel(ShopItemDefinition item)
+        {
+            if (item == null || !item.IsValid)
+            {
+                return "OFF";
+            }
+
+            if (pendingProductIds.Contains(item.ProductId))
+            {
+                return "WAIT";
+            }
+
+            if (!item.Repeatable && shopController != null && shopController.Inventory.IsProductPurchased(item.ProductId))
+            {
+                if (item.Category == ShopItemCategory.Decoration && item.Grant != null && item.Grant.DecorationIds != null)
+                {
+                    for (int i = 0; i < item.Grant.DecorationIds.Length; i++)
+                    {
+                        if (shopController.Inventory.IsDecorationActive(item.Grant.DecorationIds[i]))
+                        {
+                            return "ON";
+                        }
+                    }
+                }
+
+                return "OWN";
+            }
+
+            return item.Category == ShopItemCategory.Decoration ? "VIS" : "NEW";
+        }
+
+        private static string BuildEffectText(ShopItemDefinition item)
+        {
+            if (item == null)
+            {
+                return "No effect";
+            }
+
+            if (item.Category == ShopItemCategory.Decoration)
+            {
+                return "Visual: " + BuildDecorationEffectText(item);
+            }
+
+            if (item.Category == ShopItemCategory.Booster)
+            {
+                return "Tools added to booster bar";
+            }
+
+            if (item.Category == ShopItemCategory.Unlock)
+            {
+                return "Progression unlock";
+            }
+
+            if (item.Category == ShopItemCategory.Currency)
+            {
+                return "Adds Gems to wallet";
+            }
+
+            if (item.Category == ShopItemCategory.Bundle)
+            {
+                return "Bundle reward";
+            }
+
+            return "Reward item";
+        }
+
+        private static string BuildDecorationEffectText(ShopItemDefinition item)
+        {
+            if (item.Grant == null || item.Grant.DecorationIds == null || item.Grant.DecorationIds.Length == 0)
+            {
+                return "cosmetic";
+            }
+
+            string decorationId = item.Grant.DecorationIds[0];
+            switch (decorationId)
+            {
+                case DecorationController.BoardMossStoneId:
+                    return "board skin";
+                case DecorationController.ButterflyVariantId:
+                    return "butterfly color + extra butterfly";
+                case DecorationController.BeeVisitorId:
+                case DecorationController.LegacyBirdVisitorId:
+                    return "ambient bee visitor";
+                case DecorationController.NpcTravelerId:
+                    return "customer NPC outfit";
+                case DecorationController.BackgroundLilyPondId:
+                    return "background skin";
+                default:
+                    return "cosmetic";
+            }
+        }
+
+        private static string GetShopIconPath(ShopItemDefinition item)
+        {
+            if (item == null)
+            {
+                return null;
+            }
+
+            if (item.Category == ShopItemCategory.Decoration)
+            {
+                return GetDecorationIconPath(item);
+            }
+
+            if (item.Category == ShopItemCategory.Booster)
+            {
+                return GetBoosterIconPath(item);
+            }
+
+            if (item.Category == ShopItemCategory.Currency)
+            {
+                return item.Price != null && item.Price.PurchaseKind == ShopPurchaseKind.Gem
+                    ? "UiIcons/icon_currency_gem"
+                    : "UiIcons/icon_currency_gold";
+            }
+
+            if (item.Category == ShopItemCategory.Unlock)
+            {
+                return "UiIcons/icon_nav_level";
+            }
+
+            if (item.Category == ShopItemCategory.Bundle)
+            {
+                return "UiIcons/icon_shop_booster";
+            }
+
+            return "UiIcons/icon_nav_shop";
+        }
+
+        private static string GetBoosterIconPath(ShopItemDefinition item)
+        {
+            if (item.Grant != null && item.Grant.Abilities != null && item.Grant.Abilities.Length > 0)
+            {
+                switch (item.Grant.Abilities[0].AbilityKind)
+                {
+                    case AbilityKind.Shovel:
+                        return "UiIcons/icon_ability_shovel";
+                    case AbilityKind.MagicWand:
+                        return "UiIcons/icon_ability_magic_wand";
+                    case AbilityKind.SortingMagnet:
+                        return "UiIcons/icon_ability_sorting_magnet";
+                }
+            }
+
+            return "UiIcons/icon_shop_booster";
+        }
+
+        private static string GetDecorationIconPath(ShopItemDefinition item)
+        {
+            if (item.Grant == null || item.Grant.DecorationIds == null || item.Grant.DecorationIds.Length == 0)
+            {
+                return "UiIcons/icon_shop_decor";
+            }
+
+            switch (item.Grant.DecorationIds[0])
+            {
+                case DecorationController.BoardMossStoneId:
+                    return "UiIcons/icon_decor_board";
+                case DecorationController.ButterflyVariantId:
+                    return "UiIcons/icon_decor_butterfly";
+                case DecorationController.BeeVisitorId:
+                case DecorationController.LegacyBirdVisitorId:
+                    return "UiIcons/icon_decor_bee";
+                case DecorationController.NpcTravelerId:
+                    return "UiIcons/icon_decor_npc";
+                case DecorationController.BackgroundLilyPondId:
+                    return "UiIcons/icon_decor_background";
+                default:
+                    return "UiIcons/icon_shop_decor";
+            }
         }
 
         private static string BuildPurchaseMessage(ShopPurchaseResult result)
@@ -767,6 +961,26 @@ namespace EcoGarden.UI
             }
 
             return GetCategoryAccentColor(item.Category);
+        }
+
+        private Color GetStatusColor(ShopItemDefinition item)
+        {
+            if (item == null || !item.IsValid)
+            {
+                return UiThemePalette.DisabledButton;
+            }
+
+            if (!item.Repeatable && shopController != null && shopController.Inventory.IsProductPurchased(item.ProductId))
+            {
+                return UiThemePalette.Success;
+            }
+
+            if (item.Category == ShopItemCategory.Decoration)
+            {
+                return UiThemePalette.Gem;
+            }
+
+            return UiThemePalette.SecondaryButton;
         }
 
         private static Color GetPriceColor(ShopItemDefinition item)

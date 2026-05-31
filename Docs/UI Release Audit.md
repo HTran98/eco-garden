@@ -503,3 +503,75 @@ This slice has the highest release impact because every play session depends on 
 - Booster buttons now disable when their count reaches zero and use disabled styling for the count label.
 - Selecting a booster now sends the target prompt through the HUD feedback presentation, making the next action clearer.
 - Runtime, editor, and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false`.
+
+2026-05-31:
+
+- Continued Pause UI release polish.
+- Added a real `PausePanel` with Resume and Restart actions, shared Result-size portrait anchors, runtime fallback creation for old scenes, generated HUD support, skin/transition wiring, and blocking-panel cleanup when pause opens.
+- Added EditMode coverage for Pause panel touch sizes/message separation on the 720x1280 portrait profile and for pause toggle show/hide behavior.
+- Runtime and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false`; the first parallel runtime build hit a temporary file lock from another build process and passed when rerun separately.
+
+2026-05-31:
+
+- Continued modal interaction polish.
+- Added `UiModalBackdropController`, a full-screen dim/raycast backdrop that activates behind Result, Pause, Level, Shop, and Mission panels so modal UI clearly blocks board input outside the panel bounds.
+- `HudSkinController` ensures old scenes receive the backdrop at runtime, and generated HUDs now include the controller directly.
+- Added EditMode coverage for backdrop visibility, raycast blocking, dim opacity, and sibling order behind visible modal panels.
+- Runtime and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false` after local Unity-generated `.csproj` includes were refreshed for the new files; generated project files are not tracked.
+
+2026-05-31:
+
+- Continued modal stacking cleanup.
+- Added `UiModalPanelUtility` so opening Shop, Mission, or Level Select closes sibling modal panels instead of allowing multiple full panels to stack under the same backdrop.
+- `UiModalBackdropController` now uses the shared modal panel list, keeping the backdrop behavior aligned with the panel coordinator.
+- Added EditMode coverage that the requested modal remains visible while sibling panels are closed.
+- Runtime and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false` after local Unity-generated `.csproj` verification includes were refreshed; generated project files are not tracked.
+
+2026-05-31:
+
+- Continued backdrop interaction polish.
+- `ModalBackdrop` is now a dim `Button` with no transition, so tapping outside Shop, Mission, or Level Select closes those navigation panels.
+- Backdrop dismiss intentionally leaves Pause and Result panels active, preserving explicit Resume/Restart/Replay/Next decisions.
+- Added EditMode coverage for backdrop button setup and dismiss behavior.
+- Runtime and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false`.
+
+2026-05-31:
+
+- Continued modal z-order polish.
+- Opening Shop, Mission, Level Select, Pause, or Result now raises that modal panel to the top sibling so old scene hierarchy order cannot leave a panel partially covered by other HUD elements.
+- `ModalBackdrop` now positions itself behind the topmost active modal instead of the first modal found by name order.
+- Added EditMode coverage for raising modal panels and keeping the backdrop behind the actual topmost visible modal.
+- Runtime and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false`.
+
+2026-05-31:
+
+- Continued Shop/decor release polish.
+- Decoration category products are active by default and Shop rows now expose clearer type, status, and effect copy, including `ON`/`OWN` states for purchased one-time items.
+- Added `DecorationController` so purchased decor is visibly applied: board/background tint, butterfly variant, bee ambient visitor, and Traveler NPC color.
+- Saved decoration ownership now re-applies on restore through `ShopInventory.Changed`.
+- Runtime and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false`; Play Mode/device validation is still required to judge final art quality and whether placeholder bee/butterfly/NPC variants are shippable.
+
+2026-05-31:
+
+- Continued Shop/inventory UI completion.
+- Added a top-bar Bag entry and `InventoryPanel` with booster rows, owned decor rows, count display for boosters, and `Use`/`Using` actions for decor.
+- Decor is now applied from active decoration ids, so purchased decor can sit in the bag until the player uses it.
+- Added first-pass PNG resources for Bag/shop/decor inventory icons and runtime skin wiring for the new panel and close button.
+- Runtime and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false`; Unity import and Android device validation remain required for final icon/art readability.
+
+2026-06-01:
+
+- Continued Shop decor content and icon clarity.
+- Added `Background: Sunset Pond` as a Decoration shop item and included it in both current scene shop catalogs.
+- Added `skin_background_lily_pond`; using it from the bag swaps the gameplay background to `bg_lily_pond_sunset_01`.
+- Replaced the copied placeholder decor icons with clearer first-pass PNG silhouettes for board, butterfly, bee, NPC, background, and generic decor.
+- Runtime and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false`; Unity import/Play Mode validation remains required for final visual approval.
+
+2026-06-01:
+
+- Continued Level Select and first-level play flow polish.
+- Level row actions now open a preview panel instead of immediately switching levels.
+- The preview shows level name, difficulty/timer, objective, order reward, and starting boosters before the player taps Play.
+- Generated HUDs, runtime fallback UI, Android layout, and skin pass all know the new Level preview panel/buttons.
+- Added first-start HUD hints for levels 1-3 covering producer/merge, selling spare plants, and Magic Wand usage.
+- Runtime and EditMode test assemblies build successfully with `/p:UseSharedCompilation=false`; Play Mode validation remains required for the full level 1-10 handoff.

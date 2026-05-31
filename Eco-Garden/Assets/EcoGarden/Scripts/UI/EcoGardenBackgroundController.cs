@@ -82,5 +82,28 @@ namespace EcoGarden.UI
                 targetCamera.transform.position.y,
                 5f);
         }
+
+        public void SetCosmeticTint(Color tint)
+        {
+            EnsureRenderer();
+            spriteRenderer.color = tint;
+        }
+
+        public void SetCosmeticBackground(string resourcePath, Color tint)
+        {
+            EnsureRenderer();
+            if (!string.IsNullOrWhiteSpace(resourcePath))
+            {
+                Sprite sprite = Resources.Load<Sprite>(resourcePath);
+                if (sprite != null)
+                {
+                    backgroundResourcePath = resourcePath;
+                    spriteRenderer.sprite = sprite;
+                }
+            }
+
+            spriteRenderer.color = tint;
+            FitToCamera();
+        }
     }
 }

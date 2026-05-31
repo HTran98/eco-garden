@@ -49,6 +49,7 @@ namespace EcoGarden.Tests.EditMode
             Rect level = AndroidHudLayoutMetrics.ToPixelRect(AndroidHudLayoutMetrics.LevelButtonAnchorMin, AndroidHudLayoutMetrics.LevelButtonAnchorMax, screenSize);
             Rect mission = AndroidHudLayoutMetrics.ToPixelRect(AndroidHudLayoutMetrics.MissionButtonAnchorMin, AndroidHudLayoutMetrics.MissionButtonAnchorMax, screenSize);
             Rect shop = AndroidHudLayoutMetrics.ToPixelRect(AndroidHudLayoutMetrics.ShopButtonAnchorMin, AndroidHudLayoutMetrics.ShopButtonAnchorMax, screenSize);
+            Rect bag = AndroidHudLayoutMetrics.ToPixelRect(AndroidHudLayoutMetrics.BagButtonAnchorMin, AndroidHudLayoutMetrics.BagButtonAnchorMax, screenSize);
             Rect pause = AndroidHudLayoutMetrics.ToPixelRect(AndroidHudLayoutMetrics.PauseButtonAnchorMin, AndroidHudLayoutMetrics.PauseButtonAnchorMax, screenSize);
 
             Assert.GreaterOrEqual(timer.width, AndroidHudLayoutMetrics.MinimumTopBarStatWidth);
@@ -57,6 +58,7 @@ namespace EcoGarden.Tests.EditMode
             Assert.GreaterOrEqual(level.width, AndroidHudLayoutMetrics.MinimumTopBarActionWidth);
             Assert.GreaterOrEqual(mission.width, AndroidHudLayoutMetrics.MinimumTopBarActionWidth);
             Assert.GreaterOrEqual(shop.width, AndroidHudLayoutMetrics.MinimumTopBarActionWidth);
+            Assert.GreaterOrEqual(bag.width, AndroidHudLayoutMetrics.MinimumTopBarActionWidth);
             Assert.GreaterOrEqual(pause.width, AndroidHudLayoutMetrics.MinimumTopBarActionWidth);
         }
 

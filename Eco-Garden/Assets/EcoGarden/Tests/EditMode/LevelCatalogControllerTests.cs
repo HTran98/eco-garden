@@ -59,6 +59,31 @@ namespace EcoGarden.Tests.EditMode
             }
         }
 
+        [Test]
+        public void SelectLevelAfterUnlock_AssignsBoardLevelWithoutSaveGate()
+        {
+            GameObject boardObject = new GameObject("Board");
+            GameObject controllerObject = new GameObject("LevelCatalogController");
+            try
+            {
+                BoardController boardController = boardObject.AddComponent<BoardController>();
+                LevelCatalogController catalogController = controllerObject.AddComponent<LevelCatalogController>();
+                LevelDefinition level = CreateLevel(2);
+                catalogController.SetBoardController(boardController);
+
+                bool selected = catalogController.SelectLevelAfterUnlock(level);
+
+                Assert.IsTrue(selected);
+                Assert.AreEqual(2, boardController.LevelDefinition.LevelId);
+                Assert.AreEqual(2, catalogController.SelectedLevel.LevelId);
+            }
+            finally
+            {
+                Object.DestroyImmediate(controllerObject);
+                Object.DestroyImmediate(boardObject);
+            }
+        }
+
         private static LevelCatalogDefinition CreateCatalog(params LevelDefinition[] levels)
         {
             LevelCatalogDefinition catalog = ScriptableObject.CreateInstance<LevelCatalogDefinition>();

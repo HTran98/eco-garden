@@ -82,6 +82,12 @@ namespace EcoGarden.AI
             ApplyColor();
         }
 
+        public void SetCosmeticColor(Color color)
+        {
+            butterflyColor = color;
+            ApplyColor();
+        }
+
         private void UpdateLoop(float t)
         {
             Vector3 position = center + new Vector3(

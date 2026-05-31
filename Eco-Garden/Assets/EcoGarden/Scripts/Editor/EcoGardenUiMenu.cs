@@ -26,15 +26,19 @@ namespace EcoGarden.Editor
             CreateFeedbackText(hudRoot.transform);
             CreateCoinFeedback(hudRoot.transform);
             CreateLevelPanel(hudRoot.transform);
+            CreateInventoryPanel(hudRoot.transform);
             CreateShopPanel(hudRoot.transform);
             CreateMissionPanel(hudRoot.transform);
             CreateMissionTracker(hudRoot.transform);
+            CreatePausePanel(hudRoot.transform);
             CreateResultPanel(hudRoot.transform);
             hudRoot.AddComponent<AbilityHudController>();
             hudRoot.AddComponent<LevelSelectUiController>();
+            hudRoot.AddComponent<InventoryUiController>();
             hudRoot.AddComponent<ShopUiController>();
             hudRoot.AddComponent<MissionUiController>();
             hudRoot.AddComponent<DraggedItemCanvasGhost>();
+            hudRoot.AddComponent<UiModalBackdropController>();
             hudRoot.AddComponent<HudSkinController>().Apply();
             hudRoot.AddComponent<AndroidHudLayoutController>().ApplyLayout();
             EnsureInputSystemEventSystem();
@@ -69,6 +73,7 @@ namespace EcoGarden.Editor
             CreateButton("LevelButton", topBar.transform, UiIconLabelCatalog.Level, AndroidHudLayoutMetrics.LevelButtonAnchorMin, AndroidHudLayoutMetrics.LevelButtonAnchorMax);
             CreateButton("MissionButton", topBar.transform, UiIconLabelCatalog.Mission, AndroidHudLayoutMetrics.MissionButtonAnchorMin, AndroidHudLayoutMetrics.MissionButtonAnchorMax);
             CreateButton("ShopButton", topBar.transform, UiIconLabelCatalog.Shop, AndroidHudLayoutMetrics.ShopButtonAnchorMin, AndroidHudLayoutMetrics.ShopButtonAnchorMax);
+            CreateButton("BagButton", topBar.transform, UiIconLabelCatalog.Bag, AndroidHudLayoutMetrics.BagButtonAnchorMin, AndroidHudLayoutMetrics.BagButtonAnchorMax);
             CreateButton("PauseButton", topBar.transform, UiIconLabelCatalog.Pause, AndroidHudLayoutMetrics.PauseButtonAnchorMin, AndroidHudLayoutMetrics.PauseButtonAnchorMax);
         }
 
@@ -147,6 +152,23 @@ namespace EcoGarden.Editor
             panel.SetActive(false);
         }
 
+        private static void CreatePausePanel(Transform parent)
+        {
+            GameObject panel = CreatePanel("PausePanel", parent, AndroidHudLayoutMetrics.ResultAnchorMin, AndroidHudLayoutMetrics.ResultAnchorMax, new Vector2(0.5f, 0.5f), Vector2.zero);
+            Image image = panel.GetComponent<Image>();
+            image.color = new Color(0.08f, 0.11f, 0.15f, 0.92f);
+
+            Text title = CreateText("PauseTitleText", panel.transform, "Paused", TextAnchor.MiddleCenter, PanelUiLayoutMetrics.PauseTitleAnchorMin, PanelUiLayoutMetrics.PauseTitleAnchorMax).GetComponent<Text>();
+            title.fontSize = 40;
+
+            Text message = CreateText("PauseMessageText", panel.transform, "Take a break or restart this level.", TextAnchor.MiddleCenter, PanelUiLayoutMetrics.PauseMessageAnchorMin, PanelUiLayoutMetrics.PauseMessageAnchorMax).GetComponent<Text>();
+            message.fontSize = 22;
+
+            CreateButton("PauseResumeButton", panel.transform, "Resume", PanelUiLayoutMetrics.PauseResumeAnchorMin, PanelUiLayoutMetrics.PauseResumeAnchorMax);
+            CreateButton("PauseRestartButton", panel.transform, "Restart", PanelUiLayoutMetrics.PauseRestartAnchorMin, PanelUiLayoutMetrics.PauseRestartAnchorMax);
+            panel.SetActive(false);
+        }
+
         private static void CreateLevelPanel(Transform parent)
         {
             GameObject panel = CreatePanel("LevelPanel", parent, AndroidHudLayoutMetrics.PanelAnchorMin, AndroidHudLayoutMetrics.PanelAnchorMax, new Vector2(0.5f, 0.5f), Vector2.zero);
@@ -156,8 +178,9 @@ namespace EcoGarden.Editor
             Text title = CreateText("LevelTitleText", panel.transform, "Levels", TextAnchor.MiddleLeft, PanelUiLayoutMetrics.TitleAnchorMin, PanelUiLayoutMetrics.TitleAnchorMax).GetComponent<Text>();
             title.fontSize = 36;
             CreateButton("LevelCloseButton", panel.transform, UiIconLabelCatalog.Close, PanelUiLayoutMetrics.CloseAnchorMin, PanelUiLayoutMetrics.CloseAnchorMax);
+            CreateText("LevelSummaryText", panel.transform, string.Empty, TextAnchor.MiddleLeft, LevelSelectUiLayoutMetrics.PanelSummaryAnchorMin, LevelSelectUiLayoutMetrics.PanelSummaryAnchorMax);
 
-            GameObject viewport = CreatePanel("LevelViewport", panel.transform, PanelUiLayoutMetrics.FullContentAnchorMin, PanelUiLayoutMetrics.FullContentAnchorMax, new Vector2(0.5f, 0.5f), Vector2.zero);
+            GameObject viewport = CreatePanel("LevelViewport", panel.transform, LevelSelectUiLayoutMetrics.PanelContentAnchorMin, LevelSelectUiLayoutMetrics.PanelContentAnchorMax, new Vector2(0.5f, 0.5f), Vector2.zero);
             viewport.GetComponent<Image>().color = new Color(0.06f, 0.08f, 0.10f, 0.55f);
             Mask mask = viewport.AddComponent<Mask>();
             mask.showMaskGraphic = true;
@@ -179,6 +202,26 @@ namespace EcoGarden.Editor
             scrollRect.horizontal = false;
             scrollRect.vertical = true;
             scrollRect.movementType = ScrollRect.MovementType.Clamped;
+
+            CreateLevelPreviewPanel(panel.transform);
+            panel.SetActive(false);
+        }
+
+        private static void CreateLevelPreviewPanel(Transform parent)
+        {
+            GameObject panel = CreatePanel("LevelPreviewPanel", parent, LevelSelectUiLayoutMetrics.PreviewAnchorMin, LevelSelectUiLayoutMetrics.PreviewAnchorMax, new Vector2(0.5f, 0.5f), Vector2.zero);
+            panel.GetComponent<Image>().color = new Color(0.08f, 0.11f, 0.15f, 0.94f);
+            CreateText("LevelPreviewTitleText", panel.transform, "Level", TextAnchor.MiddleLeft, LevelSelectUiLayoutMetrics.PreviewTitleAnchorMin, LevelSelectUiLayoutMetrics.PreviewTitleAnchorMax);
+            CreateText("LevelPreviewMetaText", panel.transform, string.Empty, TextAnchor.MiddleLeft, LevelSelectUiLayoutMetrics.PreviewMetaAnchorMin, LevelSelectUiLayoutMetrics.PreviewMetaAnchorMax);
+            CreateText("LevelPreviewObjectiveText", panel.transform, string.Empty, TextAnchor.MiddleLeft, LevelSelectUiLayoutMetrics.PreviewObjectiveAnchorMin, LevelSelectUiLayoutMetrics.PreviewObjectiveAnchorMax);
+            CreateText("LevelPreviewRewardText", panel.transform, string.Empty, TextAnchor.MiddleLeft, LevelSelectUiLayoutMetrics.PreviewRewardAnchorMin, LevelSelectUiLayoutMetrics.PreviewRewardAnchorMax);
+            CreateButton("LevelPreviewPlayButton", panel.transform, "Play", LevelSelectUiLayoutMetrics.PreviewPlayAnchorMin, LevelSelectUiLayoutMetrics.PreviewPlayAnchorMax);
+            CreateButton("LevelPreviewCloseButton", panel.transform, "Close", LevelSelectUiLayoutMetrics.PreviewCloseAnchorMin, LevelSelectUiLayoutMetrics.PreviewCloseAnchorMax);
+            Text[] texts = panel.GetComponentsInChildren<Text>(true);
+            for (int i = 0; i < texts.Length; i++)
+            {
+                texts[i].color = UiThemePalette.TextLight;
+            }
 
             panel.SetActive(false);
         }
@@ -213,6 +256,43 @@ namespace EcoGarden.Editor
             layout.childForceExpandWidth = true;
             layout.childForceExpandHeight = false;
             layout.spacing = 12f;
+            layout.padding = new RectOffset(14, 14, 14, 14);
+            ContentSizeFitter fitter = list.AddComponent<ContentSizeFitter>();
+            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            ScrollRect scrollRect = viewport.AddComponent<ScrollRect>();
+            scrollRect.content = list.GetComponent<RectTransform>();
+            scrollRect.viewport = viewport.GetComponent<RectTransform>();
+            scrollRect.horizontal = false;
+            scrollRect.vertical = true;
+            scrollRect.movementType = ScrollRect.MovementType.Clamped;
+
+            panel.SetActive(false);
+        }
+
+        private static void CreateInventoryPanel(Transform parent)
+        {
+            GameObject panel = CreatePanel("InventoryPanel", parent, AndroidHudLayoutMetrics.PanelAnchorMin, AndroidHudLayoutMetrics.PanelAnchorMax, new Vector2(0.5f, 0.5f), Vector2.zero);
+            Image image = panel.GetComponent<Image>();
+            image.color = new Color(0.12f, 0.16f, 0.18f, 0.97f);
+
+            Text title = CreateText("InventoryTitleText", panel.transform, "Bag", TextAnchor.MiddleLeft, PanelUiLayoutMetrics.TitleAnchorMin, PanelUiLayoutMetrics.TitleAnchorMax).GetComponent<Text>();
+            title.fontSize = 36;
+            CreateButton("InventoryCloseButton", panel.transform, UiIconLabelCatalog.Close, PanelUiLayoutMetrics.CloseAnchorMin, PanelUiLayoutMetrics.CloseAnchorMax);
+            CreateText("InventorySummaryText", panel.transform, string.Empty, TextAnchor.MiddleLeft, InventoryUiLayoutMetrics.SummaryAnchorMin, InventoryUiLayoutMetrics.SummaryAnchorMax);
+
+            GameObject viewport = CreatePanel("InventoryViewport", panel.transform, InventoryUiLayoutMetrics.ContentAnchorMin, InventoryUiLayoutMetrics.ContentAnchorMax, new Vector2(0.5f, 0.5f), Vector2.zero);
+            viewport.GetComponent<Image>().color = new Color(0.06f, 0.08f, 0.10f, 0.55f);
+            Mask mask = viewport.AddComponent<Mask>();
+            mask.showMaskGraphic = true;
+
+            GameObject list = CreateRect("InventoryItemList", viewport.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), Vector2.zero);
+            VerticalLayoutGroup layout = list.AddComponent<VerticalLayoutGroup>();
+            layout.childControlWidth = true;
+            layout.childControlHeight = false;
+            layout.childForceExpandWidth = true;
+            layout.childForceExpandHeight = false;
+            layout.spacing = 10f;
             layout.padding = new RectOffset(14, 14, 14, 14);
             ContentSizeFitter fitter = list.AddComponent<ContentSizeFitter>();
             fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;

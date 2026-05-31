@@ -20,12 +20,15 @@ namespace EcoGarden.Level
         [SerializeField] private GameObject objectivePanel;
         [SerializeField] private Text feedbackText;
         [SerializeField] private GameObject resultPanel;
+        [SerializeField] private GameObject pausePanel;
         [SerializeField] private Text resultTitleText;
         [SerializeField] private Text resultMessageText;
         [SerializeField] private Text resultCountdownText;
         [SerializeField] private Button restartButton;
         [SerializeField] private Button nextLevelButton;
         [SerializeField] private Button pauseButton;
+        [SerializeField] private Button pauseResumeButton;
+        [SerializeField] private Button pauseRestartButton;
         [SerializeField] private LevelCatalogController levelCatalogController;
         [SerializeField] private float timerWarningSeconds = 20f;
         [SerializeField] private float timerCriticalSeconds = 10f;
@@ -59,6 +62,7 @@ namespace EcoGarden.Level
             WireRestartButton();
             WireNextLevelButton();
             WirePauseButton();
+            WirePausePanelButtons();
         }
 
         private void OnEnable()
@@ -123,6 +127,7 @@ namespace EcoGarden.Level
             remainingSeconds = boardController.LevelDefinition.TimerSeconds;
             State = LevelPlayState.Playing;
             SetResultPanelVisible(false);
+            SetPausePanelVisible(false);
             SetFeedback(string.Empty);
             ClearResultCountdown();
             RefreshObjective();
@@ -130,6 +135,7 @@ namespace EcoGarden.Level
             RefreshTimer();
             RefreshPauseButton();
             RefreshNextLevelButton();
+            ShowLevelStartHint();
         }
 
         public void CompleteLevel()
@@ -170,7 +176,9 @@ namespace EcoGarden.Level
             if (State == LevelPlayState.Playing)
             {
                 State = LevelPlayState.Paused;
+                HideBlockingPanels();
                 SetFeedback("Paused");
+                SetPausePanelVisible(true);
                 RefreshPauseButton();
                 return;
             }
@@ -179,6 +187,7 @@ namespace EcoGarden.Level
             {
                 State = LevelPlayState.Playing;
                 SetFeedback(string.Empty);
+                SetPausePanelVisible(false);
                 RefreshPauseButton();
             }
         }
@@ -236,7 +245,9 @@ namespace EcoGarden.Level
 
             SaveService.Save(saveData);
 
-            if (levelCatalogController.SelectLevel(nextLevel, saveData))
+            levelCatalogController.SetBoardController(boardController);
+            if (levelCatalogController.SelectLevel(nextLevel, saveData) ||
+                levelCatalogController.SelectLevelAfterUnlock(nextLevel))
             {
                 HideBlockingPanels();
                 SetResultPanelVisible(false);
@@ -456,6 +467,7 @@ namespace EcoGarden.Level
         private void ShowResult(string title, string message)
         {
             HideBlockingPanels();
+            SetPausePanelVisible(false);
             SetResultPanelVisible(true);
 
             if (resultTitleText != null)
@@ -498,6 +510,30 @@ namespace EcoGarden.Level
             return levelName + " failed. Retry the order.";
         }
 
+        private void ShowLevelStartHint()
+        {
+            if (boardController == null || boardController.LevelDefinition == null)
+            {
+                return;
+            }
+
+            switch (boardController.LevelDefinition.LevelId)
+            {
+                case 1:
+                    SetFeedback("Tap the seed pot, then drag matching sprouts together.");
+                    break;
+                case 2:
+                    SetFeedback("Use Sell for spare plants and keep board space open.");
+                    break;
+                case 3:
+                    SetFeedback("Use the Magic Wand when a plant needs one quick upgrade.");
+                    break;
+                default:
+                    SetFeedback(string.Empty);
+                    break;
+            }
+        }
+
         private void AutoWireReferences()
         {
             if (timerText == null)
@@ -526,6 +562,15 @@ namespace EcoGarden.Level
                 if (resultObject != null)
                 {
                     resultPanel = resultObject;
+                }
+            }
+
+            if (pausePanel == null)
+            {
+                GameObject pauseObject = FindObjectIncludingInactive("PausePanel");
+                if (pauseObject != null)
+                {
+                    pausePanel = pauseObject;
                 }
             }
 
@@ -571,6 +616,24 @@ namespace EcoGarden.Level
                 }
             }
 
+            if (pauseResumeButton == null)
+            {
+                GameObject resumeObject = FindObjectIncludingInactive("PauseResumeButton");
+                if (resumeObject != null)
+                {
+                    pauseResumeButton = resumeObject.GetComponent<Button>();
+                }
+            }
+
+            if (pauseRestartButton == null)
+            {
+                GameObject restartObject = FindObjectIncludingInactive("PauseRestartButton");
+                if (restartObject != null)
+                {
+                    pauseRestartButton = restartObject.GetComponent<Button>();
+                }
+            }
+
             if (levelCatalogController == null)
             {
                 levelCatalogController = FindAnyObjectByType<LevelCatalogController>();
@@ -611,6 +674,22 @@ namespace EcoGarden.Level
             pauseButton.onClick.RemoveListener(TogglePause);
             pauseButton.onClick.AddListener(TogglePause);
             RefreshPauseButton();
+        }
+
+        private void WirePausePanelButtons()
+        {
+            EnsurePausePanel();
+            if (pauseResumeButton != null)
+            {
+                pauseResumeButton.onClick.RemoveListener(TogglePause);
+                pauseResumeButton.onClick.AddListener(TogglePause);
+            }
+
+            if (pauseRestartButton != null)
+            {
+                pauseRestartButton.onClick.RemoveListener(RestartLevel);
+                pauseRestartButton.onClick.AddListener(RestartLevel);
+            }
         }
 
         private void RefreshPauseButton()
@@ -733,6 +812,7 @@ namespace EcoGarden.Level
             SetPanelsInactive("MissionPanel");
             SetPanelsInactive("MissionTrackerPanel");
             SetPanelsInactive("LevelPanel");
+            SetPanelsInactive("PausePanel");
         }
 
         private static void SetPanelsInactive(string objectName)
@@ -813,6 +893,56 @@ namespace EcoGarden.Level
             if (resultPanel != null)
             {
                 resultPanel.SetActive(visible);
+                if (visible)
+                {
+                    UiModalPanelUtility.RaiseModalPanel(resultPanel);
+                }
+            }
+        }
+
+        private void SetPausePanelVisible(bool visible)
+        {
+            EnsurePausePanel();
+            if (pausePanel != null)
+            {
+                pausePanel.SetActive(visible);
+                if (visible)
+                {
+                    UiModalPanelUtility.RaiseModalPanel(pausePanel);
+                }
+            }
+        }
+
+        private void EnsurePausePanel()
+        {
+            if (pausePanel == null)
+            {
+                pausePanel = FindObjectIncludingInactive("PausePanel");
+            }
+
+            if (pausePanel == null)
+            {
+                GameObject canvasRoot = FindObjectIncludingInactive("HUDRoot");
+                Transform parent = canvasRoot != null ? canvasRoot.transform : transform;
+                pausePanel = CreatePausePanel(parent);
+            }
+
+            if (pauseResumeButton == null)
+            {
+                GameObject resumeObject = FindObjectIncludingInactive("PauseResumeButton");
+                if (resumeObject != null)
+                {
+                    pauseResumeButton = resumeObject.GetComponent<Button>();
+                }
+            }
+
+            if (pauseRestartButton == null)
+            {
+                GameObject restartObject = FindObjectIncludingInactive("PauseRestartButton");
+                if (restartObject != null)
+                {
+                    pauseRestartButton = restartObject.GetComponent<Button>();
+                }
             }
         }
 
@@ -950,6 +1080,55 @@ namespace EcoGarden.Level
             text.raycastTarget = false;
 
             return buttonObject;
+        }
+
+        private static GameObject CreatePausePanel(Transform parent)
+        {
+            GameObject panel = new GameObject("PausePanel", typeof(RectTransform), typeof(Image));
+            panel.transform.SetParent(parent, false);
+
+            RectTransform rect = panel.GetComponent<RectTransform>();
+            rect.anchorMin = AndroidHudLayoutMetrics.ResultAnchorMin;
+            rect.anchorMax = AndroidHudLayoutMetrics.ResultAnchorMax;
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = Vector2.zero;
+            rect.sizeDelta = Vector2.zero;
+
+            Image image = panel.GetComponent<Image>();
+            Sprite skinSprite = Resources.Load<Sprite>("UiSkins/ui_panel_overlay");
+            image.sprite = skinSprite ?? PlaceholderSpriteFactory.HudPanelSprite;
+            image.color = skinSprite != null ? Color.white : UiThemePalette.PanelOverlay;
+
+            CreatePauseText(panel.transform, "PauseTitleText", "Paused", 40, PanelUiLayoutMetrics.PauseTitleAnchorMin, PanelUiLayoutMetrics.PauseTitleAnchorMax);
+            CreatePauseText(panel.transform, "PauseMessageText", "Take a break or restart this level.", 22, PanelUiLayoutMetrics.PauseMessageAnchorMin, PanelUiLayoutMetrics.PauseMessageAnchorMax);
+            CreateResultButton("PauseResumeButton", panel.transform, "Resume", PanelUiLayoutMetrics.PauseResumeAnchorMin, PanelUiLayoutMetrics.PauseResumeAnchorMax);
+            CreateResultButton("PauseRestartButton", panel.transform, "Restart", PanelUiLayoutMetrics.PauseRestartAnchorMin, PanelUiLayoutMetrics.PauseRestartAnchorMax);
+            panel.SetActive(false);
+            return panel;
+        }
+
+        private static void CreatePauseText(Transform parent, string name, string content, int fontSize, Vector2 anchorMin, Vector2 anchorMax)
+        {
+            GameObject textObject = new GameObject(name, typeof(RectTransform), typeof(Text));
+            textObject.transform.SetParent(parent, false);
+
+            RectTransform rect = textObject.GetComponent<RectTransform>();
+            rect.anchorMin = anchorMin;
+            rect.anchorMax = anchorMax;
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = Vector2.zero;
+            rect.sizeDelta = Vector2.zero;
+
+            Text text = textObject.GetComponent<Text>();
+            text.text = content;
+            text.alignment = TextAnchor.MiddleCenter;
+            text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            text.fontSize = fontSize;
+            text.resizeTextForBestFit = true;
+            text.resizeTextMinSize = 12;
+            text.resizeTextMaxSize = fontSize;
+            text.color = UiThemePalette.TextLight;
+            text.raycastTarget = false;
         }
 
         private static Image EnsureButtonRuntimeIcon(Button button)

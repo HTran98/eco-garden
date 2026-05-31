@@ -85,9 +85,18 @@ namespace EcoGarden.UI
 
         private void SetPanelVisible(bool visible)
         {
+            if (visible)
+            {
+                UiModalPanelUtility.HideOtherModalPanels("MissionPanel");
+            }
+
             if (missionPanel != null)
             {
                 missionPanel.SetActive(visible);
+                if (visible)
+                {
+                    UiModalPanelUtility.RaiseModalPanel(missionPanel);
+                }
             }
 
             if (visible)

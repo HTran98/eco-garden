@@ -484,11 +484,11 @@ namespace EcoGarden.Editor
                 false);
             CreateOrUpdateShopItem(
                 "shop_deco_bird_visitor",
-                "Bird Visitor Decoration",
-                "Unlocks an ambient bird visitor.",
+                "Bee Visitor Decoration",
+                "Unlocks an ambient bee visitor.",
                 ShopItemCategory.Decoration,
                 new ShopPriceDefinition(ShopPurchaseKind.Gem, 20),
-                new RewardDefinition(null, null, new[] { "deco_bird_visitor" }),
+                new RewardDefinition(null, null, new[] { "deco_bee_visitor" }),
                 false);
             CreateOrUpdateShopItem(
                 "shop_deco_board_moss_stone",
@@ -505,6 +505,14 @@ namespace EcoGarden.Editor
                 ShopItemCategory.Decoration,
                 new ShopPriceDefinition(ShopPurchaseKind.Gem, 40),
                 new RewardDefinition(null, null, new[] { "skin_npc_traveler" }),
+                false);
+            CreateOrUpdateShopItem(
+                "shop_deco_background_lily_pond",
+                "Background: Sunset Pond",
+                "Unlocks a warm lily pond background.",
+                ShopItemCategory.Decoration,
+                new ShopPriceDefinition(ShopPurchaseKind.Gem, 35),
+                new RewardDefinition(null, null, new[] { "skin_background_lily_pond" }),
                 false);
             CreateOrUpdateShopItem(
                 "shop_unlock_lotus_tier_4",

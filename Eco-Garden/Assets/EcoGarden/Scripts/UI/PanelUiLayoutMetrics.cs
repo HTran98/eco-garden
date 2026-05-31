@@ -24,6 +24,14 @@ namespace EcoGarden.UI
         public static readonly Vector2 ResultRestartAnchorMax = new Vector2(0.46f, 0.28f);
         public static readonly Vector2 ResultNextAnchorMin = new Vector2(0.54f, 0.07f);
         public static readonly Vector2 ResultNextAnchorMax = new Vector2(0.92f, 0.28f);
+        public static readonly Vector2 PauseTitleAnchorMin = new Vector2(0.08f, 0.66f);
+        public static readonly Vector2 PauseTitleAnchorMax = new Vector2(0.92f, 0.88f);
+        public static readonly Vector2 PauseMessageAnchorMin = new Vector2(0.12f, 0.46f);
+        public static readonly Vector2 PauseMessageAnchorMax = new Vector2(0.88f, 0.62f);
+        public static readonly Vector2 PauseResumeAnchorMin = new Vector2(0.08f, 0.15f);
+        public static readonly Vector2 PauseResumeAnchorMax = new Vector2(0.46f, 0.36f);
+        public static readonly Vector2 PauseRestartAnchorMin = new Vector2(0.54f, 0.15f);
+        public static readonly Vector2 PauseRestartAnchorMax = new Vector2(0.92f, 0.36f);
 
         public const float MinimumPanelTitleWidth = 320f;
         public const float MinimumPanelCloseWidth = 58f;
@@ -31,5 +39,7 @@ namespace EcoGarden.UI
         public const float MinimumResultActionWidth = 190f;
         public const float MinimumResultActionHeight = 70f;
         public const float MinimumResultCountdownHeight = 24f;
+        public const float MinimumPauseActionWidth = 190f;
+        public const float MinimumPauseActionHeight = 70f;
     }
 }

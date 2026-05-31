@@ -486,6 +486,7 @@ namespace EcoGarden.Save
 
             data.purchasedShopProductIds = shopController.Inventory.GetPurchasedProductIds();
             data.ownedDecorationIds = shopController.Inventory.GetOwnedDecorationIds();
+            data.activeDecorationIds = shopController.Inventory.GetActiveDecorationIds();
             data.processedIapTransactionIds = shopController.GetProcessedIapTransactionIds();
         }
 
@@ -631,7 +632,7 @@ namespace EcoGarden.Save
                 return;
             }
 
-            shopController.RestoreInventory(data.purchasedShopProductIds, data.ownedDecorationIds);
+            shopController.RestoreInventory(data.purchasedShopProductIds, data.ownedDecorationIds, data.activeDecorationIds);
             shopController.RestoreProcessedIapTransactionIds(data.processedIapTransactionIds);
         }
 
