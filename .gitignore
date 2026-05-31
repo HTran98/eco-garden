@@ -17,6 +17,8 @@ Eco-Garden/*.unitypackage
 Eco-Garden/.utmp/
 Eco-Garden/*_BurstDebugInformation_DoNotShip/
 Eco-Garden/*_BackUpThisFolder_ButDontShipItWithYourGame/
+Eco-Garden/Assets/_Recovery/
+Eco-Garden/Assets/_Recovery.meta
 
 # Unity generated project files
 Eco-Garden/*.csproj
