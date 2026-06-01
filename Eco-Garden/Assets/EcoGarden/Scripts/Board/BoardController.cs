@@ -126,14 +126,15 @@ namespace EcoGarden.Board
 
             BoardItem sourceItem = BoardState.GetCell(from) != null ? BoardState.GetCell(from).Item : null;
             bool willMerge = WillMerge(from, to);
-            bool changed = TryDeliverToNpc(from, to) || BoardState.TryMergeItem(from, to) || BoardState.TryMoveItem(from, to);
+            bool deliveredToNpc = TryDeliverToNpc(from, to);
+            bool changed = deliveredToNpc || BoardState.TryMergeItem(from, to) || BoardState.TryMoveItem(from, to);
 
             if (changed && refreshView)
             {
                 RefreshView();
             }
 
-            if (changed)
+            if (changed && !deliveredToNpc)
             {
                 BoardChanged?.Invoke();
                 if (willMerge)

@@ -1,3 +1,4 @@
+using EcoGarden.Audio;
 using EcoGarden.Board;
 using EcoGarden.Config;
 using EcoGarden.Progression;
@@ -178,6 +179,7 @@ namespace EcoGarden.Level
                 State = LevelPlayState.Paused;
                 HideBlockingPanels();
                 SetFeedback("Paused");
+                EcoGardenAudioController.Instance?.PlayPauseOpen();
                 SetPausePanelVisible(true);
                 RefreshPauseButton();
                 return;

@@ -1,3 +1,4 @@
+using EcoGarden.Audio;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -34,6 +35,7 @@ namespace EcoGarden.UI
             }
 
             CacheBaseScale();
+            EcoGardenAudioController.Instance?.PlayButtonTap();
             transform.localScale = baseScale * pressedScale;
         }
 

@@ -4,6 +4,7 @@ using EcoGarden.Input;
 using EcoGarden.Level;
 using EcoGarden.Economy;
 using EcoGarden.AI;
+using EcoGarden.Audio;
 using EcoGarden.IAP;
 using EcoGarden.Missions;
 using EcoGarden.Progression;
@@ -51,6 +52,8 @@ namespace EcoGarden.Editor
             gameRoot.AddComponent<LevelStateController>();
             gameRoot.AddComponent<LevelPlaytestMetricsController>();
             gameRoot.AddComponent<EconomyController>();
+            EcoGardenAudioController audioController = gameRoot.AddComponent<EcoGardenAudioController>();
+            EcoGardenAudioMenu.AssignAudioClips(audioController);
             gameRoot.AddComponent<MockIapProvider>();
             ShopController shopController = gameRoot.AddComponent<ShopController>();
             shopController.SetCatalogItems(LoadShopCatalogItems());
@@ -102,6 +105,8 @@ namespace EcoGarden.Editor
             gameRoot.AddComponent<LevelStateController>();
             gameRoot.AddComponent<LevelPlaytestMetricsController>();
             gameRoot.AddComponent<EconomyController>();
+            EcoGardenAudioController audioController = gameRoot.AddComponent<EcoGardenAudioController>();
+            EcoGardenAudioMenu.AssignAudioClips(audioController);
             gameRoot.AddComponent<MockIapProvider>();
 
             LevelCatalogController levelCatalogController = gameRoot.AddComponent<LevelCatalogController>();
@@ -221,6 +226,7 @@ namespace EcoGarden.Editor
             camera.orthographicSize = 5.25f;
             camera.clearFlags = CameraClearFlags.SolidColor;
             camera.backgroundColor = new Color(0.70f, 0.86f, 0.78f, 1f);
+            cameraObject.AddComponent<AudioListener>();
             cameraObject.transform.position = new Vector3(0f, 0f, -10f);
         }
 

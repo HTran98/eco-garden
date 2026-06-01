@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using EcoGarden.Audio;
 using EcoGarden.Missions;
 using EcoGarden.Rewards;
 using EcoGarden.Utilities;
@@ -208,6 +209,7 @@ namespace EcoGarden.UI
             }
 
             MissionClaimResult result = missionController.TryClaimMissionReward(missionId);
+            EcoGardenAudioController.Instance?.PlayMissionClaim(result.Succeeded);
             PlayMessage(BuildClaimMessage(result.Status));
             RefreshMissions();
         }

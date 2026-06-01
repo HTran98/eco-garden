@@ -1,4 +1,5 @@
 using EcoGarden.Abilities;
+using EcoGarden.Audio;
 using EcoGarden.Board;
 using EcoGarden.Shop;
 using EcoGarden.Utilities;
@@ -174,6 +175,7 @@ namespace EcoGarden.UI
         {
             if (shopController == null || !shopController.UseDecoration(decorationId))
             {
+                EcoGardenAudioController.Instance?.PlayAbilityUnavailable();
                 PlayMessage("Decor unavailable");
                 RefreshItems();
                 return;
@@ -184,6 +186,7 @@ namespace EcoGarden.UI
                 decorationController.ApplyActiveDecorationsFromShop();
             }
 
+            EcoGardenAudioController.Instance?.PlayDecorationApply();
             PlayMessage("Decor applied");
             RefreshItems();
         }

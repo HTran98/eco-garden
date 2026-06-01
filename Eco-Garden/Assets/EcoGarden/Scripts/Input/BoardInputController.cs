@@ -1,3 +1,4 @@
+using EcoGarden.Audio;
 using EcoGarden.Board;
 using EcoGarden.UI;
 using EcoGarden.Level;
@@ -177,6 +178,7 @@ namespace EcoGarden.Input
                 isDraggingItem = true;
                 dragStartPosition = gridPosition;
                 SelectItemVisual(gridPosition);
+                EcoGardenAudioController.Instance?.PlayItemPickup();
                 return;
             }
 
@@ -215,6 +217,7 @@ namespace EcoGarden.Input
 
             if (IsPointerOverUi())
             {
+                EcoGardenAudioController.Instance?.PlayInvalidDrop();
                 PlayInvalidDropFeedback();
                 AnimateDrop(dragStartPosition, false);
                 return;
@@ -223,6 +226,7 @@ namespace EcoGarden.Input
             if (!TryScreenToGrid(screenPosition, out GridPosition targetPosition) ||
                 targetPosition == dragStartPosition)
             {
+                EcoGardenAudioController.Instance?.PlayInvalidDrop();
                 PlayInvalidDropFeedback();
                 AnimateDrop(dragStartPosition, false);
                 return;
@@ -233,6 +237,7 @@ namespace EcoGarden.Input
             bool changed = boardController.TryMoveOrMerge(dragStartPosition, targetPosition, false);
             if (changed)
             {
+                EcoGardenAudioController.Instance?.PlayValidDrop();
                 Vector3 targetWorld = boardController.GetCellWorldPosition(targetPosition);
                 if (willMerge)
                 {
@@ -246,6 +251,7 @@ namespace EcoGarden.Input
             }
             else
             {
+                EcoGardenAudioController.Instance?.PlayInvalidDrop();
                 PlayInvalidDropFeedback();
             }
 
@@ -463,6 +469,7 @@ namespace EcoGarden.Input
 
             if (!boardController.TrySellItem(dragStartPosition, out int goldValue, false))
             {
+                EcoGardenAudioController.Instance?.PlayInvalidDrop();
                 gameplayFeedbackController.PlayHudMessage("Cannot sell this");
                 AnimateDrop(dragStartPosition, false);
                 return;
@@ -487,6 +494,7 @@ namespace EcoGarden.Input
         {
             if (!boardController.TryDeliverOrder(dragStartPosition, false))
             {
+                EcoGardenAudioController.Instance?.PlayInvalidDrop();
                 gameplayFeedbackController.PlayHudMessage("Need requested item");
                 AnimateDrop(dragStartPosition, false);
                 return;

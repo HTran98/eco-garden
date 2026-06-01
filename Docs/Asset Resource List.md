@@ -93,18 +93,40 @@ Acceptance status meanings:
 
 ## Required Audio Assets
 
-Audio is not release-ready yet. Current gameplay has saved sound/music settings and some SFX hook points, but no committed production audio files in the target folders.
+Audio is not release-ready yet. Current gameplay has saved sound/music settings and a Sell SFX hook point, but no committed production audio files in the target folders. Generation prompts and exact filenames are defined in `Assets/EcoGarden/Audio/AUDIO_GENERATION_PROMPTS.md`.
 
 | Asset Id | Type | Target Folder | Status | Notes |
 | --- | --- | --- | --- | --- |
 | `sfx_item_pickup_01` | SFX | `Assets/EcoGarden/Audio/SFX` | Needs authored audio before release | Item pickup |
-| `sfx_item_drop_01` | SFX | `Assets/EcoGarden/Audio/SFX` | Needs authored audio before release | Item drop |
+| `sfx_item_drop_valid_01` | SFX | `Assets/EcoGarden/Audio/SFX` | Needs authored audio before release | Valid board/drop-zone drop |
+| `sfx_item_drop_invalid_01` | SFX | `Assets/EcoGarden/Audio/SFX` | Needs authored audio before release | Invalid drop or item return |
 | `sfx_merge_01` | SFX | `Assets/EcoGarden/Audio/SFX` | Needs authored audio before release | Merge chime |
 | `sfx_producer_spawn_01` | SFX | `Assets/EcoGarden/Audio/SFX` | Needs authored audio before release | Producer tap/spawn |
-| `sfx_ability_use_01` | SFX | `Assets/EcoGarden/Audio/SFX` | Needs authored audio before release | Booster activation |
-| `sfx_objective_complete_01` | SFX | `Assets/EcoGarden/Audio/SFX` | Needs authored audio before release | Level complete |
+| `sfx_sell_item_01` | SFX | `Assets/EcoGarden/Audio/SFX` | Needs authored audio before release | Sell Basket success |
+| `sfx_delivery_submit_01` | SFX | `Assets/EcoGarden/Audio/SFX` | Needs authored audio before release | Requested item delivery |
+| `sfx_order_complete_01` | SFX | `Assets/EcoGarden/Audio/SFX` | Needs authored audio before release | NPC order complete |
+| `sfx_level_complete_01` | SFX | `Assets/EcoGarden/Audio/SFX` | Needs authored audio before release | Level complete |
+| `sfx_level_failed_01` | SFX | `Assets/EcoGarden/Audio/SFX` | Needs authored audio before release | Level failed |
 | `sfx_timer_warning_01` | SFX | `Assets/EcoGarden/Audio/SFX` | Needs authored audio before release | Under 20 seconds |
-| `music_level_pastel_zen_01` | Music | `Assets/EcoGarden/Audio/Music` | Deferred | Calm looping level music |
+| `sfx_ability_shovel_01` | SFX | `Assets/EcoGarden/Audio/SFX` | Needs authored audio before release | Shovel clears obstacle |
+| `sfx_ability_magic_wand_01` | SFX | `Assets/EcoGarden/Audio/SFX` | Needs authored audio before release | Magic Wand upgrade |
+| `sfx_ability_sorting_magnet_01` | SFX | `Assets/EcoGarden/Audio/SFX` | Needs authored audio before release | Sorting Magnet move |
+| `sfx_ability_unavailable_01` | SFX | `Assets/EcoGarden/Audio/SFX` | Needs authored audio before release | Ability unavailable or invalid target |
+| `sfx_gold_gain_01` | SFX | `Assets/EcoGarden/Audio/SFX` | Needs authored audio before release | Gold reward feedback |
+| `sfx_gem_gain_01` | SFX | `Assets/EcoGarden/Audio/SFX` | Needs authored audio before release | Gem reward feedback |
+| `sfx_reward_claim_01` | SFX | `Assets/EcoGarden/Audio/SFX` | Needs authored audio before release | Generic reward claim |
+| `sfx_mission_claim_01` | SFX | `Assets/EcoGarden/Audio/SFX` | Needs authored audio before release | Mission reward claim |
+| `sfx_shop_purchase_success_01` | SFX | `Assets/EcoGarden/Audio/SFX` | Needs authored audio before release | Shop purchase success |
+| `sfx_shop_purchase_failed_01` | SFX | `Assets/EcoGarden/Audio/SFX` | Needs authored audio before release | Shop purchase failed/cancelled |
+| `sfx_iap_pending_01` | SFX | `Assets/EcoGarden/Audio/SFX` | Needs authored audio before release | Store purchase pending |
+| `sfx_button_tap_01` | SFX | `Assets/EcoGarden/Audio/SFX` | Needs authored audio before release | Standard UI button tap |
+| `sfx_panel_open_01` | SFX | `Assets/EcoGarden/Audio/SFX` | Needs authored audio before release | Modal/panel open |
+| `sfx_panel_close_01` | SFX | `Assets/EcoGarden/Audio/SFX` | Needs authored audio before release | Modal/panel close |
+| `sfx_pause_open_01` | SFX | `Assets/EcoGarden/Audio/SFX` | Needs authored audio before release | Pause panel open |
+| `sfx_decoration_apply_01` | SFX | `Assets/EcoGarden/Audio/SFX` | Needs authored audio before release | Decoration activated from Bag |
+| `amb_pond_day_loop_01` | Ambience | `Assets/EcoGarden/Audio/Music` | Optional | Calm pond ambience loop |
+| `music_level_pastel_zen_01` | Music | `Assets/EcoGarden/Audio/Music` | Needs authored audio before release | Calm looping level music |
+| `music_menu_garden_01` | Music | `Assets/EcoGarden/Audio/Music` | Optional | Menu/level select loop |
 
 ## Import Guidelines
 

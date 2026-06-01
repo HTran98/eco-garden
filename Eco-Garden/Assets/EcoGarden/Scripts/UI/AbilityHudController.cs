@@ -1,4 +1,5 @@
 using EcoGarden.Abilities;
+using EcoGarden.Audio;
 using EcoGarden.Board;
 using UnityEngine;
 using UnityEngine.UI;
@@ -53,6 +54,7 @@ namespace EcoGarden.UI
             }
 
             SetFeedback("Invalid target");
+            EcoGardenAudioController.Instance?.PlayAbilityUnavailable();
             if (gameplayFeedbackController != null)
             {
                 gameplayFeedbackController.PlayHudMessage("Invalid target - cancelled");
@@ -84,6 +86,7 @@ namespace EcoGarden.UI
                 boardController.AbilityInventory.GetCount(abilityKind) <= 0)
             {
                 SetFeedback("No uses left");
+                EcoGardenAudioController.Instance?.PlayAbilityUnavailable();
                 if (gameplayFeedbackController != null)
                 {
                     gameplayFeedbackController.PlayHudMessage("No uses left");

@@ -1,3 +1,4 @@
+using EcoGarden.Audio;
 using EcoGarden.Shop;
 using EcoGarden.Abilities;
 using System.Collections.Generic;
@@ -174,6 +175,7 @@ namespace EcoGarden.UI
             }
 
             ShopPurchaseResult result = shopController.TryPurchase(productId);
+            EcoGardenAudioController.Instance?.PlayShopPurchase(result.Status);
             TrackPurchaseState(productId, result);
             PlayMessage(BuildPurchaseMessage(result));
             RefreshProducts();
@@ -464,6 +466,7 @@ namespace EcoGarden.UI
             }
 
             PlayMessage(BuildPurchaseMessage(result));
+            EcoGardenAudioController.Instance?.PlayShopPurchase(result.Status);
             RefreshProducts();
         }
 

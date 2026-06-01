@@ -165,6 +165,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 17413626}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &17413626
 SpriteRenderer:
   serializedVersion: 2
@@ -222,7 +223,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &24670145
 GameObject:
@@ -270,6 +271,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 24670148}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &24670148
 SpriteRenderer:
   serializedVersion: 2
@@ -327,7 +329,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &75666522
 GameObject:
@@ -454,6 +456,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 81830030}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &81830030
 SpriteRenderer:
   serializedVersion: 2
@@ -511,7 +514,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &149258567
 GameObject:
@@ -917,6 +920,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 190841592}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &190841592
 SpriteRenderer:
   serializedVersion: 2
@@ -974,7 +978,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &208454072
 GameObject:
@@ -1222,6 +1226,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 225869914}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &225869914
 SpriteRenderer:
   serializedVersion: 2
@@ -1279,7 +1284,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &254908350
 GameObject:
@@ -1772,6 +1777,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 366172141}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &366172141
 SpriteRenderer:
   serializedVersion: 2
@@ -1829,7 +1835,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &385994824
 GameObject:
@@ -2032,6 +2038,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 395040123}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &395040123
 SpriteRenderer:
   serializedVersion: 2
@@ -2089,7 +2096,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &396371608
 GameObject:
@@ -2137,6 +2144,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 396371611}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &396371611
 SpriteRenderer:
   serializedVersion: 2
@@ -2194,7 +2202,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &474087212
 GameObject:
@@ -2285,6 +2293,7 @@ GameObject:
   m_Component:
   - component: {fileID: 478049117}
   - component: {fileID: 478049116}
+  - component: {fileID: 478049118}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -2358,6 +2367,50 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &478049118
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 478049115}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalCameraData
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
+  m_RenderPostProcessing: 0
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 1
+  m_AllowHDROutput: 1
+  m_UseScreenCoordOverride: 0
+  m_ScreenSizeOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_TaaSettings:
+    m_Quality: 3
+    m_FrameInfluence: 0.1
+    m_JitterScale: 1
+    m_MipBias: 0
+    m_VarianceClampScale: 0.9
+    m_ContrastAdaptiveSharpening: 0
+  m_Version: 2
 --- !u!1 &497308347
 GameObject:
   m_ObjectHideFlags: 0
@@ -2404,6 +2457,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 497308350}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &497308350
 SpriteRenderer:
   serializedVersion: 2
@@ -2461,7 +2515,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &503125601
 GameObject:
@@ -2588,6 +2642,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 518040482}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &518040482
 SpriteRenderer:
   serializedVersion: 2
@@ -2645,7 +2700,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &541729482
 GameObject:
@@ -2843,6 +2898,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 560115811}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &560115811
 SpriteRenderer:
   serializedVersion: 2
@@ -2900,7 +2956,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &578616014
 GameObject:
@@ -3359,6 +3415,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 682469907}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &682469907
 SpriteRenderer:
   serializedVersion: 2
@@ -3416,7 +3473,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &689419524
 GameObject:
@@ -3464,6 +3521,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 689419527}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &689419527
 SpriteRenderer:
   serializedVersion: 2
@@ -3521,7 +3579,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &717013668
 GameObject:
@@ -3727,6 +3785,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 758001085}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &758001085
 SpriteRenderer:
   serializedVersion: 2
@@ -3784,7 +3843,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &781768996
 GameObject:
@@ -3832,6 +3891,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 781768999}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &781768999
 SpriteRenderer:
   serializedVersion: 2
@@ -3889,7 +3949,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &787310595
 GameObject:
@@ -3937,6 +3997,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 787310598}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &787310598
 SpriteRenderer:
   serializedVersion: 2
@@ -3994,7 +4055,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &811833843
 GameObject:
@@ -4121,6 +4182,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 865337704}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &865337704
 SpriteRenderer:
   serializedVersion: 2
@@ -4178,7 +4240,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &903981768
 GameObject:
@@ -4226,6 +4288,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 903981771}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &903981771
 SpriteRenderer:
   serializedVersion: 2
@@ -4283,7 +4346,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &923964540
 GameObject:
@@ -4331,6 +4394,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 923964543}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &923964543
 SpriteRenderer:
   serializedVersion: 2
@@ -4388,7 +4452,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &975416274
 GameObject:
@@ -4436,6 +4500,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 975416277}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &975416277
 SpriteRenderer:
   serializedVersion: 2
@@ -4493,7 +4558,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &977377303
 GameObject:
@@ -4541,6 +4606,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 977377306}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &977377306
 SpriteRenderer:
   serializedVersion: 2
@@ -4598,7 +4664,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1000344665
 GameObject:
@@ -4723,6 +4789,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 1010190195}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &1010190195
 SpriteRenderer:
   serializedVersion: 2
@@ -4780,7 +4847,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1028676979
 GameObject:
@@ -4800,6 +4867,7 @@ GameObject:
   - component: {fileID: 1028676984}
   - component: {fileID: 1028676983}
   - component: {fileID: 1028676982}
+  - component: {fileID: 1028676990}
   m_Layer: 0
   m_Name: GameRoot
   m_TagString: Untagged
@@ -4842,14 +4910,23 @@ MonoBehaviour:
   boardController: {fileID: 0}
   timerText: {fileID: 0}
   objectiveText: {fileID: 0}
+  objectivePanel: {fileID: 0}
   feedbackText: {fileID: 0}
   resultPanel: {fileID: 0}
+  pausePanel: {fileID: 0}
   resultTitleText: {fileID: 0}
   resultMessageText: {fileID: 0}
+  resultCountdownText: {fileID: 0}
   restartButton: {fileID: 0}
   nextLevelButton: {fileID: 0}
   pauseButton: {fileID: 0}
+  pauseResumeButton: {fileID: 0}
+  pauseRestartButton: {fileID: 0}
   levelCatalogController: {fileID: 0}
+  timerWarningSeconds: 20
+  timerCriticalSeconds: 10
+  autoAdvanceToNextLevel: 1
+  autoAdvanceDelaySeconds: 5
 --- !u!114 &1028676982
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4887,6 +4964,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: fc9ed26702460674786144cdd8dcacb1, type: 2}
   boardController: {fileID: 0}
   economyController: {fileID: 0}
+  includeDailyMissions: 0
 --- !u!114 &1028676984
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4917,6 +4995,8 @@ MonoBehaviour:
   boardController: {fileID: 0}
   mockIapProvider: {fileID: 0}
   iapProviderBehaviour: {fileID: 0}
+  receiptValidatorBehaviour: {fileID: 0}
+  includeDecorationCatalogItems: 1
 --- !u!114 &1028676985
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4990,6 +5070,57 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1028676990
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1028676979}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29e039931bac40c78ccd44a95dd5710a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Audio.EcoGardenAudioController
+  sfxSource: {fileID: 0}
+  musicSource: {fileID: 0}
+  ambienceSource: {fileID: 0}
+  boardController: {fileID: 0}
+  levelStateController: {fileID: 0}
+  sfxVolume: 0.78
+  musicVolume: 0.32
+  ambienceVolume: 0.18
+  timerWarningSeconds: 20
+  itemPickupClip: {fileID: 8300000, guid: 8e08e27e7c6ca1a47a605c2589cc9325, type: 3}
+  itemDropValidClip: {fileID: 8300000, guid: 0ed88ab37b72efb4eabed5f8602c629b, type: 3}
+  itemDropInvalidClip: {fileID: 8300000, guid: 4fab73babbb11ca4abd2d9bd7022335b, type: 3}
+  mergeClip: {fileID: 8300000, guid: 871d8730dae79f544b2c82020334a0b4, type: 3}
+  producerSpawnClip: {fileID: 8300000, guid: 799023dcb12a4aa4a813784eaaad9a77, type: 3}
+  sellItemClip: {fileID: 8300000, guid: 57575e4251f7a7b47ae06cc6f903c0a8, type: 3}
+  deliverySubmitClip: {fileID: 8300000, guid: 218d3d491b8a1054f8396e4b00b424cf, type: 3}
+  orderCompleteClip: {fileID: 8300000, guid: a67f9d9f1400ff547bb0ef1119aad38b, type: 3}
+  levelCompleteClip: {fileID: 8300000, guid: 9056388eabb906448bb5d33410e002fb, type: 3}
+  levelFailedClip: {fileID: 8300000, guid: 576fd569ca705f44f8808faa16f3ab2e, type: 3}
+  timerWarningClip: {fileID: 8300000, guid: f178c403b83e80b47a7aa58ed0ec760a, type: 3}
+  shovelClip: {fileID: 8300000, guid: 1b9e46ea322b84d4ca4cf368c634cdd8, type: 3}
+  magicWandClip: {fileID: 8300000, guid: ae599af29deab1043a1a15ec45758fc2, type: 3}
+  sortingMagnetClip: {fileID: 8300000, guid: e49f1c529fc573b4bb57b50f3144949f, type: 3}
+  abilityUnavailableClip: {fileID: 8300000, guid: 37066c5b1cae520488d15bc6991916c6, type: 3}
+  goldGainClip: {fileID: 8300000, guid: 8387271b6a1670c4a93e0c0028c1c3c6, type: 3}
+  gemGainClip: {fileID: 8300000, guid: 12f36fc126095e840bdcf72cd47b2c93, type: 3}
+  rewardClaimClip: {fileID: 8300000, guid: a3f4f574c90a4fc4da313409d11ba46c, type: 3}
+  missionClaimClip: {fileID: 8300000, guid: f938d88f1aeaf0e46a30078651ad5018, type: 3}
+  shopPurchaseSuccessClip: {fileID: 8300000, guid: 5c3733ca76b131d4998b667ec5375ed3, type: 3}
+  shopPurchaseFailedClip: {fileID: 8300000, guid: a757b5237ddd1a44e80380cedef3696d, type: 3}
+  iapPendingClip: {fileID: 8300000, guid: caa6a544f493635418796f864fd6b0d6, type: 3}
+  buttonTapClip: {fileID: 8300000, guid: 051a527407f1fcb41b6dd26d3d351268, type: 3}
+  panelOpenClip: {fileID: 8300000, guid: 21f4a41862bda804b89a4e9deaff10d6, type: 3}
+  panelCloseClip: {fileID: 8300000, guid: ab507c5e26383d44da37d152186867e0, type: 3}
+  pauseOpenClip: {fileID: 8300000, guid: d3103970ca74cf049ac6ef62f45482f8, type: 3}
+  decorationApplyClip: {fileID: 8300000, guid: 090a9fd9644dec34a8c641f098a982b4, type: 3}
+  pondAmbienceClip: {fileID: 8300000, guid: 59020f95620df194880e19b09d26d58e, type: 3}
+  levelMusicClip: {fileID: 8300000, guid: b4c90d71a05126d40bd7f4b3aa761e01, type: 3}
+  menuMusicClip: {fileID: 8300000, guid: b9a617c85effc9946858d6ae4bad49cc, type: 3}
 --- !u!1 &1043365079
 GameObject:
   m_ObjectHideFlags: 0
@@ -5149,6 +5280,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 1050505287}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &1050505287
 SpriteRenderer:
   serializedVersion: 2
@@ -5206,7 +5338,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1066113315
 GameObject:
@@ -5411,6 +5543,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 1102329724}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &1102329724
 SpriteRenderer:
   serializedVersion: 2
@@ -5468,7 +5601,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1102873444
 GameObject:
@@ -5516,6 +5649,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 1102873447}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &1102873447
 SpriteRenderer:
   serializedVersion: 2
@@ -5573,7 +5707,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1110395728
 GameObject:
@@ -5621,6 +5755,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 1110395731}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &1110395731
 SpriteRenderer:
   serializedVersion: 2
@@ -5678,7 +5813,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1114474498
 GameObject:
@@ -5726,6 +5861,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 1114474501}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &1114474501
 SpriteRenderer:
   serializedVersion: 2
@@ -5783,7 +5919,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1117844824
 GameObject:
@@ -5831,6 +5967,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 1117844827}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &1117844827
 SpriteRenderer:
   serializedVersion: 2
@@ -5888,7 +6025,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1155627173
 GameObject:
@@ -5936,6 +6073,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 1155627176}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &1155627176
 SpriteRenderer:
   serializedVersion: 2
@@ -5993,7 +6131,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1156385623
 GameObject:
@@ -6041,6 +6179,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 1156385626}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &1156385626
 SpriteRenderer:
   serializedVersion: 2
@@ -6098,7 +6237,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1169137041
 GameObject:
@@ -6225,6 +6364,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 1172182436}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &1172182436
 SpriteRenderer:
   serializedVersion: 2
@@ -6282,7 +6422,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1172301123
 GameObject:
@@ -6408,6 +6548,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 1185358773}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &1185358773
 SpriteRenderer:
   serializedVersion: 2
@@ -6465,7 +6606,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1190602018
 GameObject:
@@ -6513,6 +6654,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 1190602021}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &1190602021
 SpriteRenderer:
   serializedVersion: 2
@@ -6570,7 +6712,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1199900477
 GameObject:
@@ -7438,6 +7580,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 1361772294}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &1361772294
 SpriteRenderer:
   serializedVersion: 2
@@ -7495,7 +7638,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1388239728
 GameObject:
@@ -7543,6 +7686,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 1388239731}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &1388239731
 SpriteRenderer:
   serializedVersion: 2
@@ -7600,7 +7744,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1407015828
 GameObject:
@@ -7648,6 +7792,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 1407015831}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &1407015831
 SpriteRenderer:
   serializedVersion: 2
@@ -7705,7 +7850,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1414616204
 GameObject:
@@ -7753,6 +7898,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 1414616207}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &1414616207
 SpriteRenderer:
   serializedVersion: 2
@@ -7810,7 +7956,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1448257831
 GameObject:
@@ -7858,6 +8004,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 1448257834}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &1448257834
 SpriteRenderer:
   serializedVersion: 2
@@ -7915,7 +8062,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1474496202
 GameObject:
@@ -7963,6 +8110,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 1474496205}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &1474496205
 SpriteRenderer:
   serializedVersion: 2
@@ -8020,7 +8168,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1496606348
 GameObject:
@@ -8189,6 +8337,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 1499518596}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &1499518596
 SpriteRenderer:
   serializedVersion: 2
@@ -8246,7 +8395,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1499825279
 GameObject:
@@ -8294,6 +8443,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 1499825282}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &1499825282
 SpriteRenderer:
   serializedVersion: 2
@@ -8351,7 +8501,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1509210243
 GameObject:
@@ -8520,6 +8670,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 1514261854}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &1514261854
 SpriteRenderer:
   serializedVersion: 2
@@ -8577,7 +8728,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1526421604
 GameObject:
@@ -8903,6 +9054,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 1535229103}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &1535229103
 SpriteRenderer:
   serializedVersion: 2
@@ -8960,7 +9112,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1553330989
 GameObject:
@@ -9008,6 +9160,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 1553330992}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &1553330992
 SpriteRenderer:
   serializedVersion: 2
@@ -9065,7 +9218,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1561646686
 GameObject:
@@ -9353,6 +9506,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 1575395943}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &1575395943
 SpriteRenderer:
   serializedVersion: 2
@@ -9410,7 +9564,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1576072416
 GameObject:
@@ -9458,6 +9612,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 1576072419}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &1576072419
 SpriteRenderer:
   serializedVersion: 2
@@ -9515,7 +9670,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1615451350
 GameObject:
@@ -9642,6 +9797,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 1631885931}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &1631885931
 SpriteRenderer:
   serializedVersion: 2
@@ -9699,7 +9855,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1638717434
 GameObject:
@@ -10018,6 +10174,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 1657101549}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &1657101549
 SpriteRenderer:
   serializedVersion: 2
@@ -10075,7 +10232,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1668136144
 GameObject:
@@ -10123,6 +10280,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 1668136147}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &1668136147
 SpriteRenderer:
   serializedVersion: 2
@@ -10180,7 +10338,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1670707381
 GameObject:
@@ -10340,6 +10498,7 @@ MonoBehaviour:
   image: {fileID: 1673604009}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   highlightedColor: {r: 0.84, g: 1, b: 0.54, a: 1}
+  highlightedScale: 1.045
 --- !u!114 &1673604009
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10424,6 +10583,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 1702172159}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &1702172159
 SpriteRenderer:
   serializedVersion: 2
@@ -10481,7 +10641,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1705422695
 GameObject:
@@ -10529,6 +10689,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 1705422698}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &1705422698
 SpriteRenderer:
   serializedVersion: 2
@@ -10586,7 +10747,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1711730956
 GameObject:
@@ -10634,6 +10795,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 1711730959}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &1711730959
 SpriteRenderer:
   serializedVersion: 2
@@ -10691,7 +10853,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1726003656
 GameObject:
@@ -10939,6 +11101,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 1747229487}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &1747229487
 SpriteRenderer:
   serializedVersion: 2
@@ -10996,7 +11159,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1764070068
 GameObject:
@@ -11165,6 +11328,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 1772464135}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &1772464135
 SpriteRenderer:
   serializedVersion: 2
@@ -11222,7 +11386,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1785610167
 GameObject:
@@ -11337,11 +11501,13 @@ MonoBehaviour:
   missionButton: {fileID: 0}
   closeButton: {fileID: 0}
   missionPanel: {fileID: 0}
+  missionSummaryText: {fileID: 0}
   missionListRoot: {fileID: 0}
   missionTrackerPanel: {fileID: 0}
   missionTrackerRoot: {fileID: 0}
   shopPanel: {fileID: 0}
   levelPanel: {fileID: 0}
+  resultPanel: {fileID: 0}
   gameplayFeedbackController: {fileID: 0}
 --- !u!114 &1785610173
 MonoBehaviour:
@@ -11358,6 +11524,7 @@ MonoBehaviour:
   shopButton: {fileID: 0}
   closeButton: {fileID: 0}
   shopPanel: {fileID: 0}
+  shopSummaryText: {fileID: 0}
   categoryRoot: {fileID: 0}
   productListRoot: {fileID: 0}
   gameplayFeedbackController: {fileID: 0}
@@ -11376,7 +11543,15 @@ MonoBehaviour:
   levelButton: {fileID: 0}
   closeButton: {fileID: 0}
   levelPanel: {fileID: 0}
+  levelSummaryText: {fileID: 0}
   levelListRoot: {fileID: 0}
+  previewPanel: {fileID: 0}
+  previewTitleText: {fileID: 0}
+  previewMetaText: {fileID: 0}
+  previewObjectiveText: {fileID: 0}
+  previewRewardText: {fileID: 0}
+  previewPlayButton: {fileID: 0}
+  previewCloseButton: {fileID: 0}
   gameplayFeedbackController: {fileID: 0}
 --- !u!114 &1785610175
 MonoBehaviour:
@@ -11442,6 +11617,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 1804596002}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &1804596002
 SpriteRenderer:
   serializedVersion: 2
@@ -11499,7 +11675,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1808866857
 GameObject:
@@ -11547,6 +11723,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 1808866860}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &1808866860
 SpriteRenderer:
   serializedVersion: 2
@@ -11604,7 +11781,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1816292887
 GameObject:
@@ -12638,6 +12815,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 2003211187}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &2003211187
 SpriteRenderer:
   serializedVersion: 2
@@ -12695,7 +12873,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &2009303822
 GameObject:
@@ -12743,6 +12921,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 2009303825}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &2009303825
 SpriteRenderer:
   serializedVersion: 2
@@ -12800,7 +12979,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &2013652657
 GameObject:
@@ -12848,6 +13027,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 2013652660}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &2013652660
 SpriteRenderer:
   serializedVersion: 2
@@ -12905,7 +13085,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &2026524529
 GameObject:
@@ -12953,6 +13133,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 2026524532}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &2026524532
 SpriteRenderer:
   serializedVersion: 2
@@ -13010,7 +13191,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &2035571934
 GameObject:
@@ -13219,6 +13400,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 2043027997}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &2043027997
 SpriteRenderer:
   serializedVersion: 2
@@ -13276,7 +13458,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &2065604407
 GameObject:
@@ -13454,6 +13636,7 @@ MonoBehaviour:
   image: {fileID: 2072263691}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   highlightedColor: {r: 1, g: 0.76, b: 1, a: 1}
+  highlightedScale: 1.045
 --- !u!114 &2072263691
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13780,6 +13963,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 2117764225}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &2117764225
 SpriteRenderer:
   serializedVersion: 2
@@ -13837,7 +14021,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &2127529258
 GameObject:
@@ -13942,6 +14126,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 2131669045}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &2131669045
 SpriteRenderer:
   serializedVersion: 2
@@ -13999,7 +14184,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &2134012483
 GameObject:
@@ -14047,6 +14232,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Board.CellView
   spriteRenderer: {fileID: 2134012486}
+  shadowRenderer: {fileID: 0}
 --- !u!212 &2134012486
 SpriteRenderer:
   serializedVersion: 2
@@ -14104,7 +14290,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &2139217562
 GameObject:

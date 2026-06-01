@@ -1,5 +1,6 @@
 using EcoGarden.Board;
 using EcoGarden.AI;
+using EcoGarden.Audio;
 using EcoGarden.UI;
 using EcoGarden.Save;
 using UnityEngine;
@@ -29,9 +30,11 @@ namespace EcoGarden.Level
 
             EnsureNpcMovement();
             EnsureButterflies();
+            EnsureAudioListener();
             EnsureBackground();
             EnsureBoardBackdrop();
             EnsureHudSkin();
+            EnsureAudio();
             EnsureSaveController();
             EnsureDecorations();
             EnsureInventoryUi();
@@ -53,6 +56,29 @@ namespace EcoGarden.Level
             {
                 mainCamera.backgroundColor = new Color(0.70f, 0.86f, 0.78f, 1f);
             }
+        }
+
+        private void EnsureAudioListener()
+        {
+            if (FindAnyObjectByType<AudioListener>() != null)
+            {
+                return;
+            }
+
+            Camera mainCamera = Camera.main;
+            if (mainCamera == null)
+            {
+                GameObject cameraObject = new GameObject("Main Camera");
+                cameraObject.tag = "MainCamera";
+                mainCamera = cameraObject.AddComponent<Camera>();
+                mainCamera.orthographic = true;
+                mainCamera.orthographicSize = 5.25f;
+                mainCamera.clearFlags = CameraClearFlags.SolidColor;
+                mainCamera.backgroundColor = new Color(0.70f, 0.86f, 0.78f, 1f);
+                cameraObject.transform.position = new Vector3(0f, 0f, -10f);
+            }
+
+            mainCamera.gameObject.AddComponent<AudioListener>();
         }
 
         private void EnsureBoardBackdrop()
@@ -135,6 +161,17 @@ namespace EcoGarden.Level
 
             GameObject saveObject = new GameObject("SaveController");
             saveObject.AddComponent<SaveController>();
+        }
+
+        private void EnsureAudio()
+        {
+            if (FindAnyObjectByType<EcoGardenAudioController>() != null)
+            {
+                return;
+            }
+
+            GameObject audioObject = new GameObject("EcoGardenAudioController");
+            audioObject.AddComponent<EcoGardenAudioController>();
         }
 
         private void EnsureAndroidHudLayout()
