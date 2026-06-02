@@ -39,6 +39,7 @@ namespace EcoGarden.Level
             EnsureDecorations();
             EnsureInventoryUi();
             EnsureAndroidHudLayout();
+            EnsureTutorialUi();
         }
 
         private void EnsureBackground()
@@ -220,6 +221,17 @@ namespace EcoGarden.Level
                     skinController.Apply();
                 }
             }
+        }
+
+        private void EnsureTutorialUi()
+        {
+            if (FindAnyObjectByType<TutorialUiController>(FindObjectsInactive.Include) != null)
+            {
+                return;
+            }
+
+            GameObject tutorialObject = new GameObject("TutorialUiController");
+            tutorialObject.AddComponent<TutorialUiController>();
         }
     }
 }

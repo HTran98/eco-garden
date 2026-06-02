@@ -43,5 +43,53 @@ namespace EcoGarden.Tests.EditMode
             Assert.IsFalse(normalized.soundEnabled);
             Assert.IsFalse(normalized.musicEnabled);
         }
+
+        [Test]
+        public void Normalize_KeepsTutorialAvailableForNewSave()
+        {
+            SaveData data = SaveService.Normalize(new SaveData());
+
+            Assert.IsFalse(data.tutorialCompleted);
+        }
+
+        [Test]
+        public void Normalize_MarksTutorialCompleteForOldSaveWithProgress()
+        {
+            SaveData data = new SaveData
+            {
+                schemaVersion = 3,
+                highestUnlockedLevel = 2
+            };
+
+            SaveData normalized = SaveService.Normalize(data);
+
+            Assert.IsTrue(normalized.tutorialCompleted);
+        }
+
+        [Test]
+        public void Save_DoesNotOverwriteCompletedTutorialWithStaleSnapshot()
+        {
+            SaveService.Clear();
+
+            SaveService.Save(new SaveData
+            {
+                schemaVersion = SaveService.CurrentSchemaVersion,
+                tutorialCompleted = true
+            });
+
+            SaveService.Save(new SaveData
+            {
+                schemaVersion = SaveService.CurrentSchemaVersion,
+                tutorialCompleted = false,
+                gold = 25
+            });
+
+            SaveData loaded = SaveService.Load();
+
+            Assert.IsTrue(loaded.tutorialCompleted);
+            Assert.AreEqual(25, loaded.gold);
+
+            SaveService.Clear();
+        }
     }
 }

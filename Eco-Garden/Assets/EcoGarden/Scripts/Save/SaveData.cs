@@ -24,6 +24,7 @@ namespace EcoGarden.Save
         public string[] activeDecorationIds;
         public string[] processedIapTransactionIds;
         public MissionProgressSaveData[] missionProgress;
+        public bool tutorialCompleted;
         public bool soundEnabled = true;
         public bool musicEnabled = true;
     }

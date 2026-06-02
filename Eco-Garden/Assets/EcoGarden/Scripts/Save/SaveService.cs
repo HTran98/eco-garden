@@ -5,7 +5,7 @@ namespace EcoGarden.Save
     public static class SaveService
     {
         private const string SaveKey = "EcoGarden.SaveData.v1";
-        public const int CurrentSchemaVersion = 3;
+        public const int CurrentSchemaVersion = 4;
 
         public static SaveData Load()
         {
@@ -38,6 +38,7 @@ namespace EcoGarden.Save
                 return;
             }
 
+            PreserveCompletedTutorialFlag(data);
             data = Normalize(data);
             PlayerPrefs.SetString(SaveKey, JsonUtility.ToJson(data));
             PlayerPrefs.Save();
@@ -58,6 +59,7 @@ namespace EcoGarden.Save
                 shovelCount = -1,
                 magicWandCount = -1,
                 sortingMagnetCount = -1,
+                tutorialCompleted = false,
                 soundEnabled = true,
                 musicEnabled = true
             });
@@ -77,6 +79,11 @@ namespace EcoGarden.Save
                 data.musicEnabled = true;
             }
 
+            if (loadedVersion > 0 && loadedVersion < 4 && HasMeaningfulProgress(data))
+            {
+                data.tutorialCompleted = true;
+            }
+
             data.schemaVersion = CurrentSchemaVersion;
             if (data.highestUnlockedLevel <= 0)
             {
@@ -93,6 +100,49 @@ namespace EcoGarden.Save
             data.missionProgress = data.missionProgress ?? new MissionProgressSaveData[0];
 
             return data;
+        }
+
+        private static bool HasMeaningfulProgress(SaveData data)
+        {
+            return data.highestUnlockedLevel > 1 ||
+                   data.gold > 0 ||
+                   data.gem > 0 ||
+                   data.hasBoardState ||
+                   data.plantCount > 0 ||
+                   (data.boardItems != null && data.boardItems.Length > 0) ||
+                   (data.orderRequirements != null && data.orderRequirements.Length > 0) ||
+                   (data.plantTierUnlocks != null && data.plantTierUnlocks.Length > 0) ||
+                   (data.purchasedShopProductIds != null && data.purchasedShopProductIds.Length > 0) ||
+                   (data.ownedDecorationIds != null && data.ownedDecorationIds.Length > 0) ||
+                   (data.activeDecorationIds != null && data.activeDecorationIds.Length > 0) ||
+                   (data.missionProgress != null && data.missionProgress.Length > 0);
+        }
+
+        private static void PreserveCompletedTutorialFlag(SaveData data)
+        {
+            if (data.tutorialCompleted || !PlayerPrefs.HasKey(SaveKey))
+            {
+                return;
+            }
+
+            string json = PlayerPrefs.GetString(SaveKey);
+            if (string.IsNullOrEmpty(json))
+            {
+                return;
+            }
+
+            try
+            {
+                SaveData existing = JsonUtility.FromJson<SaveData>(json);
+                if (existing != null && existing.tutorialCompleted)
+                {
+                    data.tutorialCompleted = true;
+                }
+            }
+            catch
+            {
+                // Ignore corrupt existing data; Normalize handles the snapshot being saved.
+            }
         }
     }
 }
