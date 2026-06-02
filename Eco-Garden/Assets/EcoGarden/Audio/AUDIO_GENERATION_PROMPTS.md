@@ -1,6 +1,6 @@
 # Eco Garden - Audio Generation Prompts
 
-Use this file to generate first-release audio assets with Gemini or another audio generator.
+Use this file to generate first-release audio assets with Gemini, Stable Audio, or another audio generator.
 
 ## Import Targets
 
@@ -9,73 +9,85 @@ Use this file to generate first-release audio assets with Gemini or another audi
 | SFX | `Assets/EcoGarden/Audio/SFX` | WAV, 48 kHz, 16-bit or 24-bit, mono or narrow stereo, no silence at the start |
 | Music | `Assets/EcoGarden/Audio/Music` | WAV or OGG source, 48 kHz, stereo, seamless loop |
 
-## Global Audio Direction
+## Creative Direction
 
-Eco Garden is a cozy mobile merge game set around a calm lotus pond. Audio should be soft, warm, short, and low-fatigue for repeated play on phone speakers.
+Eco Garden is a cozy mobile merge game set around a calm lotus pond. Audio should feel natural, warm, small, and low-fatigue on phone speakers.
 
-Use these rules for every prompt:
+Use the prompt briefs as natural creative direction instead of strict rule blocks. If a generator adds unwanted voice or musical material to SFX, add a short negative line such as:
 
-- No vocals, no spoken words, no copyrighted melodies.
-- Avoid harsh highs, loud impacts, scary tones, arcade lasers, or casino-style reward sounds.
-- Keep SFX short and responsive. Most gameplay SFX should be 0.15-0.7 seconds.
-- Use natural garden materials where possible: water drops, soft leaves, tiny wood taps, clay/stone clicks, gentle bells, airy chimes.
-- Leave moderate headroom; avoid clipping or aggressive compression.
-- Export each file with exactly the filename listed below.
+```text
+Avoid voices, singing, humming, spoken words, animal calls, harsh alarms, casino sounds, clipping, distortion.
+```
 
 Recommended loudness targets:
 
 - SFX: peak around -3 dB, consistent perceived volume, not overly compressed.
 - Music: soft background level, seamless loop, no dominant melody that becomes tiring.
 
+## Prompt Format
+
+Each prompt uses this structure:
+
+```text
+Style:
+Mood:
+Main sounds / instruments:
+Duration:
+Use case:
+Technical notes:
+```
+
+Keep the filename outside the prompt unless the tool has a filename field.
+
 ## Required SFX
 
-| Filename | Event | Duration | Gemini Prompt |
-| --- | --- | --- | --- |
-| `sfx_item_pickup_01.wav` | Player picks up a board item | 0.15-0.25s | Create a very short cozy mobile game sound for picking up a small lotus item: soft wooden tap plus tiny leaf rustle, light and tactile, no harsh click, no melody, no voice. |
-| `sfx_item_drop_valid_01.wav` | Item drops onto a valid cell | 0.15-0.30s | Create a short gentle drop sound for placing a small plant token on a pond board: soft clay/wood contact with a subtle water ripple tail, warm, clean, low volume, no voice. |
-| `sfx_item_drop_invalid_01.wav` | Item returns after invalid drop | 0.20-0.35s | Create a soft invalid placement sound for a cozy garden puzzle game: muted hollow tap with a tiny downward leaf flutter, polite and non-alarming, no buzzer, no harsh error tone. |
-| `sfx_merge_01.wav` | Two matching items merge | 0.35-0.60s | Create a gentle merge chime for two lotus items combining: soft bell sparkle, small water shimmer, warm upward motion, satisfying but calm, no arcade sound, no voice. |
-| `sfx_producer_spawn_01.wav` | Producer creates a new lotus seed | 0.25-0.45s | Create a cozy pond producer spawn sound: single water droplet, tiny bubble, soft leaf pop, light and fresh, suitable for frequent tapping, no voice. |
-| `sfx_sell_item_01.wav` | Item sold in Sell basket | 0.30-0.50s | Create a calm sell confirmation sound: small coin sparkle mixed with soft leaf/wood tap, friendly reward feel, not casino-like, not loud, no voice. |
-| `sfx_delivery_submit_01.wav` | Requested item delivered to customer | 0.30-0.55s | Create a warm delivery submit sound for handing a lotus item to a customer: soft whoosh into basket, gentle chime, subtle happy confirmation, no voice. |
-| `sfx_order_complete_01.wav` | NPC order completes | 0.60-1.00s | Create a cozy order complete sting: warm two-note chime, soft water shimmer, small celebratory sparkle, gentle and mobile-friendly, no voice. |
-| `sfx_level_complete_01.wav` | Level complete panel appears | 0.90-1.40s | Create a short level complete success sting for a cozy lotus pond merge game: warm marimba or bell notes, airy sparkle, peaceful resolution, not triumphant or loud, no voice. |
-| `sfx_level_failed_01.wav` | Timer runs out / level fails | 0.70-1.10s | Create a gentle level failed sound: soft descending wooden bell and muted water ripple, mildly disappointed but not scary, no alarm, no voice. |
-| `sfx_timer_warning_01.wav` | Timer warning under 20 seconds | 0.18-0.30s | Create a subtle timer warning tick for a cozy puzzle game: soft wooden tick with faint water pulse, noticeable but not stressful, suitable to repeat every second, no voice. |
+| Filename | Event | Prompt Brief |
+| --- | --- | --- |
+| `sfx_item_pickup_01.wav` | Player picks up a board item | Style: cozy mobile game foley, tiny tactile UI sound.<br>Mood: light, clean, responsive.<br>Main sounds: soft wooden tap, tiny lotus leaf rustle.<br>Duration: 0.15-0.25 seconds.<br>Use case: item pickup on a merge board.<br>Technical notes: very short transient, no melody, no voice, no harsh click. |
+| `sfx_item_drop_valid_01.wav` | Item drops onto a valid cell | Style: soft garden board placement foley.<br>Mood: gentle, valid, satisfying.<br>Main sounds: clay and wood contact, subtle water ripple tail.<br>Duration: 0.15-0.30 seconds.<br>Use case: placing a plant token on a valid board cell.<br>Technical notes: warm low-volume finish, no voice, no heavy impact. |
+| `sfx_item_drop_invalid_01.wav` | Item returns after invalid drop | Style: polite invalid-action UI foley.<br>Mood: soft, non-punishing, slightly downward.<br>Main sounds: muted hollow wood tap, tiny leaf flutter.<br>Duration: 0.20-0.35 seconds.<br>Use case: item returns after invalid placement.<br>Technical notes: no buzzer, no alarm, no voice, no harsh error tone. |
+| `sfx_merge_01.wav` | Two matching items merge | Style: cozy magical merge chime.<br>Mood: satisfying, calm, upward.<br>Main sounds: soft bell sparkle, small water shimmer.<br>Duration: 0.35-0.60 seconds.<br>Use case: two lotus items combine into a higher tier.<br>Technical notes: gentle mobile-friendly sparkle, no arcade laser, no voice. |
+| `sfx_producer_spawn_01.wav` | Producer creates a new lotus seed | Style: fresh pond spawn foley.<br>Mood: light, organic, repeatable.<br>Main sounds: single water droplet, tiny bubble, soft leaf pop.<br>Duration: 0.25-0.45 seconds.<br>Use case: producer creates a new lotus item.<br>Technical notes: suitable for frequent tapping, no voice, no loud pop. |
+| `sfx_sell_item_01.wav` | Item sold in Sell basket | Style: calm reward confirmation.<br>Mood: friendly, useful, not flashy.<br>Main sounds: small coin sparkle, soft leaf and wood tap.<br>Duration: 0.30-0.50 seconds.<br>Use case: item sold in the flower shop sell area.<br>Technical notes: avoid casino slot-machine feel, no voice, no loud fanfare. |
+| `sfx_delivery_submit_01.wav` | Requested item delivered to customer | Style: warm delivery handoff foley.<br>Mood: helpful, cozy, confirmed.<br>Main sounds: soft whoosh into basket, woven basket touch, gentle chime.<br>Duration: 0.30-0.55 seconds.<br>Use case: requested lotus item delivered to customer NPC.<br>Technical notes: no character voice, no spoken reaction, no big celebration. |
+| `sfx_order_complete_01.wav` | NPC order completes | Style: cozy order-complete sting.<br>Mood: pleased, complete, gentle celebration.<br>Main sounds: warm two-note chime, water shimmer, small sparkle.<br>Duration: 0.60-1.00 seconds.<br>Use case: all requested order items are fulfilled.<br>Technical notes: mobile-friendly, no voice, no triumphant fanfare. |
+| `sfx_level_complete_01.wav` | Level complete panel appears | Style: peaceful success sting.<br>Mood: resolved, bright, calm.<br>Main sounds: warm marimba or bell notes, airy sparkle.<br>Duration: 0.90-1.40 seconds.<br>Use case: level complete panel appears.<br>Technical notes: short, not loud, no voice, no copyrighted melody. |
+| `sfx_level_failed_01.wav` | Timer runs out / level fails | Style: gentle failure feedback.<br>Mood: mildly disappointed, soft, safe.<br>Main sounds: descending wooden bell, muted water ripple.<br>Duration: 0.70-1.10 seconds.<br>Use case: timer reaches zero or level fails.<br>Technical notes: no scary tone, no alarm, no voice. |
+| `sfx_timer_warning_01.wav` | Timer warning under 20 seconds | Style: subtle timer tick.<br>Mood: noticeable but not stressful.<br>Main sounds: soft wooden tick, faint water pulse.<br>Duration: 0.18-0.30 seconds.<br>Use case: repeated once per second when timer is low.<br>Technical notes: low fatigue, consistent, no voice, no alarm. |
 
 ## Ability SFX
 
-| Filename | Event | Duration | Gemini Prompt |
-| --- | --- | --- | --- |
-| `sfx_ability_shovel_01.wav` | Shovel clears weed/pebble | 0.30-0.50s | Create a soft shovel ability sound: tiny garden scrape, pebble/leaf movement, clean pop at the end, satisfying but gentle, no harsh metal, no voice. |
-| `sfx_ability_magic_wand_01.wav` | Magic Wand upgrades an item | 0.45-0.75s | Create a magical soft burst for upgrading a lotus item: airy chime, tiny sparkles, upward shimmer, cozy and delicate, no fantasy combat feel, no voice. |
-| `sfx_ability_sorting_magnet_01.wav` | Sorting Magnet moves matching items | 0.45-0.75s | Create a soft magnet sorting sound: gentle magnetic hum, tiny sliding leaf movement, light chime at the end, playful but calm, no sci-fi laser, no voice. |
-| `sfx_ability_unavailable_01.wav` | Ability has zero count or invalid target | 0.18-0.30s | Create a polite unavailable action sound: muted soft tap with tiny dull chime, clear but non-punishing, no buzzer, no voice. |
+| Filename | Event | Prompt Brief |
+| --- | --- | --- |
+| `sfx_ability_shovel_01.wav` | Shovel clears weed/pebble | Style: tiny garden tool foley.<br>Mood: practical, clean, satisfying.<br>Main sounds: soft garden scrape, pebble and leaf movement, small clean pop.<br>Duration: 0.30-0.50 seconds.<br>Use case: shovel ability clears an obstacle.<br>Technical notes: no harsh metal, no voice, no heavy impact. |
+| `sfx_ability_magic_wand_01.wav` | Magic Wand upgrades an item | Style: delicate cozy magic.<br>Mood: bright, upward, soft.<br>Main sounds: airy chime, tiny sparkles, light shimmer.<br>Duration: 0.45-0.75 seconds.<br>Use case: magic wand upgrades a lotus item.<br>Technical notes: no combat magic, no voice, no aggressive whoosh. |
+| `sfx_ability_sorting_magnet_01.wav` | Sorting Magnet moves matching items | Style: soft playful magnet effect.<br>Mood: clever, gentle, organized.<br>Main sounds: quiet magnetic hum, sliding leaf motion, light end chime.<br>Duration: 0.45-0.75 seconds.<br>Use case: sorting magnet gathers matching items.<br>Technical notes: no sci-fi laser, no voice, no harsh sweep. |
+| `sfx_ability_unavailable_01.wav` | Ability has zero count or invalid target | Style: polite unavailable UI feedback.<br>Mood: clear, soft, non-punishing.<br>Main sounds: muted soft tap, tiny dull chime.<br>Duration: 0.18-0.30 seconds.<br>Use case: ability cannot be used.<br>Technical notes: no buzzer, no alarm, no voice. |
 
 ## Economy, Shop, Mission, and UI SFX
 
-| Filename | Event | Duration | Gemini Prompt |
-| --- | --- | --- | --- |
-| `sfx_gold_gain_01.wav` | Gold balance increases | 0.30-0.50s | Create a soft gold gain sound: two tiny coin chimes with warm wooden resonance, light reward feel, not flashy, no voice. |
-| `sfx_gem_gain_01.wav` | Gem balance increases | 0.35-0.60s | Create a gentle premium gem gain sound: crystal sparkle, soft water shimmer, slightly brighter than gold but still cozy, no casino style, no voice. |
-| `sfx_reward_claim_01.wav` | Generic reward claimed | 0.45-0.75s | Create a warm reward claim sound: small bundle of leaf chimes and soft bell sparkle, satisfying, calm, no voice. |
-| `sfx_mission_claim_01.wav` | Mission reward claimed | 0.45-0.80s | Create a mission complete reward chime for a cozy garden mobile game: friendly bell flourish, tiny sparkle, short and positive, no voice. |
-| `sfx_shop_purchase_success_01.wav` | Shop purchase succeeds | 0.40-0.70s | Create a clear calm shop purchase confirmation sound: soft coin tap, warm chime, small leaf rustle, premium but not flashy, no voice. |
-| `sfx_shop_purchase_failed_01.wav` | Shop purchase fails/cancelled | 0.25-0.45s | Create a gentle purchase failed or cancelled sound: muted wooden tick with soft downward chime, polite and unobtrusive, no buzzer, no voice. |
-| `sfx_iap_pending_01.wav` | Store purchase enters pending state | 0.35-0.60s | Create a neutral pending purchase sound: soft two-step pulse, calm waiting feel, no success flourish, no error, no voice. |
-| `sfx_button_tap_01.wav` | Standard UI button tap | 0.08-0.16s | Create a tiny cozy UI button tap sound: soft wood or leaf click, very short, low fatigue, no high-frequency snap, no voice. |
-| `sfx_panel_open_01.wav` | Shop/Mission/Bag/Level panel opens | 0.20-0.35s | Create a soft panel open sound: light cloth/leaf whoosh with tiny chime, subtle and clean, no voice. |
-| `sfx_panel_close_01.wav` | Panel closes or backdrop dismissed | 0.18-0.30s | Create a soft panel close sound: gentle reverse leaf whoosh and muted tap, calm, short, no voice. |
-| `sfx_pause_open_01.wav` | Pause panel opens | 0.20-0.35s | Create a quiet pause sound: muted wooden tap and soft low chime, calm and clear, no voice. |
-| `sfx_decoration_apply_01.wav` | Decoration activated from Bag | 0.45-0.75s | Create a cozy cosmetic apply sound: soft shimmer, leaf swirl, warm sparkle, feeling like changing garden decor, no voice. |
+| Filename | Event | Prompt Brief |
+| --- | --- | --- |
+| `sfx_gold_gain_01.wav` | Gold balance increases | Style: small cozy currency reward.<br>Mood: warm, useful, light.<br>Main sounds: two tiny coin chimes, warm wooden resonance.<br>Duration: 0.30-0.50 seconds.<br>Use case: gold balance increases.<br>Technical notes: no casino style, no voice, no loud sparkle. |
+| `sfx_gem_gain_01.wav` | Gem balance increases | Style: premium crystal reward.<br>Mood: bright but still cozy.<br>Main sounds: crystal sparkle, soft water shimmer.<br>Duration: 0.35-0.60 seconds.<br>Use case: gem balance increases.<br>Technical notes: slightly brighter than gold, no casino style, no voice. |
+| `sfx_reward_claim_01.wav` | Generic reward claimed | Style: warm reward claim flourish.<br>Mood: satisfying, calm, positive.<br>Main sounds: leaf chimes, soft bell sparkle.<br>Duration: 0.45-0.75 seconds.<br>Use case: generic reward claim.<br>Technical notes: no voice, no huge fanfare, no harsh highs. |
+| `sfx_mission_claim_01.wav` | Mission reward claimed | Style: mission-complete reward chime.<br>Mood: friendly, accomplished, short.<br>Main sounds: bell flourish, tiny sparkle.<br>Duration: 0.45-0.80 seconds.<br>Use case: mission reward is claimed.<br>Technical notes: no voice, no victory shout, no big orchestral hit. |
+| `sfx_shop_purchase_success_01.wav` | Shop purchase succeeds | Style: calm shop confirmation.<br>Mood: premium, clean, friendly.<br>Main sounds: soft coin tap, warm chime, small leaf rustle.<br>Duration: 0.40-0.70 seconds.<br>Use case: successful shop purchase.<br>Technical notes: no casino sound, no voice, no loud cash register. |
+| `sfx_shop_purchase_failed_01.wav` | Shop purchase fails/cancelled | Style: gentle cancelled-purchase feedback.<br>Mood: polite, unobtrusive, slightly downward.<br>Main sounds: muted wooden tick, soft downward chime.<br>Duration: 0.25-0.45 seconds.<br>Use case: shop purchase fails or is cancelled.<br>Technical notes: no buzzer, no alarm, no voice. |
+| `sfx_iap_pending_01.wav` | Store purchase enters pending state | Style: neutral waiting feedback.<br>Mood: calm, pending, unresolved.<br>Main sounds: soft two-step pulse, quiet UI tone.<br>Duration: 0.35-0.60 seconds.<br>Use case: store purchase enters pending state.<br>Technical notes: no success flourish, no error tone, no voice. |
+| `sfx_button_tap_01.wav` | Standard UI button tap | Style: tiny cozy UI click.<br>Mood: responsive, soft, low-fatigue.<br>Main sounds: soft wood or leaf click.<br>Duration: 0.08-0.16 seconds.<br>Use case: standard button tap.<br>Technical notes: no high-frequency snap, no voice, no tail. |
+| `sfx_panel_open_01.wav` | Shop/Mission/Bag/Level panel opens | Style: soft UI panel motion.<br>Mood: smooth, clean, light.<br>Main sounds: cloth and leaf whoosh, tiny chime.<br>Duration: 0.20-0.35 seconds.<br>Use case: panel opens.<br>Technical notes: no voice, no sharp sweep, no loud impact. |
+| `sfx_panel_close_01.wav` | Panel closes or backdrop dismissed | Style: soft UI panel close.<br>Mood: calm, tidy, short.<br>Main sounds: reverse leaf whoosh, muted tap.<br>Duration: 0.18-0.30 seconds.<br>Use case: panel closes or backdrop dismissed.<br>Technical notes: no voice, no clicky snap, no long tail. |
+| `sfx_pause_open_01.wav` | Pause panel opens | Style: quiet pause UI feedback.<br>Mood: calm, clear, low energy.<br>Main sounds: muted wooden tap, soft low chime.<br>Duration: 0.20-0.35 seconds.<br>Use case: pause panel opens.<br>Technical notes: no voice, no alarm, no dramatic stop. |
+| `sfx_decoration_apply_01.wav` | Decoration activated from Bag | Style: cozy cosmetic apply shimmer.<br>Mood: fresh, pretty, gentle.<br>Main sounds: soft shimmer, leaf swirl, warm sparkle.<br>Duration: 0.45-0.75 seconds.<br>Use case: decoration activated from Bag.<br>Technical notes: no voice, no big magic blast, no harsh highs. |
 
 ## Ambient and Music
 
-| Filename | Event | Duration | Gemini Prompt |
-| --- | --- | --- | --- |
-| `amb_pond_day_loop_01.wav` | Optional low pond ambience | 20-40s seamless loop | Create a seamless calm lotus pond ambience loop: very soft water movement, distant gentle garden air, tiny occasional leaf movement, no birds dominating, no insects too loud, no melody, no voice. |
-| `music_level_pastel_zen_01.wav` | Main gameplay music | 60-90s seamless loop | Create a seamless looping background music track for a cozy lotus pond mobile merge puzzle game: gentle marimba, soft kalimba, warm pads, light water ambience, peaceful but not sleepy, minimal melody, no drums louder than soft taps, no voice, no copyrighted style. |
-| `music_menu_garden_01.wav` | Optional menu/level select music | 45-75s seamless loop | Create a seamless cozy garden menu loop: light plucked notes, soft bells, warm pad, calm optimistic mood, sparse arrangement, no strong melody, no voice. |
+| Filename | Event | Prompt Brief |
+| --- | --- | --- |
+| `amb_pond_day_loop_01.wav` | Optional low pond ambience | Style: natural field recording, small calm lotus pond during daytime.<br>Mood: quiet, relaxed, low-fatigue.<br>Main sounds: very soft water movement, tiny ripples, subtle water bubbles, light outdoor air, extremely faint leaf rustling.<br>Duration: seamless 30-second loop.<br>Use case: low background ambience for a casual mobile merge game.<br>Technical notes: pure environmental recording, non-musical, narrow stereo image, centered sound field, consistent texture, no sudden events, no birds, frogs, insects, animals, voices, singing, humming, whispering, drones, pads, or fantasy elements. |
+| `music_level_pastel_zen_01.wav` | Main gameplay music | Style: cozy pastel zen instrumental, soft acoustic-electronic hybrid.<br>Mood: peaceful, focused, lightly optimistic, not sleepy.<br>Main sounds / instruments: gentle marimba, soft kalimba, warm pads, light water ambience, very soft percussion taps.<br>Duration: seamless 60-90 second loop.<br>Use case: main gameplay background music for repeated merge-board play.<br>Technical notes: minimal melody, no vocals, no speech, no choir, no copyrighted style, no dominant drums. |
+| `music_menu_garden_01.wav` | Optional menu/level select music | Style: cozy garden menu instrumental.<br>Mood: calm, welcoming, optimistic.<br>Main sounds / instruments: light plucked notes, soft bells, warm pad, subtle garden air.<br>Duration: seamless 45-75 second loop.<br>Use case: menu and level select background music.<br>Technical notes: sparse arrangement, no strong melody, no vocals, no speech, no choir, no copyrighted style. |
 
 ## Priority Order
 

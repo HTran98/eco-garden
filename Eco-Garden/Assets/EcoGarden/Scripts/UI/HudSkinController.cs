@@ -105,6 +105,7 @@ namespace EcoGarden.UI
                 ? PlaceholderSpriteFactory.SellBasketSprite
                 : PlaceholderSpriteFactory.DeliverZoneSprite);
             image.color = Color.white;
+            image.preserveAspect = true;
 
             ExternalDropZone zone = gameObject.GetComponent<ExternalDropZone>();
             if (zone != null)
@@ -112,11 +113,21 @@ namespace EcoGarden.UI
                 Color highlighted = kind == ExternalDropZoneKind.SellBasket
                     ? UiThemePalette.Sell
                     : UiThemePalette.Delivery;
-                zone.Configure(kind, Color.Lerp(highlighted, Color.white, 0.28f), highlighted);
+                zone.Configure(kind, Color.white, Color.Lerp(Color.white, highlighted, 0.16f));
                 EnsureAmbientPulse(gameObject, highlighted);
             }
 
-            ApplyTextColor(gameObject, UiThemePalette.TextDark);
+            HideDropZoneText(gameObject);
+        }
+
+        private static void HideDropZoneText(GameObject gameObject)
+        {
+            Text[] texts = gameObject.GetComponentsInChildren<Text>(true);
+            for (int i = 0; i < texts.Length; i++)
+            {
+                texts[i].text = string.Empty;
+                texts[i].raycastTarget = false;
+            }
         }
 
         private static void SkinButton(string objectName)

@@ -45,7 +45,7 @@ Acceptance status meanings:
 | `item_lotus_lv03_baby_leaf` | Item | `Assets/EcoGarden/Art/Items` | Runtime placeholder accepted for first release | Runtime Lotus Lv3 sprite is distinct enough for merge progression; `ItemView` adds a subtle runtime shadow for readability. |
 | `item_lotus_lv04_flower_bud` | Item | `Assets/EcoGarden/Art/Items` | Runtime placeholder accepted for first release | Runtime Lotus Lv4 bud reads as the pre-bloom tier; `ItemView` adds a subtle runtime shadow for readability. |
 | `item_lotus_lv05_blooming_lotus` | Item | `Assets/EcoGarden/Art/Items` | Runtime placeholder accepted for first release | Runtime Lotus Lv5 bloom is the clearest objective item in the current set; `ItemView` adds a subtle runtime shadow for readability. |
-| `char_customer_01` | Character | `Assets/EcoGarden/Art/Characters` | Runtime placeholder accepted for first release | `PlaceholderSpriteFactory.NpcSprite` is simple but usable for order/customer movement. |
+| `char_customer_01` | Character | `Assets/EcoGarden/Art/Characters/Resources/Characters` | First-pass PNG wired | `NpcMovementController` loads the cute customer sprite through `Resources.Load`, with `PlaceholderSpriteFactory.NpcSprite` kept as fallback. |
 | `char_butterfly_a_01` | Character | `Assets/EcoGarden/Art/Characters` | Runtime placeholder accepted for first release | `PlaceholderSpriteFactory.ButterflySprite` supports current ambient pathing. |
 | `char_butterfly_b_01` | Character | `Assets/EcoGarden/Art/Characters` | Runtime placeholder accepted for first release | Shares the accepted butterfly runtime sprite until variants are authored. |
 | `skin_board_moss_stone` | Decor / board skin | Runtime tint via `DecorationController` | Runtime placeholder accepted for first release | Buying the Moss Stone board skin applies a board/backdrop/background tint. Authored board skin art can replace the tint later. |
@@ -84,8 +84,8 @@ Acceptance status meanings:
 | `ui_badge_gold` | UI skin | `Assets/EcoGarden/Art/UI/Resources/UiSkins` | First-pass transparent PNG wired | Used by Gold price badges. |
 | `ui_badge_gem` | UI skin | `Assets/EcoGarden/Art/UI/Resources/UiSkins` | First-pass transparent PNG wired | Used by Gem price badges. |
 | `ui_badge_store` | UI skin | `Assets/EcoGarden/Art/UI/Resources/UiSkins` | First-pass transparent PNG wired | Used by Store/IAP price badges. |
-| `ui_drop_delivery` | UI skin | `Assets/EcoGarden/Art/UI/Resources/UiSkins` | First-pass transparent PNG wired | Used by Delivery drop zone when imported. |
-| `ui_drop_sell` | UI skin | `Assets/EcoGarden/Art/UI/Resources/UiSkins` | First-pass transparent PNG wired | Used by Sell drop zone when imported. |
+| `ui_drop_delivery` | UI skin | `Assets/EcoGarden/Art/UI/Resources/UiSkins` | First-pass object PNG wired | Delivery drop zone now uses a basket handoff marker while the animated customer remains world-space. |
+| `ui_drop_sell` | UI skin | `Assets/EcoGarden/Art/UI/Resources/UiSkins` | First-pass object PNG wired | Sell drop zone now uses the flower shop storefront sprite while preserving the existing sell hitbox. |
 | `vfx_merge_sparkle_01` | VFX sprite | `Assets/EcoGarden/Art/VFX` | Needs authored art before release | Merge feedback exists through runtime feedback hooks, but no dedicated sparkle sprite is authored. |
 | `vfx_producer_pulse_01` | VFX sprite | `Assets/EcoGarden/Art/VFX` | Needs authored art before release | Producer feedback is functional but lacks a dedicated pulse sprite. |
 | `vfx_ability_burst_01` | VFX sprite | `Assets/EcoGarden/Art/VFX` | Needs authored art before release | Ability feedback is functional but lacks a dedicated burst sprite. |

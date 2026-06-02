@@ -9,6 +9,8 @@ namespace EcoGarden.AI
     [RequireComponent(typeof(SpriteRenderer))]
     public sealed class NpcMovementController : MonoBehaviour
     {
+        private const string CustomerSpriteResourcePath = "Characters/char_customer_01";
+
         [SerializeField] private BoardController boardController;
         [SerializeField] private SpriteRenderer spriteRenderer;
         [SerializeField] private float moveSpeed = 2.2f;
@@ -36,10 +38,14 @@ namespace EcoGarden.AI
                 spriteRenderer = GetComponent<SpriteRenderer>();
             }
 
-            spriteRenderer.sprite = PlaceholderSpriteFactory.NpcSprite;
+            Sprite customerSprite = Resources.Load<Sprite>(CustomerSpriteResourcePath);
+            spriteRenderer.sprite = customerSprite ?? PlaceholderSpriteFactory.NpcSprite;
+            spriteRenderer.enabled = true;
             spriteRenderer.color = Color.white;
-            spriteRenderer.sortingOrder = 5;
-            transform.localScale = new Vector3(0.82f, 1.08f, 1f);
+            spriteRenderer.sortingOrder = 20;
+            transform.localScale = customerSprite != null
+                ? new Vector3(2.55f, 3.25f, 1f)
+                : new Vector3(0.82f, 1.08f, 1f);
         }
 
         private void OnEnable()
@@ -125,11 +131,16 @@ namespace EcoGarden.AI
             deliveryDropZone = FindDeliveryDropZone();
             if (deliveryDropZone != null)
             {
+                SetWorldNpcVisible(true);
                 ConfigureUiDeliveryMovement();
             }
             else if (!TryConfigureBoardFallbackMovement())
             {
                 yield break;
+            }
+            else
+            {
+                SetWorldNpcVisible(true);
             }
 
             yield return MoveTo(idleBasePosition);
@@ -241,6 +252,19 @@ namespace EcoGarden.AI
             idleBasePosition += new Vector3(0f, 0f, -0.15f);
             exitPosition += new Vector3(0f, 0f, -0.15f);
             return true;
+        }
+
+        private void SetWorldNpcVisible(bool visible)
+        {
+            if (spriteRenderer == null)
+            {
+                spriteRenderer = GetComponent<SpriteRenderer>();
+            }
+
+            if (spriteRenderer != null)
+            {
+                spriteRenderer.enabled = visible;
+            }
         }
 
         private static ExternalDropZone FindDeliveryDropZone()
