@@ -18,6 +18,8 @@ namespace EcoGarden.UI
         public bool HasSelectedAbility { get; private set; }
         public AbilityKind SelectedAbility { get; private set; }
 
+        private AbilityInventory subscribedAbilityInventory;
+
         private void Awake()
         {
             if (boardController == null)
@@ -33,7 +35,19 @@ namespace EcoGarden.UI
         private void Start()
         {
             EnsureGameplayFeedbackController();
+            SubscribeAbilityInventory();
             Refresh();
+        }
+
+        private void OnEnable()
+        {
+            SubscribeAbilityInventory();
+            Refresh();
+        }
+
+        private void OnDisable()
+        {
+            UnsubscribeAbilityInventory();
         }
 
         public bool TryUseSelectedAbility(GridPosition targetPosition)
@@ -114,6 +128,7 @@ namespace EcoGarden.UI
         public void Refresh()
         {
             EnsureBoardControllerReady();
+            SubscribeAbilityInventory();
 
             if (boardController == null || boardController.AbilityInventory == null)
             {
@@ -190,6 +205,39 @@ namespace EcoGarden.UI
                 sortingMagnetButton.onClick.RemoveListener(SelectSortingMagnet);
                 sortingMagnetButton.onClick.AddListener(SelectSortingMagnet);
             }
+        }
+
+        private void SubscribeAbilityInventory()
+        {
+            EnsureBoardControllerReady();
+            AbilityInventory inventory = boardController != null ? boardController.AbilityInventory : null;
+            if (ReferenceEquals(subscribedAbilityInventory, inventory))
+            {
+                return;
+            }
+
+            UnsubscribeAbilityInventory();
+            if (inventory != null)
+            {
+                inventory.CountChanged += OnAbilityCountChanged;
+                subscribedAbilityInventory = inventory;
+            }
+        }
+
+        private void UnsubscribeAbilityInventory()
+        {
+            if (subscribedAbilityInventory == null)
+            {
+                return;
+            }
+
+            subscribedAbilityInventory.CountChanged -= OnAbilityCountChanged;
+            subscribedAbilityInventory = null;
+        }
+
+        private void OnAbilityCountChanged(AbilityKind abilityKind, int count)
+        {
+            Refresh();
         }
 
         private void SelectShovel()
