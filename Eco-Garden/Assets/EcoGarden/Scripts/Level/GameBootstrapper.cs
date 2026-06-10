@@ -1,6 +1,7 @@
 using EcoGarden.Board;
 using EcoGarden.AI;
 using EcoGarden.Audio;
+using EcoGarden.IAP;
 using EcoGarden.UI;
 using EcoGarden.Save;
 using UnityEngine;
@@ -35,11 +36,13 @@ namespace EcoGarden.Level
             EnsureBoardBackdrop();
             EnsureHudSkin();
             EnsureAudio();
+            EnsureAndroidIapProvider();
             EnsureSaveController();
             EnsureDecorations();
             EnsureInventoryUi();
             EnsureAndroidHudLayout();
             EnsureTutorialUi();
+            EnsureStartupSplash();
         }
 
         private void EnsureBackground()
@@ -175,6 +178,19 @@ namespace EcoGarden.Level
             audioObject.AddComponent<EcoGardenAudioController>();
         }
 
+        private void EnsureAndroidIapProvider()
+        {
+#if UNITY_ANDROID && !UNITY_EDITOR
+            if (FindAnyObjectByType<UnityIapProvider>() != null)
+            {
+                return;
+            }
+
+            GameObject iapObject = new GameObject("UnityIapProvider");
+            iapObject.AddComponent<UnityIapProvider>();
+#endif
+        }
+
         private void EnsureAndroidHudLayout()
         {
             AndroidHudLayoutController layoutController = FindAnyObjectByType<AndroidHudLayoutController>();
@@ -232,6 +248,17 @@ namespace EcoGarden.Level
 
             GameObject tutorialObject = new GameObject("TutorialUiController");
             tutorialObject.AddComponent<TutorialUiController>();
+        }
+
+        private void EnsureStartupSplash()
+        {
+            if (FindAnyObjectByType<StartupSplashController>(FindObjectsInactive.Include) != null)
+            {
+                return;
+            }
+
+            GameObject splashObject = new GameObject("StartupSplashController");
+            splashObject.AddComponent<StartupSplashController>();
         }
     }
 }
