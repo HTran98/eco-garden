@@ -1,0 +1,16 @@
+product_id,product_tag,name_en_us,description_en_us,product_type,grant_gem,purchase_option_id,purchase_option_transaction_type,purchase_option_tag,notes
+eco_garden_gems_010,gem-pack-010,10 Gem,Adds 10 Gems to your Eco Garden wallet.,Consumable managed product,10,eco_garden_gems_010_buy,Buy,buy-010,New tier
+eco_garden_gems_020,gem-pack-020,20 Gem,Adds 20 Gems to your Eco Garden wallet.,Consumable managed product,20,eco_garden_gems_020_buy,Buy,buy-020,New tier
+eco_garden_gems_030,gem-pack-030,30 Gem,Adds 30 Gems to your Eco Garden wallet.,Consumable managed product,30,eco_garden_gems_030_buy,Buy,buy-030,New tier
+eco_garden_gems_040,gem-pack-040,40 Gem,Adds 40 Gems to your Eco Garden wallet.,Consumable managed product,40,eco_garden_gems_040_buy,Buy,buy-040,New tier
+eco_garden_gems_050,gem-pack-050,50 Gem,Adds 50 Gems to your Eco Garden wallet.,Consumable managed product,50,eco_garden_gems_050_buy,Buy,buy-050,New tier
+eco_garden_gems_060,gem-pack-060,60 Gem,Adds 60 Gems to your Eco Garden wallet.,Consumable managed product,60,eco_garden_gems_060_buy,Buy,buy-060,New tier
+eco_garden_gems_070,gem-pack-070,70 Gem,Adds 70 Gems to your Eco Garden wallet.,Consumable managed product,70,eco_garden_gems_070_buy,Buy,buy-070,New tier
+eco_garden_gems_080,gem-pack-080,80 Gem,Adds 80 Gems to your Eco Garden wallet.,Consumable managed product,80,eco_garden_gems_080_buy,Buy,buy-080,New tier
+eco_garden_gems_090,gem-pack-090,90 Gem,Adds 90 Gems to your Eco Garden wallet.,Consumable managed product,90,eco_garden_gems_090_buy,Buy,buy-090,New tier
+eco_garden_gems_100,gem-pack-100,100 Gem,Adds 100 Gems to your Eco Garden wallet.,Consumable managed product,100,eco_garden_gems_100_buy,Buy,buy-100,New tier
+eco_garden_gems_150,gem-pack-150,150 Gem,Adds 150 Gems to your Eco Garden wallet.,Consumable managed product,150,eco_garden_gems_150_buy,Buy,buy-150,New tier
+eco_garden_gems_200,gem-pack-200,200 Gem,Adds 200 Gems to your Eco Garden wallet.,Consumable managed product,200,eco_garden_gems_200_buy,Buy,buy-200,New tier
+eco_garden_gems_250,gem-pack-250,250 Gem,Adds 250 Gems to your Eco Garden wallet.,Consumable managed product,250,eco_garden_gems_250_buy,Buy,buy-250,New tier
+eco_garden_gems_small,gem-pack-small,80 Gem,Adds 80 Gems to your Eco Garden wallet.,Consumable managed product,80,eco_garden_gems_small_buy,Buy,buy-small,Legacy product
+eco_garden_gems_medium,gem-pack-medium,220 Gem,Adds 220 Gems to your Eco Garden wallet.,Consumable managed product,220,eco_garden_gems_medium_buy,Buy,buy-medium,Legacy product

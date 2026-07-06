@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: shop_iap_gems_medium
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Shop.ShopItemDefinition
   productId: shop_iap_gems_medium
-  displayName: Medium Gem Pack
-  description: Adds a medium Gem pack.
+  displayName: 220 Gem
+  description: Adds 220 Gem.
   category: 3
+  icon: {fileID: 21300000, guid: 6614ca253839437f8ea7b8e016384a69, type: 3}
   price:
     purchaseKind: 2
     currencyKind: 0

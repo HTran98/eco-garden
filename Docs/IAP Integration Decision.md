@@ -37,6 +37,19 @@ References:
 
 | Product ID | Type | Store Type | Grant |
 | --- | --- | --- | --- |
+| `eco_garden_gems_010` | Consumable | Google Play managed product | 10 Gem |
+| `eco_garden_gems_020` | Consumable | Google Play managed product | 20 Gem |
+| `eco_garden_gems_030` | Consumable | Google Play managed product | 30 Gem |
+| `eco_garden_gems_040` | Consumable | Google Play managed product | 40 Gem |
+| `eco_garden_gems_050` | Consumable | Google Play managed product | 50 Gem |
+| `eco_garden_gems_060` | Consumable | Google Play managed product | 60 Gem |
+| `eco_garden_gems_070` | Consumable | Google Play managed product | 70 Gem |
+| `eco_garden_gems_080` | Consumable | Google Play managed product | 80 Gem |
+| `eco_garden_gems_090` | Consumable | Google Play managed product | 90 Gem |
+| `eco_garden_gems_100` | Consumable | Google Play managed product | 100 Gem |
+| `eco_garden_gems_150` | Consumable | Google Play managed product | 150 Gem |
+| `eco_garden_gems_200` | Consumable | Google Play managed product | 200 Gem |
+| `eco_garden_gems_250` | Consumable | Google Play managed product | 250 Gem |
 | `eco_garden_gems_small` | Consumable | Google Play managed product | 80 Gem |
 | `eco_garden_gems_medium` | Consumable | Google Play managed product | 220 Gem |
 
@@ -97,7 +110,7 @@ Automated checks:
 
 The audit loads `Assets/EcoGarden/ScriptableObjects/Shop`, finds IAP shop items, and verifies:
 
-- Required ids exist: `eco_garden_gems_small`, `eco_garden_gems_medium`.
+- Required ids exist: `eco_garden_gems_010` through `eco_garden_gems_100`, `eco_garden_gems_150`, `eco_garden_gems_200`, `eco_garden_gems_250`, `eco_garden_gems_small`, and `eco_garden_gems_medium`.
 - IAP ids are not empty.
 - IAP ids are documented release ids.
 - Duplicate IAP ids are reported.

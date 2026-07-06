@@ -58,8 +58,9 @@ Potential mission reward total if all current missions are claimed once: Gold 65
 | NPC Skin: Traveler | Gem 40 | Decoration | No | Deferred from first release until visible cosmetic application exists. |
 | Board Skin: Moss Stone | Gem 45 | Decoration | No | Deferred from first release until visible cosmetic application exists. |
 | Unlock Lotus Tier 5 | Gem 60 | Permanent Lotus Lv5 | No | Premium/meta unlock; not required by Levels 1-10. |
-| Small Gem Pack | IAP | Gem 80 | Yes | Store product `eco_garden_gems_small`. |
-| Medium Gem Pack | IAP | Gem 220 | Yes | Store product `eco_garden_gems_medium`. |
+| 10-100 Gem Packs | IAP | Gem 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 | Yes | Store products `eco_garden_gems_010` through `eco_garden_gems_100`. |
+| 150/200/250 Gem Packs | IAP | Gem 150, 200, 250 | Yes | Store products `eco_garden_gems_150`, `eco_garden_gems_200`, and `eco_garden_gems_250`. |
+| Legacy Small/Medium Gem Packs | IAP | Gem 80, 220 | Yes | Store products `eco_garden_gems_small` and `eco_garden_gems_medium`. |
 
 ## First-Pass Balance Read
 

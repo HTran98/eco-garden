@@ -132,7 +132,7 @@ namespace EcoGarden.UI
             UiRowAccent.Apply(row.transform, GetShopRowAccentColor(item));
 
             GameObject iconBadge = CreateImage("TypeBadge", row.transform, PlaceholderSpriteFactory.ShopIconBadgeSprite, GetCategoryAccentColor(item.Category), ShopUiLayoutMetrics.TypeBadgeAnchorMin, ShopUiLayoutMetrics.TypeBadgeAnchorMax);
-            Sprite itemIcon = LoadSprite(GetShopIconPath(item));
+            Sprite itemIcon = item.Icon != null ? item.Icon : LoadSprite(GetShopIconPath(item));
             if (itemIcon != null)
             {
                 CreateImage("ItemIcon", iconBadge.transform, itemIcon, Color.white, new Vector2(0.14f, 0.14f), new Vector2(0.86f, 0.86f));

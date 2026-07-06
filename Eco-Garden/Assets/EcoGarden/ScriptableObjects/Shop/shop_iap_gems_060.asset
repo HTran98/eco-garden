@@ -10,22 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 80c4db1a9f1447a2a36e0efd2dc5c59d, type: 3}
-  m_Name: shop_iap_gems_small
+  m_Name: shop_iap_gems_060
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Shop.ShopItemDefinition
-  productId: shop_iap_gems_small
-  displayName: 80 Gem
-  description: Adds 80 Gem.
+  productId: shop_iap_gems_060
+  displayName: 60 Gem
+  description: Adds 60 Gem.
   category: 3
-  icon: {fileID: 21300000, guid: 37e7ac822c03499590aad771d8e7a8d8, type: 3}
+  icon: {fileID: 21300000, guid: 741c4b33c4984ffdb4935cc7bd412919, type: 3}
   price:
     purchaseKind: 2
     currencyKind: 0
     amount: 0
-    iapProductId: eco_garden_gems_small
+    iapProductId: eco_garden_gems_060
   grant:
     currencies:
     - currencyKind: 1
-      amount: 80
+      amount: 60
     abilities: []
     decorationIds: []
     plantTierUnlocks: []

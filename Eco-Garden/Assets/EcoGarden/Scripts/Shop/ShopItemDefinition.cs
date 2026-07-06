@@ -10,6 +10,7 @@ namespace EcoGarden.Shop
         [SerializeField] private string displayName;
         [SerializeField] private string description;
         [SerializeField] private ShopItemCategory category;
+        [SerializeField] private Sprite icon;
         [SerializeField] private ShopPriceDefinition price;
         [SerializeField] private RewardDefinition grant;
         [SerializeField] private bool repeatable = true;
@@ -18,6 +19,7 @@ namespace EcoGarden.Shop
         public string DisplayName { get { return displayName; } }
         public string Description { get { return description; } }
         public ShopItemCategory Category { get { return category; } }
+        public Sprite Icon { get { return icon; } }
         public ShopPriceDefinition Price { get { return price; } }
         public RewardDefinition Grant { get { return grant; } }
         public bool Repeatable { get { return repeatable; } }
@@ -31,12 +33,14 @@ namespace EcoGarden.Shop
             ShopItemCategory category,
             ShopPriceDefinition price,
             RewardDefinition grant,
-            bool repeatable)
+            bool repeatable,
+            Sprite icon = null)
         {
             this.productId = productId;
             this.displayName = displayName;
             this.description = description;
             this.category = category;
+            this.icon = icon;
             this.price = price;
             this.grant = grant;
             this.repeatable = repeatable;

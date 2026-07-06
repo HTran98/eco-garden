@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using EcoGarden.Abilities;
 using EcoGarden.Config;
 using EcoGarden.Economy;
+using EcoGarden.IAP;
 using EcoGarden.Missions;
 using EcoGarden.Progression;
 using EcoGarden.Rewards;
@@ -531,21 +532,140 @@ namespace EcoGarden.Editor
                 new RewardDefinition(null, null, null, new[] { new PlantTierUnlockReward("lotus", 5) }),
                 false);
             CreateOrUpdateShopItem(
-                "shop_iap_gems_small",
-                "Small Gem Pack",
-                "Adds a small Gem pack.",
+                "shop_iap_gems_010",
+                "10 Gem",
+                "Adds 10 Gem.",
                 ShopItemCategory.Currency,
-                new ShopPriceDefinition(ShopPurchaseKind.Iap, 0, "eco_garden_gems_small"),
+                new ShopPriceDefinition(ShopPurchaseKind.Iap, 0, IapProductIds.Gems010),
+                new RewardDefinition(new[] { new CurrencyReward(CurrencyKind.Gem, 10) }, null),
+                true,
+                LoadShopIcon("iap_gems_010_512"));
+            CreateOrUpdateShopItem(
+                "shop_iap_gems_020",
+                "20 Gem",
+                "Adds 20 Gem.",
+                ShopItemCategory.Currency,
+                new ShopPriceDefinition(ShopPurchaseKind.Iap, 0, IapProductIds.Gems020),
+                new RewardDefinition(new[] { new CurrencyReward(CurrencyKind.Gem, 20) }, null),
+                true,
+                LoadShopIcon("iap_gems_020_512"));
+            CreateOrUpdateShopItem(
+                "shop_iap_gems_030",
+                "30 Gem",
+                "Adds 30 Gem.",
+                ShopItemCategory.Currency,
+                new ShopPriceDefinition(ShopPurchaseKind.Iap, 0, IapProductIds.Gems030),
+                new RewardDefinition(new[] { new CurrencyReward(CurrencyKind.Gem, 30) }, null),
+                true,
+                LoadShopIcon("iap_gems_030_512"));
+            CreateOrUpdateShopItem(
+                "shop_iap_gems_040",
+                "40 Gem",
+                "Adds 40 Gem.",
+                ShopItemCategory.Currency,
+                new ShopPriceDefinition(ShopPurchaseKind.Iap, 0, IapProductIds.Gems040),
+                new RewardDefinition(new[] { new CurrencyReward(CurrencyKind.Gem, 40) }, null),
+                true,
+                LoadShopIcon("iap_gems_040_512"));
+            CreateOrUpdateShopItem(
+                "shop_iap_gems_050",
+                "50 Gem",
+                "Adds 50 Gem.",
+                ShopItemCategory.Currency,
+                new ShopPriceDefinition(ShopPurchaseKind.Iap, 0, IapProductIds.Gems050),
+                new RewardDefinition(new[] { new CurrencyReward(CurrencyKind.Gem, 50) }, null),
+                true,
+                LoadShopIcon("iap_gems_050_512"));
+            CreateOrUpdateShopItem(
+                "shop_iap_gems_060",
+                "60 Gem",
+                "Adds 60 Gem.",
+                ShopItemCategory.Currency,
+                new ShopPriceDefinition(ShopPurchaseKind.Iap, 0, IapProductIds.Gems060),
+                new RewardDefinition(new[] { new CurrencyReward(CurrencyKind.Gem, 60) }, null),
+                true,
+                LoadShopIcon("iap_gems_060_512"));
+            CreateOrUpdateShopItem(
+                "shop_iap_gems_070",
+                "70 Gem",
+                "Adds 70 Gem.",
+                ShopItemCategory.Currency,
+                new ShopPriceDefinition(ShopPurchaseKind.Iap, 0, IapProductIds.Gems070),
+                new RewardDefinition(new[] { new CurrencyReward(CurrencyKind.Gem, 70) }, null),
+                true,
+                LoadShopIcon("iap_gems_070_512"));
+            CreateOrUpdateShopItem(
+                "shop_iap_gems_080",
+                "80 Gem",
+                "Adds 80 Gem.",
+                ShopItemCategory.Currency,
+                new ShopPriceDefinition(ShopPurchaseKind.Iap, 0, IapProductIds.Gems080),
                 new RewardDefinition(new[] { new CurrencyReward(CurrencyKind.Gem, 80) }, null),
-                true);
+                true,
+                LoadShopIcon("iap_gems_080_512"));
+            CreateOrUpdateShopItem(
+                "shop_iap_gems_090",
+                "90 Gem",
+                "Adds 90 Gem.",
+                ShopItemCategory.Currency,
+                new ShopPriceDefinition(ShopPurchaseKind.Iap, 0, IapProductIds.Gems090),
+                new RewardDefinition(new[] { new CurrencyReward(CurrencyKind.Gem, 90) }, null),
+                true,
+                LoadShopIcon("iap_gems_090_512"));
+            CreateOrUpdateShopItem(
+                "shop_iap_gems_100",
+                "100 Gem",
+                "Adds 100 Gem.",
+                ShopItemCategory.Currency,
+                new ShopPriceDefinition(ShopPurchaseKind.Iap, 0, IapProductIds.Gems100),
+                new RewardDefinition(new[] { new CurrencyReward(CurrencyKind.Gem, 100) }, null),
+                true,
+                LoadShopIcon("iap_gems_100_512"));
+            CreateOrUpdateShopItem(
+                "shop_iap_gems_150",
+                "150 Gem",
+                "Adds 150 Gem.",
+                ShopItemCategory.Currency,
+                new ShopPriceDefinition(ShopPurchaseKind.Iap, 0, IapProductIds.Gems150),
+                new RewardDefinition(new[] { new CurrencyReward(CurrencyKind.Gem, 150) }, null),
+                true,
+                LoadShopIcon("iap_gems_150_512"));
+            CreateOrUpdateShopItem(
+                "shop_iap_gems_200",
+                "200 Gem",
+                "Adds 200 Gem.",
+                ShopItemCategory.Currency,
+                new ShopPriceDefinition(ShopPurchaseKind.Iap, 0, IapProductIds.Gems200),
+                new RewardDefinition(new[] { new CurrencyReward(CurrencyKind.Gem, 200) }, null),
+                true,
+                LoadShopIcon("iap_gems_200_512"));
+            CreateOrUpdateShopItem(
+                "shop_iap_gems_250",
+                "250 Gem",
+                "Adds 250 Gem.",
+                ShopItemCategory.Currency,
+                new ShopPriceDefinition(ShopPurchaseKind.Iap, 0, IapProductIds.Gems250),
+                new RewardDefinition(new[] { new CurrencyReward(CurrencyKind.Gem, 250) }, null),
+                true,
+                LoadShopIcon("iap_gems_250_512"));
+            CreateOrUpdateShopItem(
+                "shop_iap_gems_small",
+                "80 Gem",
+                "Adds 80 Gem.",
+                ShopItemCategory.Currency,
+                new ShopPriceDefinition(ShopPurchaseKind.Iap, 0, IapProductIds.GemsSmall),
+                new RewardDefinition(new[] { new CurrencyReward(CurrencyKind.Gem, 80) }, null),
+                true,
+                LoadShopIcon("iap_gems_small_512"));
             CreateOrUpdateShopItem(
                 "shop_iap_gems_medium",
-                "Medium Gem Pack",
-                "Adds a medium Gem pack.",
+                "220 Gem",
+                "Adds 220 Gem.",
                 ShopItemCategory.Currency,
-                new ShopPriceDefinition(ShopPurchaseKind.Iap, 0, "eco_garden_gems_medium"),
+                new ShopPriceDefinition(ShopPurchaseKind.Iap, 0, IapProductIds.GemsMedium),
                 new RewardDefinition(new[] { new CurrencyReward(CurrencyKind.Gem, 220) }, null),
-                true);
+                true,
+                LoadShopIcon("iap_gems_medium_512"));
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -838,12 +958,18 @@ namespace EcoGarden.Editor
             ShopItemCategory category,
             ShopPriceDefinition price,
             RewardDefinition grant,
-            bool repeatable)
+            bool repeatable,
+            Sprite icon = null)
         {
             string path = ShopFolder + "/" + productId + ".asset";
             ShopItemDefinition item = CreateOrLoadAsset<ShopItemDefinition>(path);
-            item.EditorSetValues(productId, displayName, description, category, price, grant, repeatable);
+            item.EditorSetValues(productId, displayName, description, category, price, grant, repeatable, icon);
             EditorUtility.SetDirty(item);
+        }
+
+        private static Sprite LoadShopIcon(string fileName)
+        {
+            return AssetDatabase.LoadAssetAtPath<Sprite>("Assets/EcoGarden/Art/StoreListing/IAP/" + fileName + ".png");
         }
 
         private static void CreateOrUpdateMission(
