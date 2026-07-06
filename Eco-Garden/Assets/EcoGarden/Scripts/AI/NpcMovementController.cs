@@ -10,6 +10,8 @@ namespace EcoGarden.AI
     public sealed class NpcMovementController : MonoBehaviour
     {
         private const string CustomerSpriteResourcePath = "Characters/char_customer_01";
+        private static readonly Vector3 AuthoredSpriteScale = new Vector3(2.55f, 3.25f, 1f);
+        private static readonly Vector3 PlaceholderSpriteScale = new Vector3(0.82f, 1.08f, 1f);
 
         [SerializeField] private BoardController boardController;
         [SerializeField] private SpriteRenderer spriteRenderer;
@@ -39,13 +41,9 @@ namespace EcoGarden.AI
             }
 
             Sprite customerSprite = Resources.Load<Sprite>(CustomerSpriteResourcePath);
-            spriteRenderer.sprite = customerSprite ?? PlaceholderSpriteFactory.NpcSprite;
+            SetSprite(customerSprite, Color.white);
             spriteRenderer.enabled = true;
-            spriteRenderer.color = Color.white;
             spriteRenderer.sortingOrder = 20;
-            transform.localScale = customerSprite != null
-                ? new Vector3(2.55f, 3.25f, 1f)
-                : new Vector3(0.82f, 1.08f, 1f);
         }
 
         private void OnEnable()
@@ -114,6 +112,37 @@ namespace EcoGarden.AI
             {
                 spriteRenderer.color = color;
             }
+        }
+
+        public void SetCosmeticSprite(string resourcePath, Color color)
+        {
+            Sprite sprite = string.IsNullOrWhiteSpace(resourcePath)
+                ? null
+                : Resources.Load<Sprite>(resourcePath);
+            SetSprite(sprite, color);
+        }
+
+        public void ResetCosmeticSprite()
+        {
+            SetSprite(Resources.Load<Sprite>(CustomerSpriteResourcePath), Color.white);
+        }
+
+        private void SetSprite(Sprite sprite, Color color)
+        {
+            if (spriteRenderer == null)
+            {
+                spriteRenderer = GetComponent<SpriteRenderer>();
+            }
+
+            if (spriteRenderer == null)
+            {
+                return;
+            }
+
+            spriteRenderer.sprite = sprite ?? PlaceholderSpriteFactory.NpcSprite;
+            spriteRenderer.color = color;
+            spriteRenderer.sortingOrder = 20;
+            transform.localScale = sprite != null ? AuthoredSpriteScale : PlaceholderSpriteScale;
         }
 
         private IEnumerator EnterWhenBoardIsReady()

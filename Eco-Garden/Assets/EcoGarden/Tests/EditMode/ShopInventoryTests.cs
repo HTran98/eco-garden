@@ -29,6 +29,35 @@ namespace EcoGarden.Tests.EditMode
         }
 
         [Test]
+        public void UseDecorationExclusive_DeactivatesOtherDecorationInGroup()
+        {
+            ShopInventory inventory = new ShopInventory();
+            inventory.AddDecorations(new[] { "skin_npc_merchant", "skin_npc_moon" });
+            inventory.UseDecoration("skin_npc_merchant");
+
+            bool used = inventory.UseDecorationExclusive(
+                "skin_npc_moon",
+                new[] { "skin_npc_merchant", "skin_npc_moon" });
+
+            Assert.IsTrue(used);
+            Assert.IsFalse(inventory.IsDecorationActive("skin_npc_merchant"));
+            Assert.IsTrue(inventory.IsDecorationActive("skin_npc_moon"));
+        }
+
+        [Test]
+        public void RemoveDecoration_DeactivatesOwnedDecoration()
+        {
+            ShopInventory inventory = new ShopInventory();
+            inventory.AddDecorations(new[] { "skin_background_moon_lotus" });
+            inventory.UseDecoration("skin_background_moon_lotus");
+
+            bool removed = inventory.RemoveDecoration("skin_background_moon_lotus");
+
+            Assert.IsTrue(removed);
+            Assert.IsFalse(inventory.IsDecorationActive("skin_background_moon_lotus"));
+        }
+
+        [Test]
         public void Restore_IgnoresActiveDecorationsThatAreNotOwned()
         {
             ShopInventory inventory = new ShopInventory();

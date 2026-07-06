@@ -8,6 +8,7 @@ namespace EcoGarden.UI
     public sealed class BoardBackdropController : MonoBehaviour
     {
         private const string BackdropSpritePath = "UiSkins/ui_board_backdrop";
+        public static readonly Color DefaultCosmeticTint = new Color(1f, 1f, 1f, 0.10f);
 
         [SerializeField] private BoardController boardController;
         [SerializeField] private float horizontalPadding = 0.42f;
@@ -15,7 +16,7 @@ namespace EcoGarden.UI
         [SerializeField] private int sortingOrder = -900;
 
         private SpriteRenderer spriteRenderer;
-        private Color cosmeticTint = Color.white;
+        private Color cosmeticTint = DefaultCosmeticTint;
 
         private void Awake()
         {
@@ -85,6 +86,11 @@ namespace EcoGarden.UI
         {
             cosmeticTint = tint;
             EnsureRenderer();
+        }
+
+        public void ResetCosmeticTint()
+        {
+            SetCosmeticTint(DefaultCosmeticTint);
         }
     }
 }

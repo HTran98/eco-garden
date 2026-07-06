@@ -72,6 +72,51 @@ namespace EcoGarden.Shop
             return true;
         }
 
+        public bool UseDecorationExclusive(string decorationId, IEnumerable<string> exclusiveDecorationIds)
+        {
+            if (!IsDecorationOwned(decorationId))
+            {
+                return false;
+            }
+
+            bool changed = false;
+            if (exclusiveDecorationIds != null)
+            {
+                foreach (string exclusiveId in exclusiveDecorationIds)
+                {
+                    if (!string.IsNullOrWhiteSpace(exclusiveId) &&
+                        exclusiveId != decorationId &&
+                        activeDecorationIds.Remove(exclusiveId))
+                    {
+                        changed = true;
+                    }
+                }
+            }
+
+            if (activeDecorationIds.Add(decorationId))
+            {
+                changed = true;
+            }
+
+            if (changed)
+            {
+                Changed?.Invoke();
+            }
+
+            return changed;
+        }
+
+        public bool RemoveDecoration(string decorationId)
+        {
+            if (string.IsNullOrWhiteSpace(decorationId) || !activeDecorationIds.Remove(decorationId))
+            {
+                return false;
+            }
+
+            Changed?.Invoke();
+            return true;
+        }
+
         public void Restore(string[] productIds, string[] decorationIds)
         {
             Restore(productIds, decorationIds, decorationIds);

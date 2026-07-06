@@ -88,6 +88,11 @@ namespace EcoGarden.AI
             ApplyColor();
         }
 
+        public void ResetCosmeticColor()
+        {
+            SetCosmeticColor(new Color(1f, 0.72f, 0.36f, 1f));
+        }
+
         private void UpdateLoop(float t)
         {
             Vector3 position = center + new Vector3(

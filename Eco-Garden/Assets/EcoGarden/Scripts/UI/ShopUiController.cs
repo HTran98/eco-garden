@@ -135,7 +135,7 @@ namespace EcoGarden.UI
             Sprite itemIcon = item.Icon != null ? item.Icon : LoadSprite(GetShopIconPath(item));
             if (itemIcon != null)
             {
-                CreateImage("ItemIcon", iconBadge.transform, itemIcon, Color.white, new Vector2(0.14f, 0.14f), new Vector2(0.86f, 0.86f));
+                CreateImage("ItemIcon", iconBadge.transform, itemIcon, Color.white, new Vector2(0.06f, 0.06f), new Vector2(0.94f, 0.94f));
             }
             else
             {
@@ -144,15 +144,24 @@ namespace EcoGarden.UI
             GameObject statusBadge = CreateImage("StatusBadge", row.transform, PlaceholderSpriteFactory.ShopIconBadgeSprite, GetStatusColor(item), ShopUiLayoutMetrics.StatusAnchorMin, ShopUiLayoutMetrics.StatusAnchorMax);
             CreateText("Status", statusBadge.transform, BuildStatusLabel(item), TextAnchor.MiddleCenter, Vector2.zero, Vector2.one, 15);
 
-            CreateText("Name", row.transform, item.DisplayName, TextAnchor.MiddleLeft, ShopUiLayoutMetrics.NameAnchorMin, ShopUiLayoutMetrics.NameAnchorMax, 25);
-            CreateText("Description", row.transform, BuildDescription(item), TextAnchor.UpperLeft, ShopUiLayoutMetrics.DescriptionAnchorMin, ShopUiLayoutMetrics.DescriptionAnchorMax, 18);
-            Text effectText = CreateText("Effect", row.transform, BuildEffectText(item), TextAnchor.MiddleLeft, ShopUiLayoutMetrics.EffectAnchorMin, ShopUiLayoutMetrics.EffectAnchorMax, 17).GetComponent<Text>();
+            CreateText("Name", row.transform, item.DisplayName, TextAnchor.MiddleLeft, ShopUiLayoutMetrics.NameAnchorMin, ShopUiLayoutMetrics.NameAnchorMax, 28);
+            CreateText("Description", row.transform, BuildDescription(item), TextAnchor.UpperLeft, ShopUiLayoutMetrics.DescriptionAnchorMin, ShopUiLayoutMetrics.DescriptionAnchorMax, 24);
+            Text effectText = CreateText("Effect", row.transform, BuildEffectText(item), TextAnchor.MiddleLeft, ShopUiLayoutMetrics.EffectAnchorMin, ShopUiLayoutMetrics.EffectAnchorMax, 21).GetComponent<Text>();
             effectText.color = UiThemePalette.TextMuted;
 
-            GameObject priceBadge = CreateImage("PriceBadge", row.transform, GetPriceBadgeSprite(item), GetPriceColor(item), ShopUiLayoutMetrics.PriceAnchorMin, ShopUiLayoutMetrics.PriceAnchorMax);
-            CreateText("Price", priceBadge.transform, BuildPriceText(item), TextAnchor.MiddleCenter, Vector2.zero, Vector2.one, 20);
+            bool isIap = item.Price != null && item.Price.PurchaseKind == ShopPurchaseKind.Iap;
+            if (!isIap)
+            {
+                GameObject priceBadge = CreateImage("PriceBadge", row.transform, GetPriceBadgeSprite(item), GetPriceColor(item), ShopUiLayoutMetrics.PriceAnchorMin, ShopUiLayoutMetrics.PriceAnchorMax);
+                CreateText("Price", priceBadge.transform, BuildPriceText(item), TextAnchor.MiddleCenter, Vector2.zero, Vector2.one, 22);
+            }
 
-            GameObject buyObject = CreateButton("BuyButton", row.transform, BuildBuyLabel(item), ShopUiLayoutMetrics.BuyAnchorMin, ShopUiLayoutMetrics.BuyAnchorMax);
+            GameObject buyObject = CreateButton(
+                "BuyButton",
+                row.transform,
+                BuildBuyLabel(item),
+                isIap ? ShopUiLayoutMetrics.StoreBuyAnchorMin : ShopUiLayoutMetrics.BuyAnchorMin,
+                isIap ? ShopUiLayoutMetrics.StoreBuyAnchorMax : ShopUiLayoutMetrics.BuyAnchorMax);
             Button buyButton = buyObject.GetComponent<Button>();
             buyButton.interactable = CanBuy(item);
             Image buyImage = buyObject.GetComponent<Image>();
@@ -190,7 +199,7 @@ namespace EcoGarden.UI
 
             if (item.Price.PurchaseKind == ShopPurchaseKind.Iap)
             {
-                return "Store";
+                return "Buy";
             }
 
             return item.Price.CurrencyKind + " " + item.Price.Amount;
@@ -315,8 +324,12 @@ namespace EcoGarden.UI
                 case DecorationController.LegacyBirdVisitorId:
                     return "ambient bee visitor";
                 case DecorationController.NpcTravelerId:
+                case DecorationController.NpcMerchantId:
+                case DecorationController.NpcMoonId:
                     return "customer NPC outfit";
                 case DecorationController.BackgroundLilyPondId:
+                case DecorationController.BackgroundCrystalLotusId:
+                case DecorationController.BackgroundMoonLotusId:
                     return "background skin";
                 default:
                     return "cosmetic";
@@ -395,9 +408,17 @@ namespace EcoGarden.UI
                 case DecorationController.LegacyBirdVisitorId:
                     return "UiIcons/icon_decor_bee";
                 case DecorationController.NpcTravelerId:
-                    return "UiIcons/icon_decor_npc";
+                    return "Characters/char_customer_01";
+                case DecorationController.NpcMerchantId:
+                    return "Characters/char_customer_merchant_01_alpha";
+                case DecorationController.NpcMoonId:
+                    return "Characters/char_customer_moon_01_alpha";
                 case DecorationController.BackgroundLilyPondId:
-                    return "UiIcons/icon_decor_background";
+                    return "Backgrounds/bg_lily_pond_sunset_01";
+                case DecorationController.BackgroundCrystalLotusId:
+                    return "Backgrounds/bg_crystal_lotus_pond_01";
+                case DecorationController.BackgroundMoonLotusId:
+                    return "Backgrounds/bg_moon_lotus_garden_01";
                 default:
                     return "UiIcons/icon_shop_decor";
             }
@@ -837,6 +858,7 @@ namespace EcoGarden.UI
             Image image = imageObject.AddComponent<Image>();
             image.sprite = sprite;
             image.color = color;
+            image.preserveAspect = true;
             image.raycastTarget = false;
             return imageObject;
         }

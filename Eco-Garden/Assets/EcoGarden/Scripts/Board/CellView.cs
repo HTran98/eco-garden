@@ -53,7 +53,8 @@ namespace EcoGarden.Board
         {
             EnsureShadowRenderer();
             shadowRenderer.sprite = sprite;
-            shadowRenderer.color = new Color(0.05f, 0.12f, 0.10f, 0.18f);
+            float sourceAlpha = spriteRenderer != null ? spriteRenderer.color.a : 1f;
+            shadowRenderer.color = new Color(0.05f, 0.12f, 0.10f, Mathf.Lerp(0.04f, 0.14f, sourceAlpha));
             shadowRenderer.sortingOrder = -1;
         }
 

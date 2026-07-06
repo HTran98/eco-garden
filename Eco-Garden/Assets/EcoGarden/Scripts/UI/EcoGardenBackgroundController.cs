@@ -89,6 +89,20 @@ namespace EcoGarden.UI
             spriteRenderer.color = tint;
         }
 
+        public void ResetCosmeticBackground()
+        {
+            EnsureRenderer();
+            backgroundResourcePath = DefaultBackgroundPath;
+            Sprite sprite = Resources.Load<Sprite>(backgroundResourcePath);
+            if (sprite != null)
+            {
+                spriteRenderer.sprite = sprite;
+            }
+
+            spriteRenderer.color = Color.white;
+            FitToCamera();
+        }
+
         public void SetCosmeticBackground(string resourcePath, Color tint)
         {
             EnsureRenderer();

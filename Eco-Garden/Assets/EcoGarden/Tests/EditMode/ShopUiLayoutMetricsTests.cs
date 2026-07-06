@@ -24,6 +24,10 @@ namespace EcoGarden.Tests.EditMode
                 ShopUiLayoutMetrics.BuyAnchorMin,
                 ShopUiLayoutMetrics.BuyAnchorMax,
                 contentWidth);
+            float storeBuyWidth = ShopUiLayoutMetrics.Width(
+                ShopUiLayoutMetrics.StoreBuyAnchorMin,
+                ShopUiLayoutMetrics.StoreBuyAnchorMax,
+                contentWidth);
             float textWidth = ShopUiLayoutMetrics.Width(
                 ShopUiLayoutMetrics.NameAnchorMin,
                 ShopUiLayoutMetrics.NameAnchorMax,
@@ -44,8 +48,9 @@ namespace EcoGarden.Tests.EditMode
             Assert.GreaterOrEqual(categoryTabWidth, ShopUiLayoutMetrics.MinimumCategoryTabWidth);
             Assert.GreaterOrEqual(priceWidth, ShopUiLayoutMetrics.MinimumPriceBadgeWidth);
             Assert.GreaterOrEqual(buyWidth, ShopUiLayoutMetrics.MinimumBuyButtonWidth);
+            Assert.GreaterOrEqual(storeBuyWidth, ShopUiLayoutMetrics.MinimumBuyButtonWidth);
             Assert.GreaterOrEqual(textWidth, ShopUiLayoutMetrics.MinimumProductTextWidth);
-            Assert.GreaterOrEqual(ShopUiLayoutMetrics.ProductRowHeight, 112f);
+            Assert.GreaterOrEqual(ShopUiLayoutMetrics.ProductRowHeight, 180f);
             Assert.GreaterOrEqual(summary.height, ShopUiLayoutMetrics.MinimumShopSummaryHeight);
             Assert.IsFalse(AndroidHudLayoutMetrics.Overlaps(tabs, summary, 8f));
             Assert.IsFalse(AndroidHudLayoutMetrics.Overlaps(summary, content, 8f));

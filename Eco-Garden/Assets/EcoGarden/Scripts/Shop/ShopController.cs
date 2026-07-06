@@ -69,6 +69,16 @@ namespace EcoGarden.Shop
             return Inventory != null && Inventory.UseDecoration(decorationId);
         }
 
+        public bool UseDecorationExclusive(string decorationId, IEnumerable<string> exclusiveDecorationIds)
+        {
+            return Inventory != null && Inventory.UseDecorationExclusive(decorationId, exclusiveDecorationIds);
+        }
+
+        public bool RemoveDecoration(string decorationId)
+        {
+            return Inventory != null && Inventory.RemoveDecoration(decorationId);
+        }
+
         public void RestoreProcessedIapTransactionIds(string[] transactionIds)
         {
             processedIapTransactionIds.Clear();

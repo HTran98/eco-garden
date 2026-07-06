@@ -51,12 +51,17 @@ Potential mission reward total if all current missions are claimed once: Gold 65
 | Small Shovel Pack | Gold 120 | Shovel x3 | Yes | Early earned-currency booster sink. |
 | Small Magic Wand Pack | Gold 160 | Magic Wand x2 | Yes | Strong recovery tool; should cost more than shovel. |
 | Small Sorting Magnet Pack | Gold 140 | Magnet x2 | Yes | Mid-value organization helper. |
-| Butterfly Decoration | Gold 250 | Decoration | No | Deferred from first release until visible cosmetic application exists. |
+| Butterfly Decoration | Gold 250 | Decoration | No | Earned cosmetic sink; equips through Bag and can be removed. |
 | Unlock Lotus Tier 4 | Gold 600 | Permanent Lotus Lv4 | No | Long-term progression sink after first-release arc. |
 | Premium Booster Bundle | Gem 35 | Shovel x5, Wand x4, Magnet x4 | Yes | Premium acceleration; should not be required. |
-| Bird Visitor Decoration | Gem 20 | Decoration | No | Deferred from first release until visible cosmetic application exists. |
-| NPC Skin: Traveler | Gem 40 | Decoration | No | Deferred from first release until visible cosmetic application exists. |
-| Board Skin: Moss Stone | Gem 45 | Decoration | No | Deferred from first release until visible cosmetic application exists. |
+| Bird Visitor Decoration | Gem 20 | Decoration | No | Low-cost premium cosmetic; equips through Bag. |
+| NPC Skin: Traveler | Gem 40 | Decoration | No | Premium NPC cosmetic tint; equips through Bag and can be removed. |
+| NPC Skin: Merchant | Gem 45 | Decoration | No | Premium authored NPC outfit; mutually exclusive with other NPC skins. |
+| Board Skin: Moss Stone | Gem 45 | Decoration | No | Premium board cosmetic; equips through Bag and can be removed. |
+| Background: Sunset Pond | Gem 35 | Decoration | No | Premium background cosmetic; mutually exclusive with other backgrounds. |
+| Background: Crystal Pond | Gem 50 | Decoration | No | Premium authored background cosmetic; mutually exclusive with other backgrounds. |
+| NPC Skin: Moon Gardener | Gem 55 | Decoration | No | Premium authored NPC outfit; mutually exclusive with other NPC skins. |
+| Background: Moon Garden | Gem 55 | Decoration | No | Premium authored background cosmetic; mutually exclusive with other backgrounds. |
 | Unlock Lotus Tier 5 | Gem 60 | Permanent Lotus Lv5 | No | Premium/meta unlock; not required by Levels 1-10. |
 | 10-100 Gem Packs | IAP | Gem 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 | Yes | Store products `eco_garden_gems_010` through `eco_garden_gems_100`. |
 | 150/200/250 Gem Packs | IAP | Gem 150, 200, 250 | Yes | Store products `eco_garden_gems_150`, `eco_garden_gems_200`, and `eco_garden_gems_250`. |
@@ -70,7 +75,7 @@ Potential mission reward total if all current missions are claimed once: Gold 65
 | Booster prices | Shovel 120, Magnet 140, Wand 160 Gold. | Prices are reachable after a few level clears plus missions; boosters may reduce level pressure too early. | Check whether player can buy boosters before Levels 4-6 and whether that trivializes obstacle pressure. |
 | Lv4 unlock | Permanent Lv4 costs 600 Gold, while Levels 7-10 use temporary unlocks. | Player may afford permanent Lv4 near the end of arc, but it is not needed for release levels. | Keep temporary unlocks for authored level progression; treat permanent Lv4 as post-arc convenience. |
 | Lv5 unlock | Permanent Lv5 costs 60 Gem; Level 10 gives only Gem 3. | Permanent Lv5 is unreachable without IAP or future Gem rewards. | Keep as optional premium/meta sink; document as not required for first release. |
-| Decorations | Decoration assets remain authored, but runtime catalog hides decoration products by default. | Cosmetic purchases have no visible application yet. | Keep deferred until a runtime cosmetic application path and restart verification are added. |
+| Decorations | Decoration products are visible and equip through Bag with per-type remove/default behavior. | Needs final Unity import and portrait Play Mode validation for the expanded item list. | Verify NPC/background scale, shop scroll readability, and save/reload of active decoration ids. |
 | IAP | Small/Medium Gem packs grant 80/220 Gem. | Production validation still required; purchases must never be required for Levels 1-10. | Keep IAP as optional acceleration until Google Play internal test passes. |
 
 ## D5 Playtest Metrics To Capture

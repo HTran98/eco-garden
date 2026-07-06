@@ -256,17 +256,17 @@ namespace EcoGarden.Board
             switch (cell.Kind)
             {
                 case CellKind.Locked:
-                    return new Color(0.17f, 0.19f, 0.23f, 1f);
+                    return new Color(0.17f, 0.19f, 0.23f, 0.78f);
                 case CellKind.Obstacle:
                     return cell.ObstacleKind == ObstacleKind.Weed
-                        ? new Color(0.28f, 0.48f, 0.27f, 1f)
-                        : new Color(0.48f, 0.43f, 0.39f, 1f);
+                        ? new Color(0.28f, 0.48f, 0.27f, 0.82f)
+                        : new Color(0.48f, 0.43f, 0.39f, 0.82f);
                 case CellKind.Producer:
-                    return new Color(0.25f, 0.56f, 0.76f, 1f);
+                    return new Color(0.25f, 0.56f, 0.76f, 0.74f);
                 case CellKind.NpcOrderPoint:
-                    return new Color(0.62f, 0.38f, 0.78f, 1f);
+                    return new Color(0.62f, 0.38f, 0.78f, 0.70f);
                 default:
-                    return new Color(0.60f, 0.78f, 0.74f, 1f);
+                    return new Color(0.58f, 0.77f, 0.70f, 0.44f);
             }
         }
 

@@ -27,12 +27,16 @@ namespace EcoGarden.UI
 
         private static readonly DecorationEntry[] DecorationEntries =
         {
-            new DecorationEntry(DecorationController.BoardMossStoneId, "Moss Board", "Board skin", "UiIcons/icon_decor_board"),
-            new DecorationEntry(DecorationController.ButterflyVariantId, "Butterfly Set", "Butterfly color + visitor", "UiIcons/icon_decor_butterfly"),
-            new DecorationEntry(DecorationController.BeeVisitorId, "Bee Visitor", "Ambient bee", "UiIcons/icon_decor_bee"),
-            new DecorationEntry(DecorationController.LegacyBirdVisitorId, "Bee Visitor", "Ambient bee", "UiIcons/icon_decor_bee"),
-            new DecorationEntry(DecorationController.NpcTravelerId, "Traveler NPC", "Customer outfit", "UiIcons/icon_decor_npc"),
-            new DecorationEntry(DecorationController.BackgroundLilyPondId, "Sunset Pond", "Background skin", "UiIcons/icon_decor_background")
+            new DecorationEntry(DecorationController.BoardMossStoneId, "Moss Board", "Board skin", "UiIcons/icon_decor_board", DecorationGroup.Board),
+            new DecorationEntry(DecorationController.ButterflyVariantId, "Butterfly Set", "Butterfly color + visitor", "UiIcons/icon_decor_butterfly", DecorationGroup.Ambient),
+            new DecorationEntry(DecorationController.BeeVisitorId, "Bee Visitor", "Ambient bee", "UiIcons/icon_decor_bee", DecorationGroup.Ambient),
+            new DecorationEntry(DecorationController.LegacyBirdVisitorId, "Bee Visitor", "Ambient bee", "UiIcons/icon_decor_bee", DecorationGroup.Ambient),
+            new DecorationEntry(DecorationController.NpcTravelerId, "Traveler NPC", "Customer tint", "UiIcons/icon_decor_npc", DecorationGroup.Npc),
+            new DecorationEntry(DecorationController.NpcMerchantId, "Merchant NPC", "Customer outfit", "UiIcons/icon_decor_npc", DecorationGroup.Npc),
+            new DecorationEntry(DecorationController.NpcMoonId, "Moon NPC", "Customer outfit", "UiIcons/icon_decor_npc", DecorationGroup.Npc),
+            new DecorationEntry(DecorationController.BackgroundLilyPondId, "Sunset Pond", "Background skin", "UiIcons/icon_decor_background", DecorationGroup.Background),
+            new DecorationEntry(DecorationController.BackgroundCrystalLotusId, "Crystal Pond", "Background skin", "UiIcons/icon_decor_background", DecorationGroup.Background),
+            new DecorationEntry(DecorationController.BackgroundMoonLotusId, "Moon Garden", "Background skin", "UiIcons/icon_decor_background", DecorationGroup.Background)
         };
 
         private void Awake()
@@ -158,8 +162,8 @@ namespace EcoGarden.UI
                 }
 
                 bool active = shopController.Inventory.IsDecorationActive(entry.DecorationId);
-                string action = active ? "Using" : "Use";
-                CreateItemRow(entry.DisplayName, entry.Detail, string.Empty, action, !active, entry.IconPath, () => UseDecoration(entry.DecorationId));
+                string action = active ? "Remove" : "Equip";
+                CreateItemRow(entry.DisplayName, BuildDecorationDetail(entry, active), string.Empty, action, true, entry.IconPath, () => ToggleDecoration(entry, active));
                 count++;
             }
 
@@ -171,12 +175,23 @@ namespace EcoGarden.UI
             return count;
         }
 
-        private void UseDecoration(string decorationId)
+        private void ToggleDecoration(DecorationEntry entry, bool active)
         {
-            if (shopController == null || !shopController.UseDecoration(decorationId))
+            if (shopController == null)
             {
                 EcoGardenAudioController.Instance?.PlayAbilityUnavailable();
                 PlayMessage("Decor unavailable");
+                RefreshItems();
+                return;
+            }
+
+            bool changed = active
+                ? shopController.RemoveDecoration(entry.DecorationId)
+                : shopController.UseDecorationExclusive(entry.DecorationId, GetExclusiveDecorationIds(entry.Group));
+            if (!changed)
+            {
+                EcoGardenAudioController.Instance?.PlayAbilityUnavailable();
+                PlayMessage(active ? "Default already active" : "Decor unavailable");
                 RefreshItems();
                 return;
             }
@@ -187,8 +202,24 @@ namespace EcoGarden.UI
             }
 
             EcoGardenAudioController.Instance?.PlayDecorationApply();
-            PlayMessage("Decor applied");
+            PlayMessage(active ? "Default restored" : "Decor equipped");
             RefreshItems();
+        }
+
+        private static string BuildDecorationDetail(DecorationEntry entry, bool active)
+        {
+            return entry.Detail + (active ? " / Equipped" : " / Tap to equip");
+        }
+
+        private static IEnumerable<string> GetExclusiveDecorationIds(DecorationGroup group)
+        {
+            for (int i = 0; i < DecorationEntries.Length; i++)
+            {
+                if (DecorationEntries[i].Group == group)
+                {
+                    yield return DecorationEntries[i].DecorationId;
+                }
+            }
         }
 
         private void CreateItemRow(string name, string detail, string countText, string actionText, bool actionEnabled, string iconPath, UnityEngine.Events.UnityAction action)
@@ -527,20 +558,30 @@ namespace EcoGarden.UI
             return gameObject;
         }
 
+        private enum DecorationGroup
+        {
+            Board,
+            Ambient,
+            Npc,
+            Background
+        }
+
         private readonly struct DecorationEntry
         {
-            public DecorationEntry(string decorationId, string displayName, string detail, string iconPath)
+            public DecorationEntry(string decorationId, string displayName, string detail, string iconPath, DecorationGroup group)
             {
                 DecorationId = decorationId;
                 DisplayName = displayName;
                 Detail = detail;
                 IconPath = iconPath;
+                Group = group;
             }
 
             public string DecorationId { get; }
             public string DisplayName { get; }
             public string Detail { get; }
             public string IconPath { get; }
+            public DecorationGroup Group { get; }
         }
     }
 }

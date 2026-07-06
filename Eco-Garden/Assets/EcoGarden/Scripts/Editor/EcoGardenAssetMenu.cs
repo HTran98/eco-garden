@@ -476,44 +476,36 @@ namespace EcoGarden.Editor
                 }),
                 true);
             CreateOrUpdateShopItem(
-                "shop_deco_butterfly",
-                "Butterfly Decoration",
-                "Unlocks a butterfly cosmetic variant.",
-                ShopItemCategory.Decoration,
-                new ShopPriceDefinition(ShopPurchaseKind.Gold, 250),
-                new RewardDefinition(null, null, new[] { "deco_butterfly_variant" }),
-                false);
-            CreateOrUpdateShopItem(
-                "shop_deco_bird_visitor",
-                "Bee Visitor Decoration",
-                "Unlocks an ambient bee visitor.",
-                ShopItemCategory.Decoration,
-                new ShopPriceDefinition(ShopPurchaseKind.Gem, 20),
-                new RewardDefinition(null, null, new[] { "deco_bee_visitor" }),
-                false);
-            CreateOrUpdateShopItem(
-                "shop_deco_board_moss_stone",
-                "Board Skin: Moss Stone",
-                "Unlocks the Moss Stone board skin.",
+                "shop_deco_npc_merchant",
+                "NPC Skin: Merchant",
+                "Unlocks the flower merchant customer.",
                 ShopItemCategory.Decoration,
                 new ShopPriceDefinition(ShopPurchaseKind.Gem, 45),
-                new RewardDefinition(null, null, new[] { "skin_board_moss_stone" }),
+                new RewardDefinition(null, null, new[] { "skin_npc_merchant" }),
                 false);
             CreateOrUpdateShopItem(
-                "shop_deco_npc_traveler",
-                "NPC Skin: Traveler",
-                "Unlocks the Traveler NPC skin.",
+                "shop_deco_npc_moon",
+                "NPC Skin: Moon Gardener",
+                "Unlocks a moon lotus customer.",
                 ShopItemCategory.Decoration,
-                new ShopPriceDefinition(ShopPurchaseKind.Gem, 40),
-                new RewardDefinition(null, null, new[] { "skin_npc_traveler" }),
+                new ShopPriceDefinition(ShopPurchaseKind.Gem, 55),
+                new RewardDefinition(null, null, new[] { "skin_npc_moon" }),
                 false);
             CreateOrUpdateShopItem(
-                "shop_deco_background_lily_pond",
-                "Background: Sunset Pond",
-                "Unlocks a warm lily pond background.",
+                "shop_deco_background_crystal_lotus",
+                "Background: Crystal Pond",
+                "Unlocks a bright crystal lotus pond.",
                 ShopItemCategory.Decoration,
-                new ShopPriceDefinition(ShopPurchaseKind.Gem, 35),
-                new RewardDefinition(null, null, new[] { "skin_background_lily_pond" }),
+                new ShopPriceDefinition(ShopPurchaseKind.Gem, 50),
+                new RewardDefinition(null, null, new[] { "skin_background_crystal_lotus" }),
+                false);
+            CreateOrUpdateShopItem(
+                "shop_deco_background_moon_lotus",
+                "Background: Moon Garden",
+                "Unlocks a starlit lotus garden.",
+                ShopItemCategory.Decoration,
+                new ShopPriceDefinition(ShopPurchaseKind.Gem, 55),
+                new RewardDefinition(null, null, new[] { "skin_background_moon_lotus" }),
                 false);
             CreateOrUpdateShopItem(
                 "shop_unlock_lotus_tier_4",

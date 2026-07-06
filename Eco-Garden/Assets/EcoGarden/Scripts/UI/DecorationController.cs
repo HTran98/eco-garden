@@ -13,7 +13,11 @@ namespace EcoGarden.UI
         public const string BeeVisitorId = "deco_bee_visitor";
         public const string LegacyBirdVisitorId = "deco_bird_visitor";
         public const string NpcTravelerId = "skin_npc_traveler";
+        public const string NpcMerchantId = "skin_npc_merchant";
+        public const string NpcMoonId = "skin_npc_moon";
         public const string BackgroundLilyPondId = "skin_background_lily_pond";
+        public const string BackgroundCrystalLotusId = "skin_background_crystal_lotus";
+        public const string BackgroundMoonLotusId = "skin_background_moon_lotus";
 
         [SerializeField] private ShopController shopController;
         [SerializeField] private BoardBackdropController boardBackdrop;
@@ -58,8 +62,8 @@ namespace EcoGarden.UI
             ApplyBoardSkin(owned.Contains(BoardMossStoneId));
             ApplyButterflyVariant(owned.Contains(ButterflyVariantId));
             ApplyBeeVisitor(owned.Contains(BeeVisitorId) || owned.Contains(LegacyBirdVisitorId));
-            ApplyNpcSkin(owned.Contains(NpcTravelerId));
-            ApplyBackgroundSkin(owned.Contains(BackgroundLilyPondId));
+            ApplyNpcSkin(owned);
+            ApplyBackgroundSkin(owned);
         }
 
         public void ApplyActiveDecorationsFromShop()
@@ -76,6 +80,21 @@ namespace EcoGarden.UI
         {
             if (!owned)
             {
+                if (boardBackdrop == null)
+                {
+                    boardBackdrop = FindAnyObjectByType<BoardBackdropController>();
+                }
+
+                if (backgroundController == null)
+                {
+                    backgroundController = FindAnyObjectByType<EcoGardenBackgroundController>();
+                }
+
+                if (boardBackdrop != null)
+                {
+                    boardBackdrop.ResetCosmeticTint();
+                }
+
                 return;
             }
 
@@ -91,7 +110,7 @@ namespace EcoGarden.UI
 
             if (boardBackdrop != null)
             {
-                boardBackdrop.SetCosmeticTint(new Color(0.76f, 0.88f, 0.68f, 1f));
+                boardBackdrop.SetCosmeticTint(new Color(0.76f, 0.88f, 0.68f, 0.24f));
             }
 
             if (backgroundController != null)
@@ -104,6 +123,21 @@ namespace EcoGarden.UI
         {
             if (!owned)
             {
+                ButterflyMovementController[] defaultButterflies = FindObjectsByType<ButterflyMovementController>(FindObjectsInactive.Include);
+                for (int i = 0; i < defaultButterflies.Length; i++)
+                {
+                    if (defaultButterflies[i] != null && defaultButterflies[i].name != "DecorButterflyVariant")
+                    {
+                        defaultButterflies[i].ResetCosmeticColor();
+                    }
+                }
+
+                GameObject decorButterfly = GameObject.Find("DecorButterflyVariant");
+                if (decorButterfly != null)
+                {
+                    decorButterfly.SetActive(false);
+                }
+
                 return;
             }
 
@@ -148,46 +182,75 @@ namespace EcoGarden.UI
             bee.SetActive(true);
         }
 
-        private void ApplyNpcSkin(bool owned)
+        private void ApplyNpcSkin(HashSet<string> owned)
         {
-            if (!owned)
-            {
-                return;
-            }
-
             if (npcController == null)
             {
                 npcController = FindAnyObjectByType<NpcMovementController>();
             }
 
-            if (npcController != null)
+            if (npcController == null)
+            {
+                return;
+            }
+
+            if (owned.Contains(NpcMerchantId))
+            {
+                npcController.SetCosmeticSprite("Characters/char_customer_merchant_01_alpha", Color.white);
+                return;
+            }
+
+            if (owned.Contains(NpcMoonId))
+            {
+                npcController.SetCosmeticSprite("Characters/char_customer_moon_01_alpha", Color.white);
+                return;
+            }
+
+            npcController.ResetCosmeticSprite();
+            if (owned.Contains(NpcTravelerId))
             {
                 npcController.SetCosmeticColor(new Color(0.42f, 0.74f, 0.94f, 1f));
             }
         }
 
-        private void ApplyBackgroundSkin(bool owned)
+        private void ApplyBackgroundSkin(HashSet<string> owned)
         {
-            if (!owned)
-            {
-                return;
-            }
-
             if (backgroundController == null)
             {
                 backgroundController = FindAnyObjectByType<EcoGardenBackgroundController>();
             }
 
-            if (backgroundController != null)
+            if (backgroundController == null)
+            {
+                return;
+            }
+
+            if (owned.Contains(BackgroundCrystalLotusId))
+            {
+                backgroundController.SetCosmeticBackground("Backgrounds/bg_crystal_lotus_pond_01", Color.white);
+                return;
+            }
+
+            if (owned.Contains(BackgroundMoonLotusId))
+            {
+                backgroundController.SetCosmeticBackground("Backgrounds/bg_moon_lotus_garden_01", Color.white);
+                return;
+            }
+
+            if (owned.Contains(BackgroundLilyPondId))
             {
                 backgroundController.SetCosmeticBackground("Backgrounds/bg_lily_pond_sunset_01", new Color(1f, 0.94f, 0.84f, 1f));
+                return;
             }
+
+            backgroundController.ResetCosmeticBackground();
         }
 
         private static void EnsureDecorButterfly()
         {
             if (GameObject.Find("DecorButterflyVariant") != null)
             {
+                GameObject.Find("DecorButterflyVariant").SetActive(true);
                 return;
             }
 

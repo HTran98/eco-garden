@@ -76,5 +76,47 @@ namespace EcoGarden.Tests.EditMode
                 Object.DestroyImmediate(controllerObject);
             }
         }
+
+        [Test]
+        public void ApplyOwnedDecorations_EmptySetRestoresDefaultPresentation()
+        {
+            GameObject controllerObject = new GameObject("DecorationController");
+            GameObject backdropObject = new GameObject("BoardBackdrop", typeof(SpriteRenderer), typeof(BoardBackdropController));
+            GameObject backgroundObject = new GameObject("EcoGardenBackground", typeof(SpriteRenderer), typeof(EcoGardenBackgroundController));
+            GameObject npcObject = new GameObject("CustomerNpc", typeof(SpriteRenderer), typeof(NpcMovementController));
+            GameObject butterflyObject = new GameObject("ButterflyA", typeof(SpriteRenderer), typeof(ButterflyMovementController));
+            try
+            {
+                DecorationController controller = controllerObject.AddComponent<DecorationController>();
+                controller.ApplyOwnedDecorations(new[]
+                {
+                    DecorationController.BoardMossStoneId,
+                    DecorationController.ButterflyVariantId,
+                    DecorationController.NpcMoonId,
+                    DecorationController.BackgroundMoonLotusId
+                });
+
+                controller.ApplyOwnedDecorations(System.Array.Empty<string>());
+
+                Assert.AreEqual(BoardBackdropController.DefaultCosmeticTint, backdropObject.GetComponent<SpriteRenderer>().color);
+                Assert.AreEqual(Color.white, backgroundObject.GetComponent<SpriteRenderer>().color);
+                Assert.AreEqual(Color.white, npcObject.GetComponent<SpriteRenderer>().color);
+                Assert.AreEqual(new Color(1f, 0.72f, 0.36f, 1f), butterflyObject.GetComponent<SpriteRenderer>().color);
+            }
+            finally
+            {
+                GameObject decorButterfly = GameObject.Find("DecorButterflyVariant");
+                if (decorButterfly != null)
+                {
+                    Object.DestroyImmediate(decorButterfly);
+                }
+
+                Object.DestroyImmediate(butterflyObject);
+                Object.DestroyImmediate(npcObject);
+                Object.DestroyImmediate(backgroundObject);
+                Object.DestroyImmediate(backdropObject);
+                Object.DestroyImmediate(controllerObject);
+            }
+        }
     }
 }
