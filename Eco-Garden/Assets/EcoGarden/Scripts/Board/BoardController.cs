@@ -20,6 +20,7 @@ namespace EcoGarden.Board
         [SerializeField] private float cameraPadding = 1.55f;
         [SerializeField] private float hudTopWorldPadding = 1.25f;
         [SerializeField] private float hudBottomWorldPadding = 1.25f;
+        [SerializeField] private float minimumPortraitOrthographicSize = 6.4f;
 
         public BoardState BoardState { get; private set; }
         public LevelDefinition LevelDefinition { get { return levelDefinition; } }
@@ -406,7 +407,8 @@ namespace EcoGarden.Board
             float safeHudBottomPadding = Mathf.Max(hudBottomWorldPadding, 1.25f);
             float sizeByHeight = boardHeight * 0.5f + safeCameraPadding + (safeHudTopPadding + safeHudBottomPadding) * 0.5f;
             float sizeByWidth = boardWidth * 0.5f / aspect + safeCameraPadding;
-            mainCamera.orthographicSize = Mathf.Max(sizeByHeight, sizeByWidth);
+            float portraitMinimum = aspect < 0.75f ? minimumPortraitOrthographicSize : 0f;
+            mainCamera.orthographicSize = Mathf.Max(sizeByHeight, sizeByWidth, portraitMinimum);
 
             // Offset toward available play space between top and bottom HUD.
             mainCamera.transform.position = new Vector3(

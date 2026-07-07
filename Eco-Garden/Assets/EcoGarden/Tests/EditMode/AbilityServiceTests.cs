@@ -18,7 +18,7 @@ namespace EcoGarden.Tests
             Assert.IsFalse(service.TryUseShovel(new GridPosition(1, 1)));
             Assert.AreEqual(1, inventory.GetCount(AbilityKind.Shovel));
 
-            Assert.IsTrue(service.TryUseShovel(new GridPosition(2, 5)));
+            Assert.IsTrue(service.TryUseShovel(new GridPosition(0, 2)));
             Assert.AreEqual(0, inventory.GetCount(AbilityKind.Shovel));
         }
 
@@ -33,9 +33,9 @@ namespace EcoGarden.Tests
             Assert.IsFalse(service.TryUseMagicWand(new GridPosition(1, 1)));
             Assert.AreEqual(1, inventory.GetCount(AbilityKind.MagicWand));
 
-            Assert.IsTrue(service.TryUseMagicWand(new GridPosition(3, 6)));
+            Assert.IsTrue(service.TryUseMagicWand(new GridPosition(1, 3)));
             Assert.AreEqual(0, inventory.GetCount(AbilityKind.MagicWand));
-            Assert.AreEqual(3, board.GetCell(new GridPosition(3, 6)).Item.Level);
+            Assert.AreEqual(3, board.GetCell(new GridPosition(1, 3)).Item.Level);
         }
 
         [Test]

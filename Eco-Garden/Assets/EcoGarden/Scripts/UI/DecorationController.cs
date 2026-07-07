@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using EcoGarden.AI;
+using EcoGarden.Board;
 using EcoGarden.Shop;
 using EcoGarden.Utilities;
 using UnityEngine;
@@ -23,6 +24,7 @@ namespace EcoGarden.UI
         [SerializeField] private BoardBackdropController boardBackdrop;
         [SerializeField] private EcoGardenBackgroundController backgroundController;
         [SerializeField] private NpcMovementController npcController;
+        [SerializeField] private BoardView boardView;
 
         private bool subscribed;
 
@@ -110,7 +112,7 @@ namespace EcoGarden.UI
 
             if (boardBackdrop != null)
             {
-                boardBackdrop.SetCosmeticTint(new Color(0.76f, 0.88f, 0.68f, 0.24f));
+                boardBackdrop.SetCosmeticTint(new Color(0.66f, 0.82f, 0.62f, 0.12f));
             }
 
             if (backgroundController != null)
@@ -227,23 +229,55 @@ namespace EcoGarden.UI
 
             if (owned.Contains(BackgroundCrystalLotusId))
             {
-                backgroundController.SetCosmeticBackground("Backgrounds/bg_crystal_lotus_pond_01", Color.white);
+                backgroundController.SetCosmeticBackground(
+                    "Backgrounds/bg_crystal_lotus_pond_01",
+                    Color.white,
+                    new Vector2(0f, -0.72f));
+                ApplyBoardTilePalette(
+                    new Color(0.72f, 0.65f, 0.48f, 1f),
+                    new Color(0.94f, 0.86f, 0.62f, 1f),
+                    new Color(0.25f, 0.72f, 0.78f, 1f));
                 return;
             }
 
             if (owned.Contains(BackgroundMoonLotusId))
             {
                 backgroundController.SetCosmeticBackground("Backgrounds/bg_moon_lotus_garden_01", Color.white);
+                ApplyBoardTilePalette(
+                    new Color(0.24f, 0.35f, 0.54f, 1f),
+                    new Color(0.50f, 0.50f, 0.70f, 1f),
+                    new Color(0.38f, 0.54f, 0.95f, 1f));
                 return;
             }
 
             if (owned.Contains(BackgroundLilyPondId))
             {
                 backgroundController.SetCosmeticBackground("Backgrounds/bg_lily_pond_sunset_01", new Color(1f, 0.94f, 0.84f, 1f));
+                ApplyBoardTilePalette(
+                    new Color(0.64f, 0.53f, 0.40f, 1f),
+                    new Color(0.92f, 0.74f, 0.52f, 1f),
+                    new Color(0.52f, 0.58f, 0.70f, 1f));
                 return;
             }
 
             backgroundController.ResetCosmeticBackground();
+            ApplyBoardTilePalette(
+                new Color(0.42f, 0.68f, 0.66f, 1f),
+                new Color(0.58f, 0.78f, 0.70f, 1f),
+                new Color(0.20f, 0.49f, 0.62f, 1f));
+        }
+
+        private void ApplyBoardTilePalette(Color edgeColor, Color centerColor, Color producerAccentColor)
+        {
+            if (boardView == null)
+            {
+                boardView = FindAnyObjectByType<BoardView>();
+            }
+
+            if (boardView != null)
+            {
+                boardView.SetCosmeticTilePalette(edgeColor, centerColor, producerAccentColor);
+            }
         }
 
         private static void EnsureDecorButterfly()
@@ -284,6 +318,11 @@ namespace EcoGarden.UI
             if (npcController == null)
             {
                 npcController = FindAnyObjectByType<NpcMovementController>();
+            }
+
+            if (boardView == null)
+            {
+                boardView = FindAnyObjectByType<BoardView>();
             }
         }
 

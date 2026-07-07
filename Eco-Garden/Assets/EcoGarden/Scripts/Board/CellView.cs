@@ -16,7 +16,7 @@ namespace EcoGarden.Board
             spriteRenderer = GetComponent<SpriteRenderer>();
         }
 
-        public void Initialize(BoardCell boardCell, Sprite sprite, Color color, Vector3 worldPosition, Vector2 size)
+        public void Initialize(BoardCell boardCell, Sprite sprite, Color color, Vector3 worldPosition, Vector2 size, float zRotation)
         {
             cell = boardCell;
 
@@ -30,11 +30,12 @@ namespace EcoGarden.Board
             spriteRenderer.sortingOrder = 0;
             RefreshShadow(sprite);
             transform.position = worldPosition;
+            transform.rotation = Quaternion.Euler(0f, 0f, zRotation);
             transform.localScale = new Vector3(size.x, size.y, 1f);
             name = "Cell_" + boardCell.Position.X + "_" + boardCell.Position.Y + "_" + boardCell.Kind;
         }
 
-        public void Refresh(BoardCell boardCell, Sprite sprite, Color color)
+        public void Refresh(BoardCell boardCell, Sprite sprite, Color color, float zRotation)
         {
             cell = boardCell;
 
@@ -46,6 +47,7 @@ namespace EcoGarden.Board
             spriteRenderer.sprite = sprite;
             spriteRenderer.color = color;
             RefreshShadow(sprite);
+            transform.rotation = Quaternion.Euler(0f, 0f, zRotation);
             name = "Cell_" + boardCell.Position.X + "_" + boardCell.Position.Y + "_" + boardCell.Kind;
         }
 
@@ -54,7 +56,7 @@ namespace EcoGarden.Board
             EnsureShadowRenderer();
             shadowRenderer.sprite = sprite;
             float sourceAlpha = spriteRenderer != null ? spriteRenderer.color.a : 1f;
-            shadowRenderer.color = new Color(0.05f, 0.12f, 0.10f, Mathf.Lerp(0.04f, 0.14f, sourceAlpha));
+            shadowRenderer.color = new Color(0.04f, 0.10f, 0.10f, Mathf.Lerp(0.02f, 0.10f, sourceAlpha));
             shadowRenderer.sortingOrder = -1;
         }
 

@@ -31,12 +31,12 @@ namespace EcoGarden.UI
             new DecorationEntry(DecorationController.ButterflyVariantId, "Butterfly Set", "Butterfly color + visitor", "UiIcons/icon_decor_butterfly", DecorationGroup.Ambient),
             new DecorationEntry(DecorationController.BeeVisitorId, "Bee Visitor", "Ambient bee", "UiIcons/icon_decor_bee", DecorationGroup.Ambient),
             new DecorationEntry(DecorationController.LegacyBirdVisitorId, "Bee Visitor", "Ambient bee", "UiIcons/icon_decor_bee", DecorationGroup.Ambient),
-            new DecorationEntry(DecorationController.NpcTravelerId, "Traveler NPC", "Customer tint", "UiIcons/icon_decor_npc", DecorationGroup.Npc),
-            new DecorationEntry(DecorationController.NpcMerchantId, "Merchant NPC", "Customer outfit", "UiIcons/icon_decor_npc", DecorationGroup.Npc),
-            new DecorationEntry(DecorationController.NpcMoonId, "Moon NPC", "Customer outfit", "UiIcons/icon_decor_npc", DecorationGroup.Npc),
-            new DecorationEntry(DecorationController.BackgroundLilyPondId, "Sunset Pond", "Background skin", "UiIcons/icon_decor_background", DecorationGroup.Background),
-            new DecorationEntry(DecorationController.BackgroundCrystalLotusId, "Crystal Pond", "Background skin", "UiIcons/icon_decor_background", DecorationGroup.Background),
-            new DecorationEntry(DecorationController.BackgroundMoonLotusId, "Moon Garden", "Background skin", "UiIcons/icon_decor_background", DecorationGroup.Background)
+            new DecorationEntry(DecorationController.NpcTravelerId, "Traveler NPC", "Customer tint", "Characters/char_customer_01", DecorationGroup.Npc),
+            new DecorationEntry(DecorationController.NpcMerchantId, "Merchant NPC", "Customer outfit", "Characters/char_customer_merchant_01_alpha", DecorationGroup.Npc),
+            new DecorationEntry(DecorationController.NpcMoonId, "Moon NPC", "Customer outfit", "Characters/char_customer_moon_01_alpha", DecorationGroup.Npc),
+            new DecorationEntry(DecorationController.BackgroundLilyPondId, "Sunset Pond", "Background skin", "Backgrounds/bg_lily_pond_sunset_01", DecorationGroup.Background),
+            new DecorationEntry(DecorationController.BackgroundCrystalLotusId, "Crystal Pond", "Background skin", "Backgrounds/bg_crystal_lotus_pond_01", DecorationGroup.Background),
+            new DecorationEntry(DecorationController.BackgroundMoonLotusId, "Moon Garden", "Background skin", "Backgrounds/bg_moon_lotus_garden_01", DecorationGroup.Background)
         };
 
         private void Awake()
@@ -233,9 +233,10 @@ namespace EcoGarden.UI
             rowImage.color = Color.white;
             UiRowAccent.Apply(row.transform, actionEnabled ? UiThemePalette.Selected : UiThemePalette.PanelMuted);
 
-            CreateImage("Icon", row.transform, LoadSprite(iconPath) ?? PlaceholderSpriteFactory.ShopIconBadgeSprite, Color.white, InventoryUiLayoutMetrics.IconAnchorMin, InventoryUiLayoutMetrics.IconAnchorMax);
-            CreateText("Name", row.transform, name, TextAnchor.MiddleLeft, InventoryUiLayoutMetrics.NameAnchorMin, InventoryUiLayoutMetrics.NameAnchorMax, 24);
-            Text detailText = CreateText("Detail", row.transform, detail, TextAnchor.MiddleLeft, InventoryUiLayoutMetrics.DetailAnchorMin, InventoryUiLayoutMetrics.DetailAnchorMax, 18).GetComponent<Text>();
+            GameObject iconBadge = CreateImage("IconBadge", row.transform, PlaceholderSpriteFactory.ShopIconBadgeSprite, UiThemePalette.PanelMuted, InventoryUiLayoutMetrics.IconAnchorMin, InventoryUiLayoutMetrics.IconAnchorMax);
+            CreateImage("Icon", iconBadge.transform, LoadSprite(iconPath) ?? PlaceholderSpriteFactory.ShopIconBadgeSprite, Color.white, new Vector2(0.05f, 0.05f), new Vector2(0.95f, 0.95f));
+            CreateText("Name", row.transform, name, TextAnchor.MiddleLeft, InventoryUiLayoutMetrics.NameAnchorMin, InventoryUiLayoutMetrics.NameAnchorMax, 26);
+            Text detailText = CreateText("Detail", row.transform, detail, TextAnchor.MiddleLeft, InventoryUiLayoutMetrics.DetailAnchorMin, InventoryUiLayoutMetrics.DetailAnchorMax, 20).GetComponent<Text>();
             detailText.color = UiThemePalette.TextMuted;
 
             if (!string.IsNullOrWhiteSpace(countText))

@@ -11,6 +11,7 @@ namespace EcoGarden.UI
         [SerializeField] private Camera targetCamera;
         [SerializeField] private string backgroundResourcePath = DefaultBackgroundPath;
         [SerializeField] private float extraScale = 1.08f;
+        [SerializeField] private Vector2 worldOffset;
 
         private void Awake()
         {
@@ -78,8 +79,8 @@ namespace EcoGarden.UI
             float scale = Mathf.Max(worldWidth / spriteSize.x, worldHeight / spriteSize.y);
             transform.localScale = new Vector3(scale, scale, 1f);
             transform.position = new Vector3(
-                targetCamera.transform.position.x,
-                targetCamera.transform.position.y,
+                targetCamera.transform.position.x + worldOffset.x,
+                targetCamera.transform.position.y + worldOffset.y,
                 5f);
         }
 
@@ -93,6 +94,7 @@ namespace EcoGarden.UI
         {
             EnsureRenderer();
             backgroundResourcePath = DefaultBackgroundPath;
+            worldOffset = Vector2.zero;
             Sprite sprite = Resources.Load<Sprite>(backgroundResourcePath);
             if (sprite != null)
             {
@@ -105,6 +107,11 @@ namespace EcoGarden.UI
 
         public void SetCosmeticBackground(string resourcePath, Color tint)
         {
+            SetCosmeticBackground(resourcePath, tint, Vector2.zero);
+        }
+
+        public void SetCosmeticBackground(string resourcePath, Color tint, Vector2 offset)
+        {
             EnsureRenderer();
             if (!string.IsNullOrWhiteSpace(resourcePath))
             {
@@ -116,6 +123,7 @@ namespace EcoGarden.UI
                 }
             }
 
+            worldOffset = offset;
             spriteRenderer.color = tint;
             FitToCamera();
         }

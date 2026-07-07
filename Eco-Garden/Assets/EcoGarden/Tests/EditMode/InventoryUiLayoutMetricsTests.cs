@@ -26,11 +26,16 @@ namespace EcoGarden.Tests.EditMode
                 InventoryUiLayoutMetrics.ActionAnchorMin,
                 InventoryUiLayoutMetrics.ActionAnchorMax,
                 new Vector2(640f, InventoryUiLayoutMetrics.ItemRowHeight));
+            Rect icon = AndroidHudLayoutMetrics.ToPixelRect(
+                InventoryUiLayoutMetrics.IconAnchorMin,
+                InventoryUiLayoutMetrics.IconAnchorMax,
+                new Vector2(640f, InventoryUiLayoutMetrics.ItemRowHeight));
 
             Assert.IsFalse(AndroidHudLayoutMetrics.Overlaps(summary, content, 8f));
             Assert.GreaterOrEqual(summary.height, InventoryUiLayoutMetrics.MinimumSummaryHeight);
             Assert.GreaterOrEqual(content.height, InventoryUiLayoutMetrics.MinimumContentHeight);
             Assert.GreaterOrEqual(action.width, InventoryUiLayoutMetrics.MinimumActionWidth);
+            Assert.GreaterOrEqual(icon.width, InventoryUiLayoutMetrics.MinimumIconPreviewWidth);
         }
     }
 }

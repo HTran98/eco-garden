@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
@@ -14,17 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Config.LevelDefinition
   levelId: 15
   levelName: The Lotus Pond Corner
-  width: 8
-  height: 8
+  width: 5
+  height: 5
   rowsTopToBottom:
-  - LL----LL
-  - L--21--L
-  - --W--W--
-  - S-PPPP--
-  - --PPPP--
-  - --W--W--
-  - L--11--L
-  - LL----LL
+  - LL-LL
+  - -221-
+  - W-S-W
+  - -111-
+  - LL-LL
   defaultProducer: {fileID: 11400000, guid: c572022a571899f41b8c872826862242, type: 2}
   itemDefinitions:
   - {fileID: 11400000, guid: ff538eddbdbd6af42a5d8603a52c658a, type: 2}
@@ -63,8 +60,8 @@ MonoBehaviour:
     tier: 5
   difficulty:
     difficultyKind: 2
-    obstacleCount: 8
-    lockedCellCount: 4
+    obstacleCount: 2
+    lockedCellCount: 8
     temporaryLockCount: 1
     orderComplexityScore: 5
     timerPressureMultiplier: 0.75
@@ -73,7 +70,7 @@ MonoBehaviour:
       board space.'
   temporaryLocks:
   - x: 1
-    y: 6
+    y: 3
     unlockTrigger: 1
     unlockSourceId: lotus_lv05_order
   timerSeconds: 180

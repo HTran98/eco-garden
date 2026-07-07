@@ -8,11 +8,11 @@ namespace EcoGarden.UI
     public sealed class BoardBackdropController : MonoBehaviour
     {
         private const string BackdropSpritePath = "UiSkins/ui_board_backdrop";
-        public static readonly Color DefaultCosmeticTint = new Color(1f, 1f, 1f, 0.10f);
+        public static readonly Color DefaultCosmeticTint = new Color(0.72f, 0.90f, 0.86f, 0.035f);
 
         [SerializeField] private BoardController boardController;
-        [SerializeField] private float horizontalPadding = 0.42f;
-        [SerializeField] private float verticalPadding = 0.44f;
+        [SerializeField] private float horizontalPadding = 0.12f;
+        [SerializeField] private float verticalPadding = 0.12f;
         [SerializeField] private int sortingOrder = -900;
 
         private SpriteRenderer spriteRenderer;

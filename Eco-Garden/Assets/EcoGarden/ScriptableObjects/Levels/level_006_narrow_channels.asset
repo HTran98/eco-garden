@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
@@ -14,17 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: EcoGarden.Runtime::EcoGarden.Config.LevelDefinition
   levelId: 6
   levelName: Narrow Channels
-  width: 8
-  height: 8
+  width: 5
+  height: 5
   rowsTopToBottom:
-  - LL----LL
-  - L-PPPP-L
-  - --PWWP--
-  - --PSPP--
-  - --PPWW--
-  - L-PPPP-L
-  - LL----LL
-  - --------
+  - LL-LL
+  - --WW-
+  - --S--
+  - -WW--
+  - LL-LL
   defaultProducer: {fileID: 11400000, guid: c572022a571899f41b8c872826862242, type: 2}
   itemDefinitions:
   - {fileID: 11400000, guid: ff538eddbdbd6af42a5d8603a52c658a, type: 2}

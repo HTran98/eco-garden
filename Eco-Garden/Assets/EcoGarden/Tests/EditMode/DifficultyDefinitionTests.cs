@@ -13,7 +13,7 @@ namespace EcoGarden.Tests.EditMode
 
             Assert.AreEqual(DifficultyKind.Hard, level.Difficulty.DifficultyKind);
             Assert.AreEqual(4, level.Difficulty.LockedCellCount);
-            Assert.AreEqual(8, level.Difficulty.ObstacleCount);
+            Assert.AreEqual(2, level.Difficulty.ObstacleCount);
             Assert.AreEqual(1, level.Difficulty.TemporaryLockCount);
             Assert.AreEqual(2f, level.Difficulty.RewardMultiplier);
             Assert.AreEqual(0.75f, level.Difficulty.TimerPressureMultiplier);

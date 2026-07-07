@@ -123,7 +123,7 @@ namespace EcoGarden.Tests.EditMode
                 "one_sprout",
                 "One Sprout",
                 new[] { new OrderRequirementDefinition("lotus", 1, 1) }));
-            GridPosition obstaclePosition = new GridPosition(2, 5);
+            GridPosition obstaclePosition = new GridPosition(0, 2);
 
             Assert.IsTrue(boardController.TryUseAbility(AbilityKind.Shovel, obstaclePosition));
 

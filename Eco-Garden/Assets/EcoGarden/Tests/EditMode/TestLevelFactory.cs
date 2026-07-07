@@ -22,18 +22,15 @@ namespace EcoGarden.Tests
             level.EditorSetValues(
                 15,
                 "The Lotus Pond Corner",
-                8,
-                8,
+                5,
+                5,
                 new[]
                 {
-                    "LL----LL",
-                    "L--21--L",
-                    "--W--W--",
-                    "S-PPPP--",
-                    "--PPPP--",
-                    "--W--W--",
-                    "L--11--L",
-                    "LL----LL"
+                    "LL-LL",
+                    "-221-",
+                    "W-S-W",
+                    "-111-",
+                    "LL-LL"
                 },
                 producer,
                 new List<ItemDefinition> { lv1, lv2, lv3, lv4, lv5 },
@@ -47,10 +44,10 @@ namespace EcoGarden.Tests
                 180f,
                 "pastel_zen",
                 null,
-                new DifficultyDefinition(DifficultyKind.Hard, 8, 4, 1, 5, 0.75f, 2f),
+                new DifficultyDefinition(DifficultyKind.Hard, 2, 8, 1, 5, 0.75f, 2f),
                 new List<TemporaryLockDefinition>
                 {
-                    new TemporaryLockDefinition(1, 6, TemporaryLockUnlockTrigger.OrderCompleted, "lotus_lv05_x1")
+                    new TemporaryLockDefinition(1, 3, TemporaryLockUnlockTrigger.OrderCompleted, "lotus_lv05_x1")
                 });
 
             return level;
@@ -62,8 +59,8 @@ namespace EcoGarden.Tests
             level.EditorSetValues(
                 level.LevelId,
                 level.LevelName,
-                8,
-                8,
+                rows != null && rows.Length > 0 ? rows[0].Length : 0,
+                rows != null ? rows.Length : 0,
                 rows,
                 level.DefaultProducer,
                 new List<ItemDefinition>
