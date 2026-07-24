@@ -8,6 +8,12 @@ namespace EcoGarden.Tests.EditMode
     public sealed class StartupSplashControllerTests
     {
         [Test]
+        public void SplashResourcePath_UsesLotimoriArtwork()
+        {
+            Assert.AreEqual("Splash/startup_splash_lotimori_portrait", StartupSplashController.SplashResourcePath);
+        }
+
+        [Test]
         public void Show_CreatesBlockingSplashCanvas()
         {
             GameObject controllerObject = new GameObject("StartupSplashController");

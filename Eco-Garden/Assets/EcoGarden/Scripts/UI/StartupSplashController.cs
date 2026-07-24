@@ -6,7 +6,7 @@ namespace EcoGarden.UI
 {
     public sealed class StartupSplashController : MonoBehaviour
     {
-        public const string SplashResourcePath = "Splash/startup_splash_eco_garden_portrait";
+        public const string SplashResourcePath = "Splash/startup_splash_lotimori_portrait";
 
         [SerializeField] private float holdSeconds = 2.2f;
         [SerializeField] private float fadeSeconds = 0.65f;
